@@ -1,0 +1,401 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Receipt ya Malipo - Kwaya Mt. Bonifasi{% endblock %}
+
+{% block content %}
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    .receipt-container {
+        max-width: 550px;
+        margin: 30px auto;
+        background: white;
+        border-radius: 28px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.15), 0 5px 15px rgba(0,0,0,0.1);
+        overflow: hidden;
+        transition: transform 0.3s;
+    }
+    
+    .receipt-container:hover {
+        transform: translateY(-5px);
+    }
+    
+    /* Header with Gold Gradient */
+    .receipt-header {
+        background: linear-gradient(135deg, #1a2a6e 0%, #2a3a7e 50%, #1a2a6e 100%);
+        padding: 30px 25px;
+        text-align: center;
+        position: relative;
+        border-bottom: 4px solid #FFD700;
+    }
+    
+    .receipt-header::before {
+        content: "🎵";
+        position: absolute;
+        left: 15px;
+        top: 20px;
+        font-size: 50px;
+        opacity: 0.15;
+    }
+    
+    .receipt-header::after {
+        content: "🎶";
+        position: absolute;
+        right: 15px;
+        bottom: 20px;
+        font-size: 50px;
+        opacity: 0.15;
+    }
+    
+    .receipt-logo {
+        font-size: 48px;
+        background: rgba(255,215,0,0.15);
+        display: inline-block;
+        padding: 12px 20px;
+        border-radius: 60px;
+        margin-bottom: 15px;
+    }
+    
+    .receipt-header h2 {
+        color: #FFD700;
+        font-size: 22px;
+        letter-spacing: 2px;
+        margin: 10px 0 5px;
+    }
+    
+    .receipt-header p {
+        color: rgba(255,255,255,0.8);
+        font-size: 12px;
+        margin: 3px 0;
+    }
+    
+    .receipt-title {
+        background: #FFD700;
+        color: #1a2a6e;
+        padding: 12px;
+        text-align: center;
+        font-weight: bold;
+        font-size: 18px;
+        letter-spacing: 3px;
+    }
+    
+    /* Body */
+    .receipt-body {
+        padding: 25px;
+        background: linear-gradient(135deg, #fff, #fef9e7);
+    }
+    
+    /* Receipt Number Badge */
+    .receipt-number-badge {
+        background: linear-gradient(135deg, #FFD700, #FFA500);
+        color: #1a2a6e;
+        text-align: center;
+        padding: 12px;
+        border-radius: 50px;
+        margin-bottom: 25px;
+        font-weight: bold;
+        font-size: 14px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    }
+    
+    .receipt-number-badge span {
+        background: #1a2a6e;
+        color: #FFD700;
+        padding: 4px 12px;
+        border-radius: 30px;
+        margin-left: 10px;
+        font-family: monospace;
+        font-size: 16px;
+    }
+    
+    /* Info Grid */
+    .info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+    
+    .info-card {
+        background: white;
+        border-radius: 16px;
+        padding: 12px 15px;
+        border-left: 4px solid #FFD700;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        transition: all 0.2s;
+    }
+    
+    .info-card:hover {
+        transform: translateX(3px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .info-label {
+        font-size: 10px;
+        text-transform: uppercase;
+        color: #1a2a6e;
+        font-weight: bold;
+        letter-spacing: 1px;
+        margin-bottom: 5px;
+    }
+    
+    .info-value {
+        font-size: 14px;
+        font-weight: 600;
+        color: #333;
+        word-break: break-word;
+    }
+    
+    .info-value.voice {
+        color: #FFD700;
+        background: #1a2a6e;
+        display: inline-block;
+        padding: 3px 12px;
+        border-radius: 30px;
+        font-size: 12px;
+    }
+    
+    /* Amount Section */
+    .amount-section {
+        background: linear-gradient(135deg, #1a2a6e, #2a3a7e);
+        border-radius: 20px;
+        padding: 20px;
+        margin: 20px 0;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .amount-section::before {
+        content: "💰";
+        position: absolute;
+        left: -20px;
+        top: -20px;
+        font-size: 80px;
+        opacity: 0.08;
+    }
+    
+    .amount-section::after {
+        content: "💵";
+        position: absolute;
+        right: -20px;
+        bottom: -20px;
+        font-size: 80px;
+        opacity: 0.08;
+    }
+    
+    .amount-label {
+        color: #FFD700;
+        font-size: 12px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+    }
+    
+    .amount-value {
+        font-size: 36px;
+        font-weight: bold;
+        color: white;
+        font-family: monospace;
+    }
+    
+    .amount-value small {
+        font-size: 14px;
+    }
+    
+    /* Footer Message */
+    .footer-message {
+        text-align: center;
+        padding: 15px;
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        border-radius: 16px;
+        margin-top: 20px;
+    }
+    
+    .footer-message p {
+        margin: 5px 0;
+        font-size: 11px;
+        color: #666;
+    }
+    
+    .footer-message .blessing {
+        color: #1a2a6e;
+        font-weight: bold;
+        font-style: italic;
+        font-size: 12px;
+    }
+    
+    .gold-line {
+        width: 60px;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, #FFD700, #FFA500, #FFD700, transparent);
+        margin: 15px auto;
+    }
+    
+    /* Buttons */
+    .action-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        padding: 20px;
+        background: white;
+        border-top: 1px solid #e0e0e0;
+        flex-wrap: wrap;
+    }
+    
+    .btn {
+        padding: 10px 24px;
+        border: none;
+        border-radius: 40px;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 13px;
+        transition: all 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+    }
+    
+    .btn-print {
+        background: linear-gradient(135deg, #1a2a6e, #2a3a7e);
+        color: #FFD700;
+    }
+    
+    .btn-close {
+        background: #6c757d;
+        color: white;
+    }
+    
+    .btn-calendar {
+        background: linear-gradient(135deg, #28a745, #1e7e34);
+        color: white;
+    }
+    
+    .btn:hover {
+        transform: translateY(-2px);
+        filter: brightness(1.05);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+    }
+    
+    @media print {
+        .action-buttons, .no-print {
+            display: none !important;
+        }
+        .receipt-container {
+            box-shadow: none;
+            margin: 0;
+            border-radius: 0;
+        }
+        .receipt-body {
+            background: white;
+        }
+    }
+    
+    @media (max-width: 500px) {
+        .info-grid {
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+        .amount-value {
+            font-size: 28px;
+        }
+        .receipt-body {
+            padding: 18px;
+        }
+    }
+</style>
+
+<div class="receipt-container">
+    <div class="receipt-header">
+        <div class="receipt-logo">🎵⛪🎵</div>
+        <h2>KWAYA YA MTAKATIFU BONIFASI</h2>
+        <p>Parokia ya Moyo Mtakatifu Wa Yesu, Sombetini</p>
+        <p>Jimbo Kuu Katoliki La Arusha</p>
+    </div>
+    
+    <div class="receipt-title">
+        📄 RECEIPT YA MALIPO 📄
+    </div>
+    
+    <div class="receipt-body">
+        <div class="receipt-number-badge">
+            🔖 NAMBA YA RISITI
+            <span>{{ payment.receipt_no }}</span>
+        </div>
+        
+        <div class="info-grid">
+            <div class="info-card">
+                <div class="info-label">📅 Tarehe ya Malipo</div>
+                <div class="info-value">{{ payment.tarehe }}</div>
+            </div>
+            <div class="info-card">
+                <div class="info-label">🎵 Sauti</div>
+                <div class="info-value voice">{{ payment.sauti }}</div>
+            </div>
+            <div class="info-card">
+                <div class="info-label">👤 Jina la Mwanakwaya</div>
+                <div class="info-value">{{ payment.jina }}</div>
+            </div>
+            <div class="info-card">
+                <div class="info-label">📞 Namba ya Simu</div>
+                <div class="info-value">{{ payment.simu }}</div>
+            </div>
+            <div class="info-card">
+                <div class="info-label">📆 Kipindi cha Malipo</div>
+                <div class="info-value">{{ payment.mwezi }} - {{ payment.mwaka }}</div>
+            </div>
+            <div class="info-card">
+                <div class="info-label">🏛️ Parokia</div>
+                <div class="info-value">Moyo Mtakatifu Wa Yesu, Sombetini</div>
+            </div>
+        </div>
+        
+        <div class="amount-section">
+            <div class="amount-label">💰 JUMLA ILIYOLIPWA 💰</div>
+            <div class="amount-value">
+                TSh {{ "%.0f"|format(payment.kiasi) }}
+            </div>
+            <div class="gold-line"></div>
+            <div style="font-size: 11px; color: rgba(255,255,255,0.7); margin-top: 8px;">
+                Malipo yamethibitishwa kwa mafanikio
+            </div>
+        </div>
+        
+        <div class="footer-message">
+            <p class="blessing">✨ "Mwimbieni Bwana wimbo mpya, mwimbieni Bwana, nchi yote!" ✨</p>
+            <p class="blessing">— Zaburi 96:1 —</p>
+            <div class="gold-line"></div>
+            <p>Asante kwa malipo yako kwa wakati!</p>
+            <p>Mungu akubariki na kuendelea kukutunza.</p>
+            <p style="margin-top: 8px; font-size: 9px;">Receipt inayotokana na mfumo wa kwaya • Powered by Kwaya Mt. Bonifasi</p>
+        </div>
+    </div>
+    
+    <div class="action-buttons no-print">
+        <button onclick="window.print()" class="btn btn-print">
+            🖨️ Chapisha Risiti
+        </button>
+        <button onclick="window.close()" class="btn btn-close">
+            ✖ Funga
+        </button>
+        <a href="/ada/calendar" class="btn btn-calendar">
+            📅 Rudi Calendar
+        </a>
+    </div>
+</div>
+
+<script>
+    // Check if opened from payment popup
+    if (window.opener) {
+        // Auto close after 8 seconds if opened as popup
+        setTimeout(function() {
+            window.close();
+        }, 8000);
+    }
+</script>
+{% endblock %}

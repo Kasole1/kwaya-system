@@ -1,0 +1,446 @@
+﻿<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kwaya Mt. Bonifasi - {% block title %}{% endblock %}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #0a1a3a 0%, #1a2a6e 50%, #0a1a3a 100%);
+            padding: 35px 20px;
+            text-align: center;
+            border-bottom: 5px solid #FFD700;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: "🎵";
+            position: absolute;
+            font-size: 100px;
+            left: 10px;
+            top: 10px;
+            opacity: 0.1;
+            transform: rotate(-15deg);
+        }
+        
+        .header::after {
+            content: "🎶";
+            position: absolute;
+            font-size: 100px;
+            right: 10px;
+            bottom: 10px;
+            opacity: 0.1;
+            transform: rotate(15deg);
+        }
+        
+        .header h1 {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 28px;
+            font-weight: bold;
+            color: #FFD700;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.5);
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+        }
+        
+        .header h2 {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 18px;
+            color: #FFD700;
+            font-weight: normal;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+            margin-bottom: 8px;
+        }
+        
+        .header h3 {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 16px;
+            color: #FFD700;
+            font-weight: normal;
+            margin-bottom: 5px;
+        }
+        
+        .header p {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 14px;
+            color: #FFD700;
+            opacity: 0.9;
+        }
+        
+        .gold-border {
+            width: 80px;
+            height: 3px;
+            background: #FFD700;
+            margin: 15px auto 0;
+            border-radius: 2px;
+        }
+        
+        .user-bar {
+            background: #1a2a6e;
+            padding: 12px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            border-bottom: 2px solid #FFD700;
+        }
+        
+        .user-welcome {
+            color: #FFD700;
+            font-size: 16px;
+            font-family: 'Times New Roman', Times, serif;
+        }
+        
+        .logout-btn {
+            background: #dc3545;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .logout-btn:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+        }
+        
+        .nav {
+            background: linear-gradient(135deg, #1a2a6e 0%, #2a3a7e 100%);
+            padding: 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            border-radius: 0 0 20px 20px;
+        }
+        
+        .nav-menu {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            list-style: none;
+            gap: 5px;
+            padding: 10px 20px;
+        }
+        
+        .nav-menu > li {
+            position: relative;
+        }
+        
+        .nav-menu > li > a {
+            display: block;
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            padding: 12px 22px;
+            font-size: 15px;
+            font-weight: 500;
+            font-family: 'Times New Roman', Times, serif;
+            transition: all 0.3s ease;
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .nav-menu > li > a:hover {
+            background: #FFD700;
+            color: #1a2a6e;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+        }
+        
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;
+            min-width: 260px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            border-radius: 12px;
+            z-index: 1000;
+            margin-top: 8px;
+            border-top: 3px solid #FFD700;
+            list-style: none;
+            padding: 8px 0;
+        }
+        
+        .nav-menu > li:hover .dropdown-menu {
+            display: block;
+        }
+        
+        .dropdown-menu li {
+            position: relative;
+        }
+        
+        .dropdown-menu li a {
+            color: #1a2a6e;
+            padding: 10px 18px;
+            text-decoration: none;
+            display: block;
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 14px;
+            transition: all 0.2s;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .dropdown-menu li a:hover {
+            background: #FFD700;
+            color: #1a2a6e;
+            padding-left: 25px;
+        }
+        
+        .nested-dropdown {
+            position: relative;
+        }
+        
+        .nested-dropdown > a::after {
+            content: "▶";
+            float: right;
+            font-size: 10px;
+            margin-left: 15px;
+        }
+        
+        .nested-menu {
+            display: none;
+            position: absolute;
+            left: 100%;
+            top: 0;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            min-width: 220px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            border-radius: 12px;
+            z-index: 1001;
+            list-style: none;
+            padding: 8px 0;
+            margin-left: 5px;
+        }
+        
+        .nested-dropdown:hover .nested-menu {
+            display: block;
+        }
+        
+        .nested-menu li a {
+            color: #1a2a6e !important;
+            font-weight: 600;
+            padding: 10px 18px;
+            border-bottom: 1px solid rgba(255,255,255,0.3);
+            background: transparent;
+        }
+        
+        .nested-menu li a:hover {
+            background: #1a2a6e !important;
+            color: #FFD700 !important;
+            padding-left: 25px;
+            border-radius: 8px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            min-height: 500px;
+        }
+        
+        .flash-messages {
+            max-width: 1400px;
+            margin: 20px auto 0;
+            padding: 0 20px;
+        }
+        
+        .alert {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 5px solid #FFD700;
+        }
+        
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 5px solid #FFD700;
+        }
+        
+        .footer {
+            background: linear-gradient(135deg, #0a1a3a 0%, #1a2a6e 100%);
+            color: #FFD700;
+            text-align: center;
+            padding: 25px;
+            margin-top: 40px;
+            border-top: 3px solid #FFD700;
+        }
+        
+        .footer p {
+            margin: 5px 0;
+        }
+        
+        @media (max-width: 768px) {
+            .nav-menu {
+                flex-direction: column;
+            }
+            .dropdown-menu {
+                position: static;
+                display: none;
+            }
+            .nav-menu > li:hover .dropdown-menu {
+                display: block;
+            }
+            .nested-menu {
+                position: static;
+                left: 0;
+                margin-left: 20px;
+            }
+            .header h1 {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎵 KWAYA YA MTAKATIFU BONIFASI ASKOFU NA SHAHIDI 🎵</h1>
+        <h2>Parokia ya Moyo Mtakatifu Wa Yesu, Sombetini</h2>
+        <h3>Jimbo Kuu Katoliki La Arusha</h3>
+        <p>Arusha, Tanzania</p>
+        <div class="gold-border"></div>
+    </div>
+    
+    {% if session.user_id %}
+    <div class="user-bar">
+        <div class="user-welcome">👋 Karibu, {{ session.username }}</div>
+        <a href="{{ url_for('logout') }}" class="logout-btn">🚪 Toka Mfumo</a>
+    </div>
+    
+    <div class="nav">
+        <ul class="nav-menu">
+            <li><a href="{{ url_for('dashboard') }}">🏠 Home</a></li>
+            
+            <li class="dropdown">
+                <a href="#">📖 Kwaya Yetu</a>
+                <ul class="dropdown-menu">
+                    <li><a href="{{ url_for('historia_kwaya') }}">📜 Historia ya Kwaya</a></li>
+                    <li><a href="{{ url_for('somo_msimamizi') }}">📖 Somo/Msimamizi wa Kwaya</a></li>
+                    <li><a href="{{ url_for('mwanzilishi') }}">⭐ Mwanzilishi wa Kwaya</a></li>
+                    
+                    <li class="nested-dropdown">
+                        <a href="#">📋 Sifa/Vigezo/Masharti</a>
+                        <ul class="nested-menu">
+                            <li><a href="{{ url_for('kuwa_mwanakwaya') }}">👤 Kuwa Mwanakwaya</a></li>
+                            <li><a href="{{ url_for('kuwa_mwalimu') }}">📚 Kuwa Mwalimu</a></li>
+                            <li><a href="{{ url_for('kuwa_kiongozi') }}">👑 Kuwa Kiongozi</a></li>
+                            <li><a href="{{ url_for('kuwa_mfadhili') }}">💰 Kuwa Mfadhili</a></li>
+                            <li><a href="{{ url_for('kuwa_rafiki') }}">🤝 Kuwa Rafiki wa Kwaya</a></li>
+                            <li><a href="{{ url_for('kuwa_mlezi') }}">🛡️ Kuwa Mlezi</a></li>
+                        </ul>
+                    </li>
+                    
+                    <li class="nested-dropdown">
+                        <a href="#">🎯 Malengo</a>
+                        <ul class="nested-menu">
+                            <li><a href="{{ url_for('malengo_mfupi') }}">📅 Muda Mfupi (Wiki)</a></li>
+                            <li><a href="{{ url_for('malengo_kati') }}">📆 Muda wa Kati (Mwezi-Mwaka)</a></li>
+                            <li><a href="{{ url_for('malengo_mrefu') }}">🗓️ Muda Mrefu (Miaka 1-5)</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            
+            <li><a href="{{ url_for('wanakwaya') }}">👥 Wanakwaya</a></li>
+            
+            <li class="dropdown">
+                <a href="#">📅 Ratiba</a>
+                <ul class="dropdown-menu">
+                    <li class="nested-dropdown">
+                        <a href="#">📖 Mwaka wa Kanisa</a>
+                        <ul class="nested-menu">
+                            <li><a href="{{ url_for('ratiba_mwaka_kanisa', mwaka='A') }}">📅 Mwaka A</a></li>
+                            <li><a href="{{ url_for('ratiba_mwaka_kanisa', mwaka='B') }}">📅 Mwaka B</a></li>
+                            <li><a href="{{ url_for('ratiba_mwaka_kanisa', mwaka='C') }}">📅 Mwaka C</a></li>
+                        </ul>
+                    </li>
+                    
+                    <li class="nested-dropdown">
+                        <a href="#">🎵 Makundi ya Nyimbo</a>
+                        <ul class="nested-menu">
+                            <li><a href="{{ url_for('ratiba_makundi_nyimbo', kundi='Maandamano') }}">🎶 Maandamano</a></li>
+                            <li><a href="{{ url_for('ratiba_makundi_nyimbo', kundi='Mwanzo') }}">🎵 Mwanzo</a></li>
+                            <li><a href="{{ url_for('ratiba_makundi_nyimbo', kundi='Shangilio') }}">🎉 Shangilio</a></li>
+                            <li><a href="{{ url_for('ratiba_makundi_nyimbo', kundi='Zaburi') }}">📖 Zaburi</a></li>
+                            <li><a href="{{ url_for('ratiba_makundi_nyimbo', kundi='Misa') }}">⛪ Misa</a></li>
+                            <li><a href="{{ url_for('ratiba_makundi_nyimbo', kundi='Antifona') }}">📜 Antifona</a></li>
+                            <li><a href="{{ url_for('ratiba_makundi_nyimbo', kundi='Sadaka') }}">💰 Sadaka</a></li>
+                            <li><a href="{{ url_for('ratiba_makundi_nyimbo', kundi='Komunyo') }}">🍞 Komunyo</a></li>
+                            <li><a href="{{ url_for('ratiba_makundi_nyimbo', kundi='Shukrani') }}">🙏 Shukrani</a></li>
+                            <li><a href="{{ url_for('ratiba_makundi_nyimbo', kundi='Ubatizo') }}">💧 Ubatizo</a></li>
+                            <li><a href="{{ url_for('ratiba_makundi_nyimbo', kundi='Ndoa') }}">💍 Ndoa/Harusi</a></li>
+                            <li><a href="{{ url_for('ratiba_makundi_nyimbo', kundi='Mazishi') }}">🕯️ Mazishi</a></li>
+                            <li><a href="{{ url_for('ratiba_makundi_nyimbo', kundi='Christmas') }}">🎄 Christmas</a></li>
+                            <li><a href="{{ url_for('ratiba_makundi_nyimbo', kundi='Pasaka') }}">🐣 Pasaka</a></li>
+                            <li><a href="{{ url_for('ratiba_makundi_nyimbo', kundi='Majilio') }}">🕯️ Majilio</a></li>
+                            <li><a href="{{ url_for('ratiba_makundi_nyimbo', kundi='Kwaresma') }}">✝️ Kwaresma</a></li>
+                            <li><a href="{{ url_for('ratiba_makundi_nyimbo', kundi='Mwisho') }}">🏁 Mwisho</a></li>
+                        </ul>
+                    </li>
+                    
+                    <li><a href="{{ url_for('ratiba_tengeneza') }}">✏️ Tengeneza Ratiba</a></li>
+                    <li style="border-top: 1px solid #eee; margin-top: 5px; padding-top: 5px;">
+                        <a href="{{ url_for('ratiba_ongezwa_wimbo') }}" style="color: #28a745; font-weight: bold;">➕ Ongeza Wimbo Mpya</a>
+                    </li>
+                </ul>
+            </li>
+            
+            <li><a href="{{ url_for('mahudhurio_enhanced') }}">📋 Mahudhurio</a></li>
+            <li><a href="#">💰 Ada</a></li>
+            <li><a href="#">📈 Mapato</a></li>
+            <li><a href="#">👑 Uongozi</a></li>
+            <li><a href="#">🤝 Kamati Kuu</a></li>
+            <li><a href="#">📦 Assets</a></li>
+        </ul>
+    </div>
+    {% endif %}
+    
+    <div class="flash-messages">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+    
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+    
+    <div class="footer">
+        <p>© 2026 Kwaya Ya Mtakatifu Bonifasi Askofu na Shahidi</p>
+        <p>Parokia ya Moyo Mtakatifu Wa Yesu, Sombetini - Jimbo Kuu Katoliki La Arusha</p>
+        <p style="font-size: 12px; margin-top: 8px;">"Utukufu wa Mungu kwa sauti za malaika"</p>
+    </div>
+</body>
+</html>

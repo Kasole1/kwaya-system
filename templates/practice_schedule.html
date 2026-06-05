@@ -1,0 +1,284 @@
+{% extends "base.html" %}
+
+{% block title %}Practice Schedule - Kwaya Mt. Bonifasi{% endblock %}
+
+{% block content %}
+<style>
+    .schedule-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    .schedule-header {
+        background: linear-gradient(135deg, #1a2a6e, #2a3a7e);
+        padding: 25px;
+        border-radius: 20px;
+        color: #FFD700;
+        text-align: center;
+        margin-bottom: 25px;
+    }
+    .month-nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    .month-nav button {
+        background: #1a2a6e;
+        color: #FFD700;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 30px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+    .current-month {
+        font-size: 24px;
+        font-weight: bold;
+        color: #1a2a6e;
+    }
+    .voice-tabs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 25px;
+        flex-wrap: wrap;
+    }
+    .voice-tab {
+        background: #e0e0e0;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 30px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: all 0.2s;
+    }
+    .voice-tab.active {
+        background: #1a2a6e;
+        color: #FFD700;
+    }
+    .events-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 20px;
+    }
+    .event-card {
+        background: white;
+        border-radius: 20px;
+        padding: 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        transition: transform 0.2s;
+        border-left: 4px solid #FFD700;
+    }
+    .event-card:hover {
+        transform: translateY(-3px);
+    }
+    .event-date {
+        font-size: 14px;
+        color: #1a2a6e;
+        font-weight: bold;
+        margin-bottom: 8px;
+    }
+    .event-title {
+        font-size: 18px;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 10px;
+    }
+    .event-location {
+        font-size: 13px;
+        color: #666;
+        margin-bottom: 8px;
+    }
+    .event-desc {
+        font-size: 12px;
+        color: #888;
+        margin-top: 8px;
+        padding-top: 8px;
+        border-top: 1px solid #eee;
+    }
+    .empty-message {
+        text-align: center;
+        padding: 50px;
+        color: #888;
+        grid-column: 1 / -1;
+    }
+    @media (max-width: 700px) {
+        .events-grid { grid-template-columns: 1fr; }
+        .month-nav { flex-direction: column; text-align: center; }
+    }
+    /* ============ PRINT STYLES ============ */
+        /* ============ PRINT STYLES ============ */
+    @media print {
+        body * {
+            visibility: hidden;
+        }
+        
+        .events-grid, .events-grid * {
+            visibility: visible;
+        }
+        
+        .events-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+        }
+        
+        .no-print, .voice-tabs, .month-nav, .schedule-header,
+        .header, .nav, .user-bar, .footer, .flash-messages,
+        #dynamicSidebar, #sidebarOverlay {
+            display: none !important;
+        }
+        
+        .event-card {
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+        
+        @page {
+            size: auto;
+            margin: 1cm;
+        }
+    }
+</style>
+
+<div class="schedule-container">
+    <div class="schedule-header">
+        <h1>🎵 PRACTICE & EVENT SCHEDULE</h1>
+        <p>Ratiba ya Mazoezi na Matukio ya Kwaya</p>
+    </div>
+
+    <div class="month-nav">
+        <button onclick="changeMonth(-1)">◀ PREV</button>
+        <span class="current-month" id="currentMonth">Loading...</span>
+        <button onclick="changeMonth(1)">NEXT ▶</button>
+    </div>
+
+    <div class="voice-tabs">
+        <button class="voice-tab active" onclick="filterEvents('all')">🎤 Wote</button>
+        <button class="voice-tab" onclick="filterEvents('Soprano')">🎵 Soprano</button>
+        <button class="voice-tab" onclick="filterEvents('Alto')">🎶 Alto</button>
+        <button class="voice-tab" onclick="filterEvents('Tenor')">🎼 Tenor</button>
+        <button class="voice-tab" onclick="filterEvents('Bass')">🎻 Bass</button>
+        <button class="voice-tab" onclick="filterEvents('Practice')">📋 General Practice</button>
+    </div>
+
+    <div id="eventsGrid" class="events-grid">
+        <div style="text-align: center; padding: 50px; grid-column: 1/-1;">Loading events...</div>
+    </div>
+</div>
+
+<script>
+let allEvents = [];
+let currentMonth = new Date();
+let currentFilter = 'all';
+
+async function loadEvents() {
+    const response = await fetch('/api/events');
+    const data = await response.json();
+    if (data.success) {
+        allEvents = data.events;
+        renderEvents();
+    }
+}
+
+function renderEvents() {
+    const year = currentMonth.getFullYear();
+    const month = currentMonth.getMonth();
+    
+    // Filter by month
+    let monthEvents = allEvents.filter(event => {
+        const eventDate = new Date(event.start);
+        return eventDate.getFullYear() === year && eventDate.getMonth() === month;
+    });
+    
+    // Filter by voice/type
+    if (currentFilter !== 'all') {
+        if (currentFilter === 'Practice') {
+            monthEvents = monthEvents.filter(event => 
+                event.title.toLowerCase().includes('mazoezi') || 
+                event.title.toLowerCase().includes('practice')
+            );
+        } else {
+            monthEvents = monthEvents.filter(event => 
+                event.title.includes(currentFilter)
+            );
+        }
+    }
+    
+    // Sort by date
+    monthEvents.sort((a, b) => new Date(a.start) - new Date(b.start));
+    
+    const monthNames = ['Januari', 'Februari', 'Machi', 'Aprili', 'Mei', 'Juni', 
+                        'Julai', 'Agosti', 'Septemba', 'Oktoba', 'Novemba', 'Desemba'];
+    document.getElementById('currentMonth').innerHTML = `${monthNames[month]} ${year}`;
+    
+    if (monthEvents.length === 0) {
+        document.getElementById('eventsGrid').innerHTML = `
+            <div class="empty-message">
+                📭 Hakuna matukio yaliyopangwa kwa mwezi huu<br>
+                <small>Wasiliana na msimamizi wa kwaya kwa ratiba.</small>
+            </div>
+        `;
+        return;
+    }
+    
+    const days = ['Jumapili', 'Jumatatu', 'Jumanne', 'Jumatano', 'Alhamisi', 'Ijumaa', 'Jumamosi'];
+    
+    document.getElementById('eventsGrid').innerHTML = monthEvents.map(event => {
+        const eventDate = new Date(event.start);
+        const dayName = days[eventDate.getDay()];
+        const formattedDate = `${dayName}, ${eventDate.getDate()} ${monthNames[eventDate.getMonth()]} ${eventDate.getFullYear()}`;
+        
+        // Determine icon based on event type
+        let icon = '📅';
+        if (event.title.toLowerCase().includes('mazoezi') || event.title.toLowerCase().includes('practice')) {
+            icon = '🎵';
+        } else if (event.title.toLowerCase().includes('misa')) {
+            icon = '⛪';
+        } else if (event.title.toLowerCase().includes('sherehe')) {
+            icon = '🎉';
+        }
+        
+        return `
+            <div class="event-card">
+                <div class="event-date">${icon} ${formattedDate}</div>
+                <div class="event-title">${escapeHtml(event.title)}</div>
+                <div class="event-location">📍 ${event.location || 'Kanisa la Sombetini'}</div>
+                ${event.description ? `<div class="event-desc">📝 ${escapeHtml(event.description.substring(0, 100))}${event.description.length > 100 ? '...' : ''}</div>` : ''}
+            </div>
+        `;
+    }).join('');
+}
+
+function changeMonth(delta) {
+    currentMonth.setMonth(currentMonth.getMonth() + delta);
+    renderEvents();
+}
+
+function filterEvents(filter) {
+    currentFilter = filter;
+    
+    // Update active tab
+    document.querySelectorAll('.voice-tab').forEach(tab => {
+        tab.classList.remove('active');
+        if (tab.innerText.toLowerCase().includes(filter === 'all' ? 'wote' : filter.toLowerCase())) {
+            tab.classList.add('active');
+        }
+    });
+    
+    renderEvents();
+}
+
+function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+loadEvents();
+</script>
+{% endblock %}

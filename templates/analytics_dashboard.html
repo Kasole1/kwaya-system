@@ -1,0 +1,230 @@
+{% extends "base.html" %}
+
+{% block title %}Analytics Dashboard - Kwaya Mt. Bonifasi{% endblock %}
+
+{% block content %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+    .analytics-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    
+    .analytics-header {
+        background: linear-gradient(135deg, #1a2a6e, #2a3a7e);
+        padding: 25px;
+        border-radius: 20px;
+        color: white;
+        margin-bottom: 25px;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+    
+    .prediction-card {
+        background: linear-gradient(135deg, #FFD700, #FFA500);
+        border-radius: 20px;
+        padding: 20px;
+        text-align: center;
+        color: #1a2a6e;
+    }
+    
+    .prediction-value {
+        font-size: 32px;
+        font-weight: bold;
+    }
+    
+    .charts-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+    
+    .chart-card {
+        background: white;
+        border-radius: 20px;
+        padding: 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    
+    .trend-up { color: #28a745; }
+    .trend-down { color: #dc3545; }
+    
+    @media (max-width: 800px) {
+        .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        .charts-grid { grid-template-columns: 1fr; }
+    }
+    
+    body.dark-mode .chart-card {
+        background: #1e293b;
+    }
+</style>
+
+<div class="analytics-container">
+    <div class="analytics-header">
+        <h1>📊 Advanced Analytics Dashboard</h1>
+        <p>Utabiri na mwenyelekeo wa mapato na mahudhurio</p>
+    </div>
+    
+    <div class="stats-grid">
+        <div class="prediction-card">
+            <div>📈 Utabiri wa Mapato Mwezi Ujao</div>
+            <div class="prediction-value" id="predictedIncome">TSh 0</div>
+            <div id="incomeTrend" class="trend-up">↑ 0%</div>
+        </div>
+        <div class="prediction-card">
+            <div>👥 Utabiri wa Mahudhurio</div>
+            <div class="prediction-value" id="predictedAttendance">0%</div>
+            <div id="attendanceTrend" class="trend-up">↑ 0%</div>
+        </div>
+        <div class="prediction-card">
+            <div>💰 Top Donor</div>
+            <div class="prediction-value" id="topDonor">-</div>
+            <div id="topDonorAmount">TSh 0</div>
+        </div>
+        <div class="prediction-card">
+            <div>⚠️ Penalty Prediction</div>
+            <div class="prediction-value" id="predictedPenalty">TSh 0</div>
+            <div id="penaltyTrend" class="trend-down">↓ 0%</div>
+        </div>
+    </div>
+    
+    <div class="charts-grid">
+        <div class="chart-card">
+            <h3>📈 Mwelekeo wa Mapato (Utabiri)</h3>
+            <canvas id="forecastChart" height="250"></canvas>
+        </div>
+        <div class="chart-card">
+            <h3>👥 Mahudhurio kwa Sauti</h3>
+            <canvas id="voiceAttendanceChart" height="250"></canvas>
+        </div>
+        <div class="chart-card">
+            <h3>💰 Wafadhili Bora</h3>
+            <canvas id="topDonorsChart" height="250"></canvas>
+        </div>
+        <div class="chart-card">
+            <h3>⚠️ Mwelekeo wa Penalty</h3>
+            <canvas id="penaltyForecastChart" height="250"></canvas>
+        </div>
+    </div>
+</div>
+
+<script>
+let forecastChart, voiceChart, donorsChart, penaltyForecastChart;
+
+async function loadAnalytics() {
+    try {
+        const response = await fetch('/api/analytics/data');
+        const data = await response.json();
+        
+        if (data.success) {
+            // Update predictions
+            document.getElementById('predictedIncome').innerHTML = `TSh ${data.predictions.next_month_income.toLocaleString()}`;
+            document.getElementById('predictedAttendance').innerHTML = `${data.predictions.next_month_attendance}%`;
+            document.getElementById('predictedPenalty').innerHTML = `TSh ${data.predictions.next_month_penalty.toLocaleString()}`;
+            
+            document.getElementById('incomeTrend').innerHTML = `${data.trends.income_trend > 0 ? '↑' : '↓'} ${Math.abs(data.trends.income_trend)}%`;
+            document.getElementById('incomeTrend').className = data.trends.income_trend > 0 ? 'trend-up' : 'trend-down';
+            
+            document.getElementById('attendanceTrend').innerHTML = `${data.trends.attendance_trend > 0 ? '↑' : '↓'} ${Math.abs(data.trends.attendance_trend)}%`;
+            document.getElementById('attendanceTrend').className = data.trends.attendance_trend > 0 ? 'trend-up' : 'trend-down';
+            
+            if (data.top_donors && data.top_donors.length > 0) {
+                document.getElementById('topDonor').innerHTML = data.top_donors[0].name;
+                document.getElementById('topDonorAmount').innerHTML = `TSh ${data.top_donors[0].amount.toLocaleString()}`;
+            }
+            
+            // Create charts
+            createForecastChart(data);
+            createVoiceChart(data);
+            createDonorsChart(data);
+            createPenaltyForecastChart(data);
+        }
+    } catch(e) {
+        console.error('Error loading analytics:', e);
+    }
+}
+
+function createForecastChart(data) {
+    const ctx = document.getElementById('forecastChart');
+    if (!ctx) return;
+    
+    const months = data.monthly_labels || ['Jan', 'Feb', 'Mac', 'Apr', 'Mei', 'Jun', 'Jul', 'Ago', 'Sep', 'Okt', 'Nov', 'Des'];
+    const actual = data.actual_income || [0,0,0,0,0,0,0,0,0,0,0,0];
+    const forecast = data.forecast_income || [0,0,0,0,0,0,0,0,0,0,0,0];
+    
+    if (forecastChart) forecastChart.destroy();
+    
+    forecastChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: months,
+            datasets: [
+                { label: 'Mapato Halisi', data: actual, borderColor: '#28a745', backgroundColor: 'rgba(40,167,69,0.1)', fill: true, tension: 0.4 },
+                { label: 'Utabiri', data: forecast, borderColor: '#dc3545', borderDash: [5,5], fill: false, tension: 0.4 }
+            ]
+        },
+        options: { responsive: true, maintainAspectRatio: true, scales: { y: { beginAtZero: true, ticks: { callback: v => 'TSh ' + v.toLocaleString() } } } }
+    });
+}
+
+function createVoiceChart(data) {
+    const ctx = document.getElementById('voiceAttendanceChart');
+    if (!ctx) return;
+    
+    if (voiceChart) voiceChart.destroy();
+    
+    voiceChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Soprano', 'Alto', 'Tenor', 'Bass'],
+            datasets: [{ label: 'Mahudhurio (%)', data: data.voice_attendance || [0,0,0,0], backgroundColor: ['#FF69B4', '#9370DB', '#4169E1', '#2F4F4F'], borderRadius: 8 }]
+        },
+        options: { responsive: true, scales: { y: { beginAtZero: true, max: 100, ticks: { callback: v => v + '%' } } } }
+    });
+}
+
+function createDonorsChart(data) {
+    const ctx = document.getElementById('topDonorsChart');
+    if (!ctx) return;
+    
+    if (donorsChart) donorsChart.destroy();
+    
+    donorsChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: (data.top_donors || []).map(d => d.name),
+            datasets: [{ label: 'Mchango (TSh)', data: (data.top_donors || []).map(d => d.amount), backgroundColor: '#FFD700', borderRadius: 8 }]
+        },
+        options: { responsive: true, scales: { y: { beginAtZero: true, ticks: { callback: v => 'TSh ' + v.toLocaleString() } } } }
+    });
+}
+
+function createPenaltyForecastChart(data) {
+    const ctx = document.getElementById('penaltyForecastChart');
+    if (!ctx) return;
+    
+    if (penaltyForecastChart) penaltyForecastChart.destroy();
+    
+    penaltyForecastChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: data.monthly_labels || ['Jan', 'Feb', 'Mac', 'Apr', 'Mei', 'Jun', 'Jul', 'Ago', 'Sep', 'Okt', 'Nov', 'Des'],
+            datasets: [
+                { label: 'Penalty Halisi', data: data.actual_penalty || [0,0,0,0,0,0,0,0,0,0,0,0], borderColor: '#fd7e14', fill: true, tension: 0.4 },
+                { label: 'Utabiri', data: data.forecast_penalty || [0,0,0,0,0,0,0,0,0,0,0,0], borderColor: '#dc3545', borderDash: [5,5], fill: false }
+            ]
+        },
+        options: { responsive: true, scales: { y: { beginAtZero: true, ticks: { callback: v => 'TSh ' + v.toLocaleString() } } } }
+    });
+}
+
+loadAnalytics();
+</script>
+{% endblock %}

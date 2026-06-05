@@ -1,0 +1,67 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Somo/Msimamizi wa Kwaya{% endblock %}
+
+{% block content %}
+<style>
+    .content-container {
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+    .content-card {
+        background: white;
+        border-radius: 20px;
+        padding: 35px;
+        margin-bottom: 25px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        border-top: 5px solid #FFD700;
+    }
+    .content-card h1 {
+        color: #1a2a6e;
+        margin-bottom: 20px;
+    }
+    .content-card h2 {
+        color: #1a2a6e;
+        margin: 20px 0 10px;
+    }
+    .content-card p {
+        line-height: 1.8;
+        color: #333;
+    }
+    .duty-list {
+        list-style: none;
+        padding-left: 0;
+    }
+    .duty-list li {
+        padding: 10px 0;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+</style>
+
+<div class="content-container">
+    <div class="content-card">
+        <h1>📖 Somo la Msimamizi wa Kwaya</h1>
+        
+        <h2>🎯 Dhamira ya Msimamizi</h2>
+        <p>Msimamizi wa kwaya ndiye anayesimamia shughuli zote za kwaya, kuanzia upangaji wa ratiba, usimamizi wa wanakwaya, hadi uratibu wa matukio. Msimamizi anapaswa kuwa mfano mwema kwa wanakwaya wengine.</p>
+        
+        <h2>📋 Majukumu ya Msimamizi</h2>
+        <ul class="duty-list">
+            <li>✅ Kusimamia mahudhurio ya wanakwaya</li>
+            <li>✅ Kupanga ratiba ya mazoezi na matukio</li>
+            <li>✅ Kuandaa taarifa za mapato na matumizi</li>
+            <li>✅ Kuratibu na viongozi wa kanisa</li>
+            <li>✅ Kutoa mrejesho kwa wanakwaya</li>
+            <li>✅ Kuhakikisha nidhamu na amani kwaya</li>
+        </ul>
+        
+        <h2>📖 Somo la Kiroho</h2>
+        <p>Kwaya ni huduma ya kumsifu Mungu kwa sauti. Kila mwanakwaya anapaswa kujiandaa kiroho kabla ya kuimba. Maombi, kusoma Biblia, na kuwa na moyo safi ni muhimu ili Mungu apokee nyimbo zetu.</p>
+        
+        <p style="margin-top: 20px;"><strong>"Mwimbieni Bwana wimbo mpya, mwimbieni Bwana, nchi yote!" - Zaburi 96:1</strong></p>
+    </div>
+</div>
+{% endblock %}

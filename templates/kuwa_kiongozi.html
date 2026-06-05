@@ -1,0 +1,60 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Kuwa Kiongozi wa Kwaya{% endblock %}
+
+{% block content %}
+<style>
+    .criteria-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+    .criteria-card {
+        background: white;
+        border-radius: 20px;
+        padding: 35px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        border-top: 5px solid #FFD700;
+    }
+    .criteria-card h1 {
+        color: #1a2a6e;
+        margin-bottom: 10px;
+    }
+    .badge {
+        background: linear-gradient(135deg, #FFD700, #FFA500);
+        display: inline-block;
+        padding: 5px 15px;
+        border-radius: 50px;
+        color: #1a2a6e;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+    .criteria-list {
+        list-style: none;
+        padding-left: 0;
+    }
+    .criteria-list li {
+        padding: 12px 0;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+</style>
+
+<div class="criteria-container">
+    <div class="criteria-card">
+        <div class="badge">👑 SIFA ZA KUWA KIONGOZI</div>
+        <h1>Kuwa Kiongozi wa Kwaya</h1>
+        
+        <ul class="criteria-list">
+            <li>✅ Kuwa mwanakwaya bora kwa mfano na nidhamu</li>
+            <li>✅ Uwezo wa kuongoza na kuhamasisha wengine</li>
+            <li>✅ Uaminifu na uwajibikaji</li>
+            <li>✅ Uwezo wa kusuluhisha migogoro</li>
+            <li>✅ Kuwa na maono ya maendeleo ya kwaya</li>
+            <li>✅ Kushirikiana na viongozi wa kanisa</li>
+            <li>✅ Kuchaguliwa na wanakwaya kupitia mchakato wa kidemokrasia</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

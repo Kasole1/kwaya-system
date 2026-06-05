@@ -1,0 +1,1209 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Wanakwaya - Kwaya Mt. Bonifasi{% endblock %}
+
+{% block content %}
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    .wanakwaya-container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    /* Header Section */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+    
+    .page-header h1 {
+        color: #1a2a6e;
+        font-size: 28px;
+        border-left: 4px solid #FFD700;
+        padding-left: 18px;
+        font-weight: bold;
+    }
+    
+    /* Add Member Button */
+    .add-member-btn {
+        background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+        color: white;
+        padding: 12px 28px;
+        border: none;
+        border-radius: 40px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: bold;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 3px 12px rgba(40,167,69,0.3);
+    }
+    
+    .add-member-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(40,167,69,0.4);
+    }
+    
+    /* GOLD CARD - Search Section */
+    .gold-card {
+        background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+        border-radius: 20px;
+        padding: 20px 25px;
+        margin-bottom: 25px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    }
+    
+    .gold-card-title {
+        color: #1a2a6e;
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        border-bottom: 2px solid #1a2a6e;
+        padding-bottom: 8px;
+    }
+    
+    .search-filter-row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+    
+    .search-input-wrapper {
+        flex: 2;
+        min-width: 250px;
+        position: relative;
+    }
+    
+    .search-input-wrapper input {
+        width: 100%;
+        padding: 12px 18px;
+        border: none;
+        border-radius: 40px;
+        font-size: 14px;
+        background: white;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    
+    .search-input-wrapper input:focus {
+        outline: none;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+    }
+    
+    .search-btn, .reset-btn {
+        padding: 10px 24px;
+        border-radius: 40px;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: bold;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        border: none;
+    }
+    
+    .search-btn {
+        background: #1a2a6e;
+        color: white;
+    }
+    
+    .search-btn:hover {
+        background: #0a1a3a;
+        transform: translateY(-2px);
+    }
+    
+    .reset-btn {
+        background: #6c757d;
+        color: white;
+    }
+    
+    .reset-btn:hover {
+        background: #5a6268;
+        transform: translateY(-2px);
+    }
+    
+    /* Voice Control Bar */
+    .voice-control-bar {
+        background: white;
+        padding: 12px 20px;
+        border-radius: 18px;
+        margin-bottom: 25px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        box-shadow: 0 3px 15px rgba(0,0,0,0.05);
+    }
+    
+    .voice-toggles {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+    
+    .voice-toggle-btn {
+        background: linear-gradient(135deg, #1a2a6e 0%, #0a1a3a 100%);
+        color: white;
+        border: none;
+        padding: 8px 18px;
+        border-radius: 40px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13px;
+    }
+    
+    .voice-toggle-btn.active {
+        background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+        color: #1a2a6e;
+    }
+    
+    .voice-toggle-btn:hover {
+        transform: translateY(-2px);
+    }
+    
+    .count-badge {
+        background: rgba(255,255,255,0.3);
+        border-radius: 30px;
+        padding: 2px 8px;
+        font-size: 11px;
+    }
+    
+    .global-toggle {
+        display: flex;
+        gap: 8px;
+    }
+    
+    .global-toggle-btn {
+        background: #6c757d;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 40px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+    }
+    
+    .global-toggle-btn:hover {
+        background: #5a6268;
+        transform: translateY(-2px);
+    }
+    
+    /* Voice Sections with Soft Background Colors */
+    .voice-section {
+        margin-bottom: 30px;
+        border-radius: 20px;
+        padding: 18px;
+        transition: all 0.3s;
+    }
+    
+    .voice-section.hidden {
+        display: none;
+    }
+    
+    .voice-section-soprano {
+        background: rgba(255, 105, 180, 0.12);
+        border: 1px solid rgba(255, 105, 180, 0.25);
+    }
+    
+    .voice-section-alto {
+        background: rgba(147, 112, 219, 0.12);
+        border: 1px solid rgba(147, 112, 219, 0.25);
+    }
+    
+    .voice-section-tenor {
+        background: rgba(65, 105, 225, 0.12);
+        border: 1px solid rgba(65, 105, 225, 0.25);
+    }
+    
+    .voice-section-bass {
+        background: rgba(47, 79, 79, 0.12);
+        border: 1px solid rgba(47, 79, 79, 0.25);
+    }
+    
+    .voice-title {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid rgba(0,0,0,0.1);
+    }
+    
+    .voice-title h2 {
+        font-size: 20px;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .voice-title h2 span {
+        background: rgba(0,0,0,0.1);
+        padding: 4px 12px;
+        border-radius: 30px;
+        font-size: 13px;
+        font-weight: normal;
+    }
+    
+    .voice-section-soprano .voice-title h2 { color: #c2185b; }
+    .voice-section-alto .voice-title h2 { color: #6a1b9a; }
+    .voice-section-tenor .voice-title h2 { color: #1565c0; }
+    .voice-section-bass .voice-title h2 { color: #1e3a3a; }
+    
+    .members-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 15px;
+    }
+    
+    /* Member Cards - 4 Rows Design */
+    .member-card {
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+        transition: all 0.3s;
+        border: 1px solid rgba(0,0,0,0.05);
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .member-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+    
+    /* Row 1: Header with Profile Picture */
+    .member-row-1 {
+        padding: 12px 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        position: relative;
+    }
+    
+    .member-profile-pic {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid white;
+        background: rgba(255,255,255,0.2);
+    }
+    
+    .member-card-soprano .member-row-1 { background: linear-gradient(135deg, #FF69B4, #FF1493); }
+    .member-card-alto .member-row-1 { background: linear-gradient(135deg, #9370DB, #7B2FBE); }
+    .member-card-tenor .member-row-1 { background: linear-gradient(135deg, #4169E1, #1E3A8A); }
+    .member-card-bass .member-row-1 { background: linear-gradient(135deg, #2F4F4F, #1E3A3A); }
+    
+    .member-number {
+        font-size: 14px;
+        font-weight: bold;
+        background: rgba(255,255,255,0.25);
+        color: white;
+        padding: 4px 12px;
+        border-radius: 30px;
+        font-family: monospace;
+    }
+    
+    .member-status {
+        padding: 4px 12px;
+        border-radius: 30px;
+        font-size: 11px;
+        font-weight: bold;
+    }
+    
+    .status-active {
+        background: #28a745;
+        color: white;
+    }
+    
+    .status-suspended {
+        background: #fd7e14;
+        color: white;
+    }
+    
+    /* Row 2: Name */
+    .member-row-2 {
+        padding: 15px 15px 0 15px;
+    }
+    
+    .member-name {
+        font-size: 16px;
+        font-weight: bold;
+        color: #1a2a6e;
+    }
+    
+    /* Row 3: Contact Details */
+    .member-row-3 {
+        padding: 10px 15px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+    
+    .member-detail {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #666;
+        font-size: 12px;
+    }
+    
+    .member-detail i {
+        width: 24px;
+        color: #FFD700;
+        font-style: normal;
+    }
+    
+    /* Row 4: Buttons */
+    .member-row-4 {
+        display: flex;
+        gap: 6px;
+        padding: 12px 15px;
+        background: #fafafa;
+        border-top: 1px solid #eee;
+        flex-wrap: wrap;
+        margin-top: auto;
+    }
+    
+    .action-btn {
+        flex: 1;
+        padding: 6px 0;
+        border: none;
+        border-radius: 25px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        font-size: 11px;
+        min-width: 55px;
+    }
+    
+    .action-btn.view { background: #17a2b8; color: white; }
+    .action-btn.edit { background: #FFD700; color: #1a2a6e; }
+    .action-btn.suspend { background: #fd7e14; color: white; }
+    .action-btn.delete { background: #dc3545; color: white; }
+    
+    .action-btn:hover {
+        transform: scale(1.02);
+        filter: brightness(1.05);
+    }
+    
+    /* Modal Styles */
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.7);
+        backdrop-filter: blur(5px);
+        z-index: 2000;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .modal.active {
+        display: flex;
+    }
+    
+    .modal-content {
+        background: white;
+        border-radius: 25px;
+        width: 90%;
+        max-width: 550px;
+        max-height: 85vh;
+        overflow-y: auto;
+        animation: modalFadeIn 0.3s ease;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    }
+    
+    @keyframes modalFadeIn {
+        from { opacity: 0; transform: translateY(-20px) scale(0.95); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    
+    .modal-header {
+        background: linear-gradient(135deg, #1a2a6e 0%, #0a1a3a 100%);
+        color: #FFD700;
+        padding: 20px 25px;
+        border-radius: 25px 25px 0 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .modal-header h2 {
+        margin: 0;
+        font-size: 20px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .close-modal {
+        background: none;
+        border: none;
+        color: #FFD700;
+        font-size: 28px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .close-modal:hover {
+        transform: rotate(90deg);
+    }
+    
+    .modal-body {
+        padding: 25px;
+    }
+    
+    .form-group {
+        margin-bottom: 18px;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: 600;
+        color: #1a2a6e;
+        font-size: 13px;
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        font-size: 13px;
+        transition: all 0.3s;
+    }
+    
+    .form-group input:focus,
+    .form-group select:focus {
+        outline: none;
+        border-color: #FFD700;
+        box-shadow: 0 0 0 3px rgba(255,215,0,0.2);
+    }
+    
+    .photo-preview {
+        margin-top: 10px;
+        text-align: center;
+    }
+    
+    .photo-preview img {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid #FFD700;
+    }
+    
+    .btn-submit {
+        background: linear-gradient(135deg, #1a2a6e 0%, #0a1a3a 100%);
+        color: white;
+        width: 100%;
+        padding: 12px;
+        border: none;
+        border-radius: 40px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: bold;
+        transition: all 0.3s;
+        margin-top: 10px;
+    }
+    
+    .btn-submit:hover {
+        background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+        color: #1a2a6e;
+        transform: translateY(-2px);
+    }
+    
+    .view-modal-content {
+        max-width: 700px;
+    }
+    
+    .details-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+    
+    .detail-item {
+        background: #f8f9fa;
+        padding: 12px;
+        border-radius: 12px;
+        border-left: 3px solid #FFD700;
+    }
+    
+    .detail-label {
+        font-weight: bold;
+        color: #1a2a6e;
+        margin-bottom: 4px;
+        font-size: 11px;
+        text-transform: uppercase;
+    }
+    
+    .detail-value {
+        color: #333;
+        font-size: 14px;
+        font-weight: 500;
+    }
+    
+    .member-photo-large {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    
+    .member-photo-large img {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid #FFD700;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+    
+    .financial-summary {
+        background: linear-gradient(135deg, #1a2a6e 0%, #0a1a3a 100%);
+        color: white;
+        padding: 18px;
+        border-radius: 16px;
+        margin-top: 18px;
+    }
+    
+    .financial-summary h4 {
+        color: #FFD700;
+        margin-bottom: 12px;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 40px;
+        color: #999;
+        font-size: 14px;
+    }
+    
+    .empty-state i {
+        font-size: 40px;
+        margin-bottom: 10px;
+        display: block;
+    }
+    
+    .birthday-badge {
+        display: inline-block;
+        background: #FFD700;
+        color: #1a2a6e;
+        border-radius: 30px;
+        padding: 2px 10px;
+        font-size: 10px;
+        font-weight: bold;
+        margin-left: 8px;
+    }
+    
+    @media (max-width: 900px) {
+        .members-grid {
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .members-grid {
+            grid-template-columns: 1fr;
+        }
+        .voice-control-bar {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .voice-toggles {
+            justify-content: center;
+        }
+        .global-toggle {
+            justify-content: center;
+        }
+        .search-filter-row {
+            flex-direction: column;
+        }
+        .details-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="wanakwaya-container">
+    <div class="page-header">
+        <h1>👥 Wanakwaya</h1>
+        <button class="add-member-btn" onclick="openAddModal()">
+            <span>➕</span> Mwanakwaya Mpya
+        </button>
+    </div>
+    
+    <div class="gold-card">
+        <div class="gold-card-title">
+            <span>🔍</span> Tafuta Mwanakwaya
+        </div>
+        <div class="search-filter-row">
+            <div class="search-input-wrapper">
+                <input type="text" id="searchInput" placeholder="🔍 Tafuta kwa Jina, Simu, au Member Number...">
+            </div>
+            <button id="searchBtn" class="search-btn">🔍 Search</button>
+            <button id="resetBtn" class="reset-btn">🔄 Reset</button>
+        </div>
+    </div>
+    
+    <div class="voice-control-bar">
+        <div class="voice-toggles">
+            <button class="voice-toggle-btn active" data-voice="Soprano" onclick="toggleVoice('Soprano')">
+                🎵 Soprano <span class="count-badge" id="sopranoCount">0</span>
+            </button>
+            <button class="voice-toggle-btn active" data-voice="Alto" onclick="toggleVoice('Alto')">
+                🎵 Alto <span class="count-badge" id="altoCount">0</span>
+            </button>
+            <button class="voice-toggle-btn active" data-voice="Tenor" onclick="toggleVoice('Tenor')">
+                🎵 Tenor <span class="count-badge" id="tenorCount">0</span>
+            </button>
+            <button class="voice-toggle-btn active" data-voice="Bass" onclick="toggleVoice('Bass')">
+                🎵 Bass <span class="count-badge" id="bassCount">0</span>
+            </button>
+        </div>
+        <div class="global-toggle">
+            <button class="global-toggle-btn" onclick="showAllVoices()">👁️ Show All</button>
+            <button class="global-toggle-btn" onclick="hideAllVoices()">🙈 Hide All</button>
+        </div>
+    </div>
+    
+    <div id="SopranoSection" class="voice-section voice-section-soprano">
+        <div class="voice-title">
+            <h2>🎵 Soprano <span id="sopranoSectionCount">0</span></h2>
+        </div>
+        <div id="sopranoGrid" class="members-grid"></div>
+    </div>
+    
+    <div id="AltoSection" class="voice-section voice-section-alto">
+        <div class="voice-title">
+            <h2>🎵 Alto <span id="altoSectionCount">0</span></h2>
+        </div>
+        <div id="altoGrid" class="members-grid"></div>
+    </div>
+    
+    <div id="TenorSection" class="voice-section voice-section-tenor">
+        <div class="voice-title">
+            <h2>🎵 Tenor <span id="tenorSectionCount">0</span></h2>
+        </div>
+        <div id="tenorGrid" class="members-grid"></div>
+    </div>
+    
+    <div id="BassSection" class="voice-section voice-section-bass">
+        <div class="voice-title">
+            <h2>🎵 Bass <span id="bassSectionCount">0</span></h2>
+        </div>
+        <div id="bassGrid" class="members-grid"></div>
+    </div>
+</div>
+
+<div id="memberModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2><span id="modalIcon">➕</span> <span id="modalTitle">Ongeza Mwanakwaya</span></h2>
+            <button class="close-modal" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="memberForm" enctype="multipart/form-data">
+                <input type="hidden" id="memberId" name="member_id">
+                <div class="form-group">
+                    <label>📝 Jina Kamili *</label>
+                    <input type="text" id="jina" name="jina" required placeholder="Mfano: Maria John">
+                </div>
+                <div class="form-group">
+                    <label>📞 Namba ya Simu *</label>
+                    <input type="text" id="simu" name="simu" required placeholder="Mfano: 0712345678">
+                </div>
+                <div class="form-group">
+                    <label>🎵 Sauti *</label>
+                    <select id="sauti" name="sauti" required>
+                        <option value="">-- Chagua Sauti --</option>
+                        <option value="Soprano">🎵 Soprano</option>
+                        <option value="Alto">🎵 Alto</option>
+                        <option value="Tenor">🎵 Tenor</option>
+                        <option value="Bass">🎵 Bass</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>🏠 Anwani</label>
+                    <input type="text" id="anwani" name="anwani" placeholder="Mfano: Sombetini, Arusha">
+                </div>
+                <div class="form-group">
+                    <label>🎂 Tarehe ya Kuzaliwa</label>
+                    <input type="date" id="tarehe_kuzaliwa" name="tarehe_kuzaliwa">
+                </div>
+                <div class="form-group">
+                    <label>🖼️ Picha ya Mwanakwaya</label>
+                    <input type="file" id="profile_picture" name="profile_picture" accept="image/*" onchange="previewPhoto(this)">
+                    <div class="photo-preview" id="photoPreview" style="display: none;">
+                        <img id="previewImg" src="">
+                    </div>
+                </div>
+                <button type="submit" class="btn-submit">💾 Hifadhi Mwanakwaya</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="viewModal" class="modal">
+    <div class="modal-content view-modal-content">
+        <div class="modal-header">
+            <h2>👤 Maelezo Kamili</h2>
+            <button class="close-modal" onclick="closeViewModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div id="viewDetails"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let wanakwayaData = [];
+    let voiceStates = { Soprano: true, Alto: true, Tenor: true, Bass: true };
+    let currentMemberPhoto = null;
+    
+    function previewPhoto(input) {
+        const preview = document.getElementById('photoPreview');
+        const previewImg = document.getElementById('previewImg');
+        
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImg.src = e.target.result;
+                preview.style.display = 'block';
+                currentMemberPhoto = e.target.result;
+            };
+            reader.readAsDataURL(input.files[0]);
+        } else {
+            preview.style.display = 'none';
+            currentMemberPhoto = null;
+        }
+    }
+    
+    async function loadWanakwaya() {
+        const response = await fetch('/api/wanakwaya');
+        wanakwayaData = await response.json();
+        updateCounters();
+        renderWanakwaya();
+    }
+    
+    function updateCounters() {
+        const counts = { Soprano: 0, Alto: 0, Tenor: 0, Bass: 0 };
+        wanakwayaData.forEach(m => {
+            if (counts[m.sauti] !== undefined) counts[m.sauti]++;
+        });
+        document.getElementById('sopranoCount').innerText = counts.Soprano;
+        document.getElementById('altoCount').innerText = counts.Alto;
+        document.getElementById('tenorCount').innerText = counts.Tenor;
+        document.getElementById('bassCount').innerText = counts.Bass;
+        document.getElementById('sopranoSectionCount').innerText = counts.Soprano;
+        document.getElementById('altoSectionCount').innerText = counts.Alto;
+        document.getElementById('tenorSectionCount').innerText = counts.Tenor;
+        document.getElementById('bassSectionCount').innerText = counts.Bass;
+    }
+    
+    function calculateDaysUntilBirthday(birthDate) {
+        if (!birthDate) return null;
+        const today = new Date();
+        const birth = new Date(birthDate);
+        const nextBirthday = new Date(today.getFullYear(), birth.getMonth(), birth.getDate());
+        if (nextBirthday < today) {
+            nextBirthday.setFullYear(today.getFullYear() + 1);
+        }
+        const diffDays = Math.ceil((nextBirthday - today) / (1000 * 60 * 60 * 24));
+        return diffDays;
+    }
+    
+    function renderWanakwaya() {
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        
+        let filtered = wanakwayaData.filter(m => {
+            const matchesSearch = (m.jina && m.jina.toLowerCase().includes(searchTerm)) || 
+                                  (m.simu && m.simu.includes(searchTerm)) ||
+                                  (m.member_number && m.member_number.toLowerCase().includes(searchTerm));
+            return matchesSearch;
+        });
+        
+        ['Soprano', 'Alto', 'Tenor', 'Bass'].forEach(voice => {
+            const voiceMembers = filtered.filter(m => m.sauti === voice);
+            const grid = document.getElementById(`${voice.toLowerCase()}Grid`);
+            if (grid) {
+                if (voiceMembers.length === 0) {
+                    grid.innerHTML = '<div class="empty-state"><i>📭</i><br>Hakuna wanakwaya wa sauti hii</div>';
+                } else {
+                    grid.innerHTML = voiceMembers.map(m => renderMemberCard(m, voice)).join('');
+                }
+            }
+        });
+    }
+    
+        function renderMemberCard(m, voice) {
+        const statusText = m.status === 'suspended' ? 'Suspended' : 'Active';
+        const statusClass = m.status === 'suspended' ? 'status-suspended' : 'status-active';
+        const suspendText = m.status === 'suspended' ? 'Reactivate' : 'Simamisha';
+        const cardClass = `member-card-${voice.toLowerCase()}`;
+        const isViewer = m.is_viewer === true;
+        
+        // Birthday badge
+        let birthdayBadge = '';
+        if (m.tarehe_kuzaliwa) {
+            const daysLeft = calculateDaysUntilBirthday(m.tarehe_kuzaliwa);
+            if (daysLeft !== null && daysLeft <= 30) {
+                birthdayBadge = `<span class="birthday-badge">🎂 Siku ${daysLeft}</span>`;
+            }
+        }
+        
+        // Profile picture - FIXED: use data from API directly
+        let profilePicHtml = '';
+        if (m.profile_picture && m.profile_picture !== 'null' && m.profile_picture !== '' && m.profile_picture !== 'undefined') {
+            profilePicHtml = `<img src="${m.profile_picture}" class="member-profile-pic" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid white;">`;
+        } else {
+            // Voice-based avatar
+            const voiceAvatar = {
+                'Soprano': '🎤', 'Alto': '🎵', 'Tenor': '🎶', 'Bass': '🎼'
+            };
+            profilePicHtml = `<div class="member-profile-pic" style="width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.3); display: flex; align-items: center; justify-content: center; font-size: 20px;">${voiceAvatar[voice] || '👤'}</div>`;
+        }
+        
+        let actionsHtml = '';
+        if (!isViewer) {
+            actionsHtml = `
+                <button class="action-btn view" onclick="viewDetails(${m.id})">👁️ View</button>
+                <button class="action-btn" onclick="printStatement(${m.id}, '${escapeHtml(m.jina)}')" style="background: #17a2b8; color: white;">📄 Statement</button>
+                <button class="action-btn edit" onclick="editMember(${m.id})">✏️ Hariri</button>
+                <button class="action-btn suspend" onclick="toggleSuspend(${m.id})">${suspendText}</button>
+                <button class="action-btn delete" onclick="confirmDelete(${m.id})">🗑️ Futa</button>
+            `;
+        } else {
+            actionsHtml = `<button class="action-btn view" onclick="viewDetails(${m.id})">👁️ Tazama</button>`;
+        }
+        
+        return `
+            <div class="member-card ${cardClass}">
+                <div class="member-row-1">
+                    ${profilePicHtml}
+                    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                        <span class="member-number">#${m.member_number || 'N/A'}</span>
+                        ${birthdayBadge}
+                        <span class="member-status ${statusClass}">${statusText}</span>
+                    </div>
+                </div>
+                <div class="member-row-2">
+                    <div class="member-name">${escapeHtml(m.jina)}</div>
+                </div>
+                <div class="member-row-3">
+                    <div class="member-detail"><i>📞</i> ${m.simu}</div>
+                    <div class="member-detail"><i>🏠</i> ${m.anwani || '-'}</div>
+                    ${m.tarehe_kuzaliwa ? `<div class="member-detail"><i>🎂</i> ${formatDate(m.tarehe_kuzaliwa)}</div>` : ''}
+                </div>
+                <div class="member-row-4">
+                    ${actionsHtml}
+                </div>
+            </div>
+        `;
+    }
+    
+    function formatDate(dateStr) {
+        if (!dateStr) return '-';
+        const date = new Date(dateStr);
+        return date.toLocaleDateString('sw-TZ');
+    }
+
+    function printStatement(memberId, memberName) {
+        const wantPrint = confirm(`Je, unataka kutengeneza taarifa kamili ya ada, madeni na michango kwa ${memberName}?`);
+        if (wantPrint) {
+            window.open(`/api/member/statement/${memberId}`, '_blank');
+        }
+    }
+    
+    function escapeHtml(text) {
+        if (!text) return '';
+        return text.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+    
+    async function toggleSuspend(id) {
+        const member = wanakwayaData.find(m => m.id === id);
+        const newStatus = member.status === 'suspended' ? 'active' : 'suspended';
+        
+        const response = await fetch('/api/wanakwaya/suspend', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: id, status: newStatus })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showNotification(result.message, 'success');
+            await loadWanakwaya();
+        } else {
+            showNotification(result.message || 'Kuna tatizo, tafadhali jaribu tena', 'error');
+        }
+    }
+    
+    function showNotification(message, type) {
+        const notification = document.createElement('div');
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            z-index: 9999;
+            animation: slideIn 0.3s ease;
+            background: ${type === 'success' ? '#28a745' : '#dc3545'};
+        `;
+        notification.innerHTML = message;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.style.animation = 'slideOut 0.3s ease';
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
+    }
+    
+        async function viewDetails(id) {
+        const member = wanakwayaData.find(m => m.id === id);
+        
+        if (member) {
+            const totalFees = member.total_fees || 0;
+            const paidFees = member.paid_fees || 0;
+            const debt = totalFees - paidFees;
+            
+            // Birthday info
+            let birthdayHtml = '';
+            let birthdayMessage = '';
+            if (member.tarehe_kuzaliwa) {
+                const daysLeft = calculateDaysUntilBirthday(member.tarehe_kuzaliwa);
+                birthdayHtml = `<div class="detail-item"><div class="detail-label">🎂 Siku ya Kuzaliwa</div><div class="detail-value">${formatDate(member.tarehe_kuzaliwa)}</div></div>`;
+                if (daysLeft !== null && daysLeft <= 7) {
+                    birthdayMessage = `<div style="background: #FFD700; color: #1a2a6e; padding: 10px; border-radius: 12px; text-align: center; margin-bottom: 15px;">🎉 Siku ${daysLeft} zimesalia! Jiandae kumpongeza ${member.jina}! 🎉</div>`;
+                }
+            }
+            
+            // Profile picture - FIXED
+            let profilePicHtml = '';
+            if (member.profile_picture && member.profile_picture !== 'null' && member.profile_picture !== '' && member.profile_picture !== 'undefined') {
+                profilePicHtml = `<div class="member-photo-large"><img src="${member.profile_picture}" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 4px solid #FFD700; box-shadow: 0 5px 15px rgba(0,0,0,0.2);"></div>`;
+            } else {
+                const voiceAvatar = { 'Soprano': '🎤', 'Alto': '🎵', 'Tenor': '🎶', 'Bass': '🎼' };
+                profilePicHtml = `<div class="member-photo-large"><div style="width: 120px; height: 120px; background: linear-gradient(135deg, #FFD700, #FFA500); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 50px; margin: 0 auto;">${voiceAvatar[member.sauti] || '👤'}</div></div>`;
+            }
+            
+            document.getElementById('viewDetails').innerHTML = `
+                ${birthdayMessage}
+                ${profilePicHtml}
+                <div class="details-grid">
+                    <div class="detail-item"><div class="detail-label">Member Number</div><div class="detail-value">#${member.member_number || 'N/A'}</div></div>
+                    <div class="detail-item"><div class="detail-label">Jina Kamili</div><div class="detail-value">${escapeHtml(member.jina)}</div></div>
+                    <div class="detail-item"><div class="detail-label">Sauti</div><div class="detail-value">${member.sauti}</div></div>
+                    <div class="detail-item"><div class="detail-label">Namba ya Simu</div><div class="detail-value">${member.simu}</div></div>
+                    <div class="detail-item"><div class="detail-label">Anwani</div><div class="detail-value">${member.anwani || '-'}</div></div>
+                    <div class="detail-item"><div class="detail-label">Tarehe ya Kujiunga</div><div class="detail-value">${member.tarehe_jiunga || '-'}</div></div>
+                    ${birthdayHtml}
+                    <div class="detail-item"><div class="detail-label">Status</div><div class="detail-value">${member.status === 'suspended' ? '⏸️ Simamishwa' : '✅ Active'}</div></div>
+                </div>
+                <div class="financial-summary">
+                    <h4>💰 Taarifa za Kifedha</h4>
+                    <div class="detail-item" style="background: rgba(255,255,255,0.1); margin-bottom: 8px;">
+                        <div class="detail-label">Jumla ya Ada za Mwaka</div>
+                        <div class="detail-value">TSh ${(totalFees || 0).toLocaleString()}</div>
+                    </div>
+                    <div class="detail-item" style="background: rgba(255,255,255,0.1); margin-bottom: 8px;">
+                        <div class="detail-label">Ada Zilizolipwa</div>
+                        <div class="detail-value">TSh ${(paidFees || 0).toLocaleString()}</div>
+                    </div>
+                    <div class="detail-item" style="background: rgba(255,255,255,0.1);">
+                        <div class="detail-label">Madeni</div>
+                        <div class="detail-value">TSh ${(debt || 0).toLocaleString()}</div>
+                    </div>
+                </div>
+                <div style="margin-top: 15px; text-align: center;">
+                    <button onclick="printStatement(${member.id}, '${escapeHtml(member.jina)}')" style="background: #17a2b8; color: white; border: none; padding: 10px 20px; border-radius: 30px; cursor: pointer; font-weight: bold;">📄 Chapisha Taarifa Kamili</button>
+                </div>
+            `;
+            document.getElementById('viewModal').classList.add('active');
+        }
+    }
+    
+    function openAddModal() {
+        document.getElementById('modalIcon').innerHTML = '➕';
+        document.getElementById('modalTitle').innerHTML = 'Ongeza Mwanakwaya';
+        document.getElementById('memberId').value = '';
+        document.getElementById('jina').value = '';
+        document.getElementById('simu').value = '';
+        document.getElementById('sauti').value = '';
+        document.getElementById('anwani').value = '';
+        document.getElementById('tarehe_kuzaliwa').value = '';
+        document.getElementById('profile_picture').value = '';
+        document.getElementById('photoPreview').style.display = 'none';
+        document.getElementById('memberModal').classList.add('active');
+    }
+    
+    function editMember(id) {
+        const member = wanakwayaData.find(m => m.id === id);
+        if (member) {
+            document.getElementById('modalIcon').innerHTML = '✏️';
+            document.getElementById('modalTitle').innerHTML = 'Hariri Mwanakwaya';
+            document.getElementById('memberId').value = member.id;
+            document.getElementById('jina').value = member.jina;
+            document.getElementById('simu').value = member.simu;
+            document.getElementById('sauti').value = member.sauti;
+            document.getElementById('anwani').value = member.anwani || '';
+            document.getElementById('tarehe_kuzaliwa').value = member.tarehe_kuzaliwa || '';
+            document.getElementById('photoPreview').style.display = 'none';
+            document.getElementById('profile_picture').value = '';
+            
+            // Show existing photo if any
+            if (member.profile_picture) {
+                const preview = document.getElementById('photoPreview');
+                const previewImg = document.getElementById('previewImg');
+                previewImg.src = member.profile_picture;
+                preview.style.display = 'block';
+            }
+            
+            document.getElementById('memberModal').classList.add('active');
+        }
+    }
+    
+    function confirmDelete(id) {
+        if (confirm('⚠️ Una uhakika unataka kumfuta mwanakwaya huyu? Kitendo hiki hakiwezi kutenguliwa.')) {
+            window.location.href = `/futa_mwanakwaya/${id}`;
+        }
+    }
+    
+    function closeModal() {
+        document.getElementById('memberModal').classList.remove('active');
+    }
+    
+    function closeViewModal() {
+        document.getElementById('viewModal').classList.remove('active');
+    }
+    
+    function toggleVoice(voice) {
+        voiceStates[voice] = !voiceStates[voice];
+        const section = document.getElementById(`${voice}Section`);
+        const btn = document.querySelector(`.voice-toggle-btn[data-voice="${voice}"]`);
+        
+        if (section) {
+            if (voiceStates[voice]) {
+                section.classList.remove('hidden');
+                if (btn) btn.classList.add('active');
+            } else {
+                section.classList.add('hidden');
+                if (btn) btn.classList.remove('active');
+            }
+        }
+    }
+    
+    function showAllVoices() {
+        for (const voice of ['Soprano', 'Alto', 'Tenor', 'Bass']) {
+            voiceStates[voice] = true;
+            const section = document.getElementById(`${voice}Section`);
+            const btn = document.querySelector(`.voice-toggle-btn[data-voice="${voice}"]`);
+            if (section) section.classList.remove('hidden');
+            if (btn) btn.classList.add('active');
+        }
+    }
+    
+    function hideAllVoices() {
+        for (const voice of ['Soprano', 'Alto', 'Tenor', 'Bass']) {
+            voiceStates[voice] = false;
+            const section = document.getElementById(`${voice}Section`);
+            const btn = document.querySelector(`.voice-toggle-btn[data-voice="${voice}"]`);
+            if (section) section.classList.add('hidden');
+            if (btn) btn.classList.remove('active');
+        }
+    }
+    
+    function resetFilters() {
+        document.getElementById('searchInput').value = '';
+        renderWanakwaya();
+    }
+    
+    const styleSheet = document.createElement("style");
+    styleSheet.textContent = `
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+    `;
+    document.head.appendChild(styleSheet);
+    
+    document.getElementById('memberForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const response = await fetch('/api/wanakwaya/save', {
+            method: 'POST',
+            body: formData
+        });
+        if (response.ok) {
+            closeModal();
+            loadWanakwaya();
+            showNotification('Mwanakwaya amehifadhiwa kikamilifu!', 'success');
+        }
+    });
+    
+    document.getElementById('searchBtn').addEventListener('click', () => renderWanakwaya());
+    document.getElementById('resetBtn').addEventListener('click', resetFilters);
+    document.getElementById('searchInput').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') renderWanakwaya();
+    });
+    
+    loadWanakwaya();
+</script>
+{% endblock %}

@@ -1,0 +1,483 @@
+﻿<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Kwaya Mt. Bonifasi</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        /* Animated Background */
+        .login-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+        }
+        
+        .bg-note {
+            position: absolute;
+            font-size: 60px;
+            opacity: 0.05;
+            animation: floatNote 20s infinite linear;
+        }
+        
+        .bg-note:nth-child(1) { top: 10%; left: 5%; animation-duration: 25s; }
+        .bg-note:nth-child(2) { top: 60%; left: 85%; animation-duration: 30s; animation-delay: 5s; }
+        .bg-note:nth-child(3) { top: 80%; left: 15%; animation-duration: 22s; animation-delay: 2s; }
+        .bg-note:nth-child(4) { top: 20%; left: 75%; animation-duration: 28s; animation-delay: 8s; }
+        .bg-note:nth-child(5) { top: 40%; left: 45%; animation-duration: 35s; animation-delay: 3s; }
+        .bg-note:nth-child(6) { top: 70%; left: 50%; animation-duration: 26s; animation-delay: 12s; }
+        .bg-note:nth-child(7) { top: 85%; left: 8%; animation-duration: 32s; animation-delay: 1s; }
+        .bg-note:nth-child(8) { top: 15%; left: 92%; animation-duration: 24s; animation-delay: 7s; }
+        
+        @keyframes floatNote {
+            0% { transform: translateY(0) rotate(0deg); opacity: 0.03; }
+            50% { transform: translateY(-40px) rotate(10deg); opacity: 0.1; }
+            100% { transform: translateY(0) rotate(0deg); opacity: 0.03; }
+        }
+        
+        /* Music Symbols */
+        .g-clef-bg {
+            position: absolute;
+            font-size: 250px;
+            opacity: 0.04;
+            bottom: -50px;
+            left: -50px;
+            animation: slowPulse 6s infinite;
+        }
+        
+        .f-clef-bg {
+            position: absolute;
+            font-size: 250px;
+            opacity: 0.04;
+            top: -50px;
+            right: -50px;
+            animation: slowPulse 6s infinite reverse;
+        }
+        
+        .piano-bg {
+            position: absolute;
+            font-size: 120px;
+            opacity: 0.05;
+            bottom: 30px;
+            right: 80px;
+            animation: floatPiano 18s infinite;
+        }
+        
+        .trumpet-bg {
+            position: absolute;
+            font-size: 100px;
+            opacity: 0.05;
+            top: 100px;
+            left: 80px;
+            animation: floatTrumpet 15s infinite;
+        }
+        
+        @keyframes slowPulse {
+            0%, 100% { opacity: 0.02; transform: scale(1); }
+            50% { opacity: 0.08; transform: scale(1.05); }
+        }
+        
+        @keyframes floatPiano {
+            0%, 100% { transform: translateX(0) translateY(0); opacity: 0.03; }
+            50% { transform: translateX(-30px) translateY(-20px); opacity: 0.1; }
+        }
+        
+        @keyframes floatTrumpet {
+            0%, 100% { transform: translateX(0) rotate(0deg); opacity: 0.03; }
+            50% { transform: translateX(40px) rotate(15deg); opacity: 0.1; }
+        }
+        
+        /* Login Card */
+        .login-card {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 460px;
+            margin: 20px;
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 32px;
+            overflow: hidden;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+            animation: slideUp 0.6s ease;
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Church Header */
+        .church-header {
+            background: linear-gradient(135deg, #1a2a6e 0%, #2a3a7e 100%);
+            padding: 35px 25px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .church-header::before {
+            content: "🎵";
+            position: absolute;
+            font-size: 100px;
+            left: -20px;
+            top: -20px;
+            opacity: 0.1;
+            transform: rotate(-15deg);
+        }
+        
+        .church-header::after {
+            content: "🎶";
+            position: absolute;
+            font-size: 100px;
+            right: -20px;
+            bottom: -20px;
+            opacity: 0.1;
+            transform: rotate(15deg);
+        }
+        
+        .church-icon {
+            font-size: 65px;
+            background: rgba(255, 215, 0, 0.15);
+            display: inline-block;
+            width: 110px;
+            height: 110px;
+            line-height: 110px;
+            border-radius: 50%;
+            margin-bottom: 15px;
+            border: 2px solid #FFD700;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.4); }
+            50% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(255, 215, 0, 0); }
+        }
+        
+        .church-header h2 {
+            color: #FFD700;
+            font-size: 26px;
+            margin: 10px 0 5px;
+            letter-spacing: 1px;
+        }
+        
+        .church-header p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 12px;
+        }
+        
+        .gold-line {
+            width: 70px;
+            height: 3px;
+            background: #FFD700;
+            margin: 15px auto 0;
+            border-radius: 3px;
+        }
+        
+        /* Form Body */
+        .form-body {
+            padding: 35px 30px;
+        }
+        
+        .welcome-text {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        .welcome-text h3 {
+            color: #1a2a6e;
+            font-size: 22px;
+            margin-bottom: 5px;
+        }
+        
+        .welcome-text p {
+            color: #666;
+            font-size: 13px;
+        }
+        
+        /* Input Groups */
+        .input-group {
+            margin-bottom: 22px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #1a2a6e;
+            font-size: 13px;
+        }
+        
+        .input-icon {
+            position: relative;
+        }
+        
+        .input-icon .icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 18px;
+            z-index: 1;
+        }
+        
+        .input-icon input {
+            width: 100%;
+            padding: 14px 15px 14px 48px;
+            border: 2px solid #e0e0e0;
+            border-radius: 16px;
+            font-size: 15px;
+            transition: all 0.3s;
+            background: #f8fafc;
+        }
+        
+        .input-icon input:focus {
+            outline: none;
+            border-color: #FFD700;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.2);
+        }
+        
+        /* Password Toggle */
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #888;
+            font-size: 18px;
+            z-index: 1;
+        }
+        
+        /* Login Button */
+        .login-btn {
+            background: linear-gradient(135deg, #1a2a6e, #2a3a7e);
+            color: #FFD700;
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .login-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(26, 42, 110, 0.4);
+        }
+        
+        /* Flash Messages */
+        .flash-message {
+            margin-bottom: 20px;
+            padding: 12px 16px;
+            border-radius: 14px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideDown 0.3s ease;
+        }
+        
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .flash-success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+        
+        .flash-error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+        
+        .flash-warning {
+            background: #fff3cd;
+            color: #856404;
+            border-left: 4px solid #ffc107;
+        }
+        
+        /* Demo Credentials */
+        .demo-card {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 20px;
+            padding: 15px 20px;
+            margin-top: 25px;
+            text-align: center;
+            border-left: 4px solid #FFD700;
+        }
+        
+        .demo-title {
+            font-size: 11px;
+            color: #666;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+        
+        .demo-creds {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .demo-item {
+            background: white;
+            padding: 5px 15px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-family: monospace;
+            font-weight: bold;
+            color: #1a2a6e;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .demo-item span:first-child {
+            color: #FFD700;
+            margin-right: 5px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 500px) {
+            .form-body { padding: 25px 20px; }
+            .church-header { padding: 25px 20px; }
+            .church-icon { width: 85px; height: 85px; line-height: 85px; font-size: 45px; }
+            .church-header h2 { font-size: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="login-bg">
+        <div class="g-clef-bg">𝄞</div>
+        <div class="f-clef-bg">𝄢</div>
+        <div class="piano-bg">🎹</div>
+        <div class="trumpet-bg">🎺</div>
+        <div class="bg-note">♪</div>
+        <div class="bg-note">♫</div>
+        <div class="bg-note">♩</div>
+        <div class="bg-note">♬</div>
+        <div class="bg-note">🎵</div>
+        <div class="bg-note">🎶</div>
+        <div class="bg-note">♪</div>
+        <div class="bg-note">♫</div>
+    </div>
+    
+    <div class="login-card">
+        <div class="church-header">
+            <div class="church-icon">🎵⛪</div>
+            <h2>KWAYA MT. BONIFASI</h2>
+            <p>Parokia ya Moyo Mtakatifu Wa Yesu, Sombetini</p>
+            <div class="gold-line"></div>
+        </div>
+        
+        <div class="form-body">
+            <div class="welcome-text">
+                <h3>Karibu Tena! 👋</h3>
+                <p>Ingia kwenye mfumo wa usimamizi wa kwaya</p>
+            </div>
+            
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash-message flash-{{ category }}">
+                            <span>{% if category == 'success' %}✅{% elif category == 'error' %}❌{% else %}⚠️{% endif %}</span>
+                            <span>{{ message }}</span>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <!-- Login Form -->
+            <form method="POST">
+                <div class="input-group">
+                    <label>👤 Jina la Mtumiaji</label>
+                    <div class="input-icon">
+                        <span class="icon">👨‍💼</span>
+                        <input type="text" name="username" placeholder="Ingiza username yako" required autocomplete="off">
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label>🔒 Neno la Siri</label>
+                    <div class="input-icon">
+                        <span class="icon">🔑</span>
+                        <input type="password" name="password" id="password" placeholder="Ingiza neno la siri" required>
+                        <span class="password-toggle" onclick="togglePassword()">👁️</span>
+                    </div>
+                </div>
+                
+                <button type="submit" class="login-btn">
+                    <span>🚪</span> Ingia Mfumo
+                </button>
+            </form>
+            
+            <!-- Demo Credentials -->
+            <div class="demo-card">
+                <div class="demo-title">📋 MAELEZO YA KUJARIBU</div>
+                <div class="demo-creds">
+                    <div class="demo-item"><span>👤</span> admin</div>
+                    <div class="demo-item"><span>🔑</span> admin123</div>
+                </div>
+            </div>
+        </div>
+        
+        <div style="background: #f8f9fa; padding: 12px; text-align: center; border-top: 1px solid #e0e0e0;">
+            <p style="font-size: 10px; color: #888;">© 2026 Kwaya Ya Mtakatifu Bonifasi</p>
+            <p style="font-size: 9px; color: #aaa;">"Utukufu wa Mungu kwa sauti za malaika"</p>
+        </div>
+    </div>
+    
+    <script>
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const toggleIcon = event.target;
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.innerHTML = '🙈';
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.innerHTML = '👁️';
+            }
+        }
+        
+        // Auto-hide flash messages after 5 seconds
+        setTimeout(() => {
+            document.querySelectorAll('.flash-message').forEach(msg => {
+                msg.style.opacity = '0';
+                msg.style.transition = 'opacity 0.5s';
+                setTimeout(() => msg.remove(), 500);
+            });
+        }, 5000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Ripoti za Ada{% endblock %}
+
+{% block content %}
+<div style="max-width:1200px; margin:0 auto;">
+    <div style="background:white; border-radius:20px; padding:25px;">
+        <h1 style="color:#1a2a6e;">📊 Ripoti za Ada</h1>
+        <form method="GET" style="margin:20px 0; display:flex; gap:15px; flex-wrap:wrap;">
+            <input type="number" name="year" value="{{ year }}" placeholder="Mwaka" style="padding:8px 15px; border-radius:30px; border:1px solid #ddd;">
+            <select name="month" style="padding:8px 15px; border-radius:30px;"><option value="">Mwezi wote</option>{% for m in months %}<option value="{{ m }}" {% if month==m %}selected{% endif %}>{{ m }}</option>{% endfor %}</select>
+            <button type="submit" style="background:#1a2a6e; color:white; padding:8px 20px; border-radius:30px; border:none;">🔍 Tazama</button>
+        </form>
+        
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:15px; margin-bottom:25px;">
+            <div style="background:#1a2a6e; padding:15px; border-radius:16px; text-align:center; color:white;"><div style="font-size:24px; color:#FFD700;">TSh {{ "%.0f"|format(summary.total_expected or 0) }}</div><div>Inayotakiwa</div></div>
+            <div style="background:#1a2a6e; padding:15px; border-radius:16px; text-align:center; color:white;"><div style="font-size:24px; color:#FFD700;">TSh {{ "%.0f"|format(summary.total_paid or 0) }}</div><div>Iliyolipwa</div></div>
+            <div style="background:#1a2a6e; padding:15px; border-radius:16px; text-align:center; color:white;"><div style="font-size:24px; color:#FFD700;">TSh {{ "%.0f"|format(summary.total_debt or 0) }}</div><div>Deni</div></div>
+        </div>
+        
+        <table style="width:100%; border-collapse:collapse;"><thead><tr style="background:#1a2a6e; color:#FFD700;"><th style="padding:10px;">Jina</th><th>Sauti</th><th>Mwezi</th><th>Inayotakiwa</th><th>Iliyolipwa</th><th>Deni</th></tr></thead>
+        <tbody>{% for r in records %}<tr style="border-bottom:1px solid #eee;"><td style="padding:8px;">{{ r.jina }}</td><td>{{ r.sauti }}</td><td>{{ r.mwezi }}</td><td>TSh {{ "%.0f"|format(r.kiasi_kinachotakiwa) }}</td><td>TSh {{ "%.0f"|format(r.kiasi_kilicholipwa) }}</td><td><strong>TSh {{ "%.0f"|format(r.jumla_ya_deni) }}</strong></td></tr>{% endfor %}</tbody></table>
+        
+        <div style="margin-top:20px; text-align:center;"><a href="/ada" style="color:#1a2a6e;">◀ Rudi</a></div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,1745 @@
+﻿<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kwaya Mt. Bonifasi - {% block title %}{% endblock %}</title>
+    <style>
+        /* Sidebar Dropdown - FORCED STYLES (IMPROVED) */
+        .sidebar-dropdown {
+            position: relative;
+            width: 100%;
+        }
+        
+        .sidebar-dropdown-toggle {
+            display: flex !important;
+            align-items: center !important;
+            gap: 12px !important;
+            padding: 12px 20px !important;
+            color: rgba(255,255,255,0.85) !important;
+            cursor: pointer !important;
+            transition: all 0.2s !important;
+            width: 100% !important;
+            background: transparent !important;
+            border: none !important;
+            font-size: 14px !important;
+            text-align: left !important;
+            border-left: 3px solid transparent;
+        }
+        
+        .sidebar-dropdown-toggle:hover {
+            background: #FFD700 !important;
+            color: #1a2a6e !important;
+            padding-left: 28px !important;
+        }
+        
+        .sidebar-dropdown-toggle.active {
+            background: #FFD700 !important;
+            color: #1a2a6e !important;
+            font-weight: bold;
+        }
+        
+        .sidebar-arrow {
+            margin-left: auto !important;
+            font-size: 10px !important;
+            transition: transform 0.2s !important;
+        }
+        
+        .sidebar-dropdown.open .sidebar-arrow {
+            transform: rotate(90deg) !important;
+        }
+        
+        .sidebar-submenu {
+            display: none;
+            padding-left: 25px;
+            background: rgba(0, 0, 0, 0.2);
+            border-left: 2px solid #FFD700;
+            margin-left: 10px;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .sidebar-submenu .sidebar-link {
+            background: rgba(255, 255, 255, 0.05);
+            margin: 2px 0;
+            border-radius: 8px;
+        }
+
+        .sidebar-submenu .sidebar-link:hover {
+            background: #FFD700;
+            color: #1a2a6e;
+        }
+
+        .sidebar-submenu .sidebar-link.active {
+            background: #FFD700;
+            color: #1a2a6e;
+        }
+        
+        .sidebar-dropdown.open .sidebar-submenu {
+            display: block !important;
+        }
+        
+        .sidebar-submenu .sidebar-link {
+            display: flex !important;
+            align-items: center !important;
+            gap: 10px !important;
+            padding: 8px 15px 8px 35px !important;
+            color: rgba(255,255,255,0.75) !important;
+            text-decoration: none !important;
+            font-size: 12px !important;
+            transition: all 0.2s !important;
+        }
+        
+        .sidebar-submenu .sidebar-link:hover {
+            background: #FFD700 !important;
+            color: #1a2a6e !important;
+            padding-left: 42px !important;
+        }
+        
+        .sidebar-submenu .sidebar-link.active {
+            background: #FFD700 !important;
+            color: #1a2a6e !important;
+            font-weight: bold !important;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            transition: margin-left 0.3s ease;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #0a1a3a 0%, #1a2a6e 50%, #0a1a3a 100%);
+            padding: 35px 20px;
+            text-align: center;
+            border-bottom: 5px solid #FFD700;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: "🎵";
+            position: absolute;
+            font-size: 100px;
+            left: 10px;
+            top: 10px;
+            opacity: 0.1;
+            transform: rotate(-15deg);
+        }
+        
+        .header::after {
+            content: "🎶";
+            position: absolute;
+            font-size: 100px;
+            right: 10px;
+            bottom: 10px;
+            opacity: 0.1;
+            transform: rotate(15deg);
+        }
+        
+        .header h1 {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 28px;
+            font-weight: bold;
+            color: #FFD700;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.5);
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+        }
+        
+        .header h2 {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 18px;
+            color: #FFD700;
+            font-weight: normal;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+            margin-bottom: 8px;
+        }
+        
+        .header h3 {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 16px;
+            color: #FFD700;
+            font-weight: normal;
+            margin-bottom: 5px;
+        }
+        
+        .header p {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 14px;
+            color: #FFD700;
+            opacity: 0.9;
+        }
+        
+        .gold-border {
+            width: 80px;
+            height: 3px;
+            background: #FFD700;
+            margin: 15px auto 0;
+            border-radius: 2px;
+        }
+        
+        .user-bar {
+            background: #1a2a6e;
+            padding: 12px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            border-bottom: 2px solid #FFD700;
+        }
+        
+        .user-welcome {
+            color: #FFD700;
+            font-size: 16px;
+            font-family: 'Times New Roman', Times, serif;
+        }
+        
+        .user-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .icon-btn {
+            background: none;
+            border: none;
+            color: #FFD700;
+            font-size: 20px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            position: relative;
+        }
+        
+        .icon-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .logout-btn {
+            background: #dc3545;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .logout-btn:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+        }
+        
+        /* Notification Bell Styles */
+        .notification-bell {
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .notification-count {
+            position: absolute;
+            top: -8px;
+            right: -12px;
+            background: #dc3545;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 10px;
+            font-weight: bold;
+            min-width: 18px;
+            text-align: center;
+        }
+        
+        .notification-dropdown {
+            position: absolute;
+            right: 0;
+            top: 40px;
+            width: 350px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            display: none;
+            z-index: 10000;
+            max-height: 450px;
+            overflow-y: auto;
+        }
+        
+        .notification-dropdown.active {
+            display: block;
+        }
+        
+        .notification-header {
+            padding: 12px 15px;
+            background: linear-gradient(135deg, #1a2a6e, #2a3a7e);
+            color: #FFD700;
+            border-radius: 12px 12px 0 0;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+        }
+        
+        .mark-all-read {
+            background: none;
+            border: none;
+            color: #FFD700;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .notification-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .notification-item:hover {
+            background: #f5f5f5;
+        }
+        
+        .notification-item.unread {
+            background: #f0f7ff;
+        }
+        
+        .notification-item.unread:hover {
+            background: #e0edff;
+        }
+        
+        .notification-title {
+            font-weight: bold;
+            color: #1a2a6e;
+            margin-bottom: 5px;
+        }
+        
+        .notification-message {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .notification-time {
+            font-size: 10px;
+            color: #999;
+        }
+        
+        .no-notifications {
+            padding: 30px;
+            text-align: center;
+            color: #888;
+        }
+        
+        .nav {
+            background: linear-gradient(135deg, #1a2a6e 0%, #2a3a7e 100%);
+            padding: 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            border-radius: 0 0 20px 20px;
+        }
+        
+        .nav-menu {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            list-style: none;
+            gap: 5px;
+            padding: 10px 20px;
+        }
+        
+        .nav-menu > li {
+            position: relative;
+        }
+        
+        .nav-menu > li > a {
+            display: block;
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            padding: 12px 22px;
+            font-size: 15px;
+            font-weight: 500;
+            font-family: 'Times New Roman', Times, serif;
+            transition: all 0.3s ease;
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .nav-menu > li > a:hover {
+            background: #FFD700;
+            color: #1a2a6e;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+        }
+        
+        /* Active state for top nav */
+        .nav-menu > li > a.active {
+            background: #FFD700;
+            color: #1a2a6e;
+            font-weight: bold;
+        }
+        
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;
+            min-width: 260px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            border-radius: 12px;
+            z-index: 1000;
+            margin-top: 8px;
+            border-top: 3px solid #FFD700;
+            list-style: none;
+            padding: 8px 0;
+        }
+        
+        .nav-menu > li:hover .dropdown-menu {
+            display: block;
+        }
+        
+        .dropdown-menu li {
+            position: relative;
+        }
+        
+        .dropdown-menu li a {
+            color: #1a2a6e;
+            padding: 10px 18px;
+            text-decoration: none;
+            display: block;
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 14px;
+            transition: all 0.2s;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .dropdown-menu li a:hover {
+            background: #FFD700;
+            color: #1a2a6e;
+            padding-left: 25px;
+        }
+        
+        .nested-dropdown {
+            position: relative;
+        }
+        
+        .nested-dropdown > a::after {
+            content: "▶";
+            float: right;
+            font-size: 10px;
+            margin-left: 15px;
+        }
+        
+        .nested-menu {
+            display: none;
+            position: absolute;
+            left: 100%;
+            top: 0;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            min-width: 220px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            border-radius: 12px;
+            z-index: 1001;
+            list-style: none;
+            padding: 8px 0;
+            margin-left: 5px;
+        }
+        
+        .nested-dropdown:hover .nested-menu {
+            display: block;
+        }
+        
+        .nested-menu li a {
+            color: #1a2a6e !important;
+            font-weight: 600;
+            padding: 10px 18px;
+            border-bottom: 1px solid rgba(255,255,255,0.3);
+            background: transparent;
+        }
+        
+        .nested-menu li a:hover {
+            background: #1a2a6e !important;
+            color: #FFD700 !important;
+            padding-left: 25px;
+            border-radius: 8px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            min-height: 500px;
+            transition: margin-left 0.3s ease;
+        }
+        
+        .flash-messages {
+            max-width: 1400px;
+            margin: 20px auto 0;
+            padding: 0 20px;
+        }
+        
+        .alert {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 5px solid #FFD700;
+        }
+        
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 5px solid #FFD700;
+        }
+        
+        .footer {
+            background: linear-gradient(135deg, #0a1a3a 0%, #1a2a6e 100%);
+            color: #FFD700;
+            text-align: center;
+            padding: 25px;
+            margin-top: 40px;
+            border-top: 3px solid #FFD700;
+        }
+        
+        .footer p {
+            margin: 5px 0;
+        }
+        
+        @media (max-width: 768px) {
+            .nav-menu {
+                flex-direction: column;
+            }
+            .dropdown-menu {
+                position: static;
+                display: none;
+            }
+            .nav-menu > li:hover .dropdown-menu {
+                display: block;
+            }
+            .nested-menu {
+                position: static;
+                left: 0;
+                margin-left: 20px;
+            }
+            .header h1 {
+                font-size: 20px;
+            }
+            .notification-dropdown {
+                width: 300px;
+                right: -50px;
+            }
+        }
+        
+        /* Dark Mode Styles */
+        body.dark-mode {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b2e 100%);
+        }
+        
+        body.dark-mode .container {
+            background: #1e293b;
+            color: #e2e8f0;
+        }
+        
+        body.dark-mode .stat-card,
+        body.dark-mode .profile-card,
+        body.dark-mode .export-card,
+        body.dark-mode .asset-card,
+        body.dark-mode .product-card {
+            background: #2d3a4e;
+            color: #e2e8f0;
+        }
+        
+        body.dark-mode .stat-value,
+        body.dark-mode .card-title {
+            color: #FFD700;
+        }
+        
+        body.dark-mode .info-row {
+            border-bottom-color: #334155;
+        }
+        
+        body.dark-mode .info-label {
+            color: #94a3b8;
+        }
+        
+        body.dark-mode .member-card {
+            background: #2d3a4e;
+        }
+        
+        body.dark-mode .voice-section {
+            background: #1e293b;
+        }
+        
+        body.dark-mode .calendar-table {
+            background: #2d3a4e;
+        }
+        
+        body.dark-mode .calendar-table td {
+            border-bottom-color: #334155;
+        }
+        
+        body.dark-mode .notification-dropdown {
+            background: #1e293b;
+        }
+        
+        body.dark-mode .notification-item {
+            border-bottom-color: #334155;
+        }
+        
+        body.dark-mode .notification-item:hover {
+            background: #2d3a4e;
+        }
+        
+        body.dark-mode .notification-item.unread {
+            background: #1a2a6e;
+        }
+        
+        body.dark-mode .notification-title {
+            color: #FFD700;
+        }
+        
+        body.dark-mode .notification-message {
+            color: #cbd5e1;
+        }
+        
+        /* Sidebar Styles */
+        #dynamicSidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 280px;
+            height: 100%;
+            background: linear-gradient(135deg, #1a2a6e, #2a3a7e);
+            z-index: 99999;
+            overflow-y: auto;
+            box-shadow: 2px 0 20px rgba(0,0,0,0.3);
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+        }
+        
+        #dynamicSidebar.open {
+            transform: translateX(0);
+        }
+        
+        #sidebarOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 99998;
+            display: none;
+        }
+        
+        #sidebarOverlay.active {
+            display: block;
+        }
+        
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            color: rgba(255,255,255,0.85);
+            text-decoration: none;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+        
+        .sidebar-link:hover {
+            background: #FFD700 !important;
+            color: #1a2a6e !important;
+            padding-left: 28px;
+            border-left-color: #FFA500;
+        }
+        
+        .sidebar-link.active {
+            background: #FFD700 !important;
+            color: #1a2a6e !important;
+            font-weight: bold;
+            border-left-color: #FFA500;
+        }
+        
+        .sidebar-icon {
+            font-size: 20px;
+            min-width: 32px;
+        }
+        
+        body.sidebar-open {
+            margin-left: 280px;
+        }
+/* ============ RESPONSIVE DESIGN - MOBILE VIEW ============ */
+
+/* Mobile menu toggle button */
+.mobile-menu-toggle {
+    display: none;
+    background: #FFD700;
+    color: #1a2a6e;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    margin: 10px;
+}
+
+/* Tablet view (768px and below) */
+@media (max-width: 768px) {
+    /* Header adjustments */
+    .header h1 {
+        font-size: 20px !important;
+    }
+    .header h2 {
+        font-size: 14px !important;
+    }
+    .header h3 {
+        font-size: 12px !important;
+    }
+    .header p {
+        font-size: 10px !important;
+    }
+    
+    /* User bar */
+    .user-bar {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+        padding: 12px 15px;
+    }
+    
+    .user-actions {
+        justify-content: center;
+    }
+    
+    /* Top navigation - make it scrollable horizontally */
+    .nav {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .nav-menu {
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        gap: 3px;
+        padding: 8px 10px;
+        min-width: max-content;
+    }
+    
+    .nav-menu > li > a {
+        padding: 8px 12px;
+        font-size: 12px;
+        white-space: nowrap;
+    }
+    
+    /* Container */
+    .container {
+        margin: 15px;
+        padding: 15px;
+    }
+    
+    /* Grid layouts - single column */
+    .stats-grid, .widgets-grid, .card-grid, .actions-grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px;
+    }
+    
+    /* Cards */
+    .stat-card, .export-card, .profile-card, .asset-card, .product-card {
+        padding: 15px;
+    }
+    
+    .stat-value {
+        font-size: 22px;
+    }
+    
+    /* Tables - make scrollable horizontally */
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        display: block;
+    }
+    
+    .calendar-table, .member-table, .users-table, .history-table, .penalty-table {
+        min-width: 600px;
+    }
+    
+    /* Forms */
+    .filter-row, .form-row {
+        flex-direction: column;
+    }
+    
+    .filter-group input, .filter-group select, .form-group input, .form-group select {
+        width: 100%;
+    }
+    
+    /* Buttons */
+    .btn-group {
+        flex-direction: column;
+    }
+    
+    .btn-pdf, .btn-excel, .btn-save {
+        width: 100%;
+        justify-content: center;
+        margin: 3px 0;
+    }
+    
+    /* Modal */
+    .modal-content {
+        width: 95%;
+        margin: 10px;
+    }
+    
+    /* Sidebar - full screen on mobile */
+    #dynamicSidebar {
+        width: 85%;
+        max-width: 280px;
+    }
+    
+    /* Flash messages */
+    .flash-messages {
+        margin: 10px 15px;
+    }
+    
+    .alert {
+        padding: 10px 15px;
+        font-size: 13px;
+    }
+    
+    /* Dashboard specific */
+    .dashboard-container .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .quick-actions .actions-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    /* Voice sections */
+    .voice-section .member-table {
+        font-size: 11px;
+    }
+    
+    /* Profile page */
+    .profile-header {
+        padding: 20px;
+    }
+    
+    .profile-name {
+        font-size: 20px;
+    }
+    
+    .info-row {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    /* Calendar */
+    .calendar-day {
+        min-height: 80px;
+        font-size: 10px;
+        padding: 5px;
+    }
+    
+    .calendar-weekdays div {
+        font-size: 10px;
+        padding: 8px 0;
+    }
+    
+    .day-number {
+        font-size: 10px;
+    }
+    
+    .day-event {
+        font-size: 8px;
+        padding: 2px 3px;
+    }
+}
+
+/* Phone view (480px and below) */
+@media (max-width: 480px) {
+    .header h1 {
+        font-size: 16px !important;
+    }
+    
+    .nav-menu > li > a {
+        padding: 6px 10px;
+        font-size: 10px;
+    }
+    
+    .container {
+        margin: 10px;
+        padding: 12px;
+    }
+    
+    .stat-value {
+        font-size: 18px;
+    }
+    
+    .stat-title {
+        font-size: 11px;
+    }
+    
+    .btn-pdf, .btn-excel {
+        font-size: 12px;
+        padding: 8px 12px;
+    }
+    
+    .modal-header h3 {
+        font-size: 16px;
+    }
+    
+    .modal-body {
+        padding: 15px;
+    }
+    
+    .form-group input, .form-group textarea {
+        padding: 8px;
+        font-size: 12px;
+    }
+}
+
+/* Touch-friendly buttons - larger tap targets */
+@media (max-width: 768px) {
+    button, 
+    .btn-pdf, .btn-excel, 
+    .sidebar-link, 
+    .sidebar-dropdown-toggle,
+    .action-btn,
+    .nav-menu > li > a {
+        min-height: 44px;
+    }
+    
+    input, select, textarea {
+        font-size: 16px !important; /* Prevents zoom on focus in iOS */
+    }
+}
+
+/* Hide mobile toggle on desktop, show on mobile */
+@media (max-width: 768px) {
+    .mobile-menu-toggle {
+        display: block;
+    }
+}
+
+/* Fix for sidebar on mobile */
+@media (max-width: 768px) {
+    body.sidebar-open #dynamicSidebar {
+        transform: translateX(0);
+    }
+    
+    body.sidebar-open {
+        overflow: hidden;
+    }
+}
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎵 KWAYA YA MTAKATIFU BONIFASI ASKOFU NA SHAHIDI 🎵</h1>
+        <h2>Parokia ya Moyo Mtakatifu Wa Yesu, Sombetini</h2>
+        <h3>Jimbo Kuu Katoliki La Arusha</h3>
+        <p>Arusha, Tanzania</p>
+        <div class="gold-border"></div>
+    </div>
+    
+    {% if session.user_id %}
+    <div class="user-bar">
+        <div class="user-welcome">👋 Karibu, {{ session.username }}</div>
+        <div class="user-actions">
+            <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰ Menu</button>
+
+            <!-- VIEW TOGGLE BUTTON (Top Menu / Sidebar) -->
+            <button class="icon-btn" onclick="toggleMenuView()" id="viewToggleBtn" style="font-size: 18px;" title="Badili mwonekano wa menu">📱</button>
+            
+            <!-- NOTIFICATION BELL -->
+            <div class="notification-bell">
+                <button class="icon-btn" onclick="toggleNotificationDropdown()">🔔</button>
+                <span id="notificationCount" class="notification-count" style="display: none;">0</span>
+                
+                <!-- Notification Dropdown -->
+                <div id="notificationDropdown" class="notification-dropdown">
+                    <div class="notification-header">
+                        <span>🔔 Arifa Zako</span>
+                        <button class="mark-all-read" onclick="markAllNotificationsRead(event)">✔️ Soma zote</button>
+                    </div>
+                    <div id="notificationList">
+                        <div class="no-notifications">Loading...</div>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="icon-btn" onclick="toggleDarkMode()" id="darkModeBtn">🌙</button>
+            <button class="icon-btn" onclick="toggleLanguage()" id="langBtn" style="font-size: 14px;">🇬🇧 EN</button>
+        </div>
+    </div>
+    
+    <div class="nav">
+        <ul class="nav-menu">
+            
+            <!-- ==================== MENU ZA ADMIN (role_id = 1) ==================== -->
+            {% if session.role_id == 1 %}
+                <li><a href="{{ url_for('dashboard') }}" class="top-nav-link">🏠 Home</a></li>
+                
+                <li class="dropdown">
+                    <a href="#">📖 Kwaya Yetu</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ url_for('historia_kwaya') }}">📜 Historia ya Kwaya</a></li>
+                        <li><a href="{{ url_for('somo_msimamizi') }}">📖 Somo/Msimamizi wa Kwaya</a></li>
+                        <li><a href="{{ url_for('mwanzilishi') }}">⭐ Mwanzilishi wa Kwaya</a></li>
+                        
+                        <li class="nested-dropdown">
+                            <a href="#">📋 Sifa/Vigezo/Masharti</a>
+                            <ul class="nested-menu">
+                                <li><a href="{{ url_for('kuwa_mwanakwaya') }}">👤 Kuwa Mwanakwaya</a></li>
+                                <li><a href="{{ url_for('kuwa_mwalimu') }}">📚 Kuwa Mwalimu</a></li>
+                                <li><a href="{{ url_for('kuwa_kiongozi') }}">👑 Kuwa Kiongozi</a></li>
+                                <li><a href="{{ url_for('kuwa_mfadhili') }}">💰 Kuwa Mfadhili</a></li>
+                                <li><a href="{{ url_for('kuwa_rafiki') }}">🤝 Kuwa Rafiki wa Kwaya</a></li>
+                                <li><a href="{{ url_for('kuwa_mlezi') }}">🛡️ Kuwa Mlezi</a></li>
+                            </ul>
+                        </li>
+                        
+                        <li class="nested-dropdown">
+                            <a href="#">🎯 Malengo</a>
+                            <ul class="nested-menu">
+                                <li><a href="{{ url_for('malengo_mfupi') }}">📅 Muda Mfupi (Wiki)</a></li>
+                                <li><a href="{{ url_for('malengo_kati') }}">📆 Muda wa Kati (Mwezi-Mwaka)</a></li>
+                                <li><a href="{{ url_for('malengo_mrefu') }}">🗓️ Muda Mrefu (Miaka 1-5)</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                
+                <li><a href="{{ url_for('wanakwaya') }}" class="top-nav-link">👥 Wanakwaya</a></li>
+                
+                <li class="dropdown">
+                    <a href="#">📅 Ratiba</a>
+                    <ul class="dropdown-menu">
+                        <li class="nested-dropdown">
+                            <a href="#">📖 Mwaka wa Kanisa</a>
+                            <ul class="nested-menu">
+                                <li><a href="{{ url_for('ratiba_mwaka_kanisa', mwaka='A') }}">📅 Mwaka A</a></li>
+                                <li><a href="{{ url_for('ratiba_mwaka_kanisa', mwaka='B') }}">📅 Mwaka B</a></li>
+                                <li><a href="{{ url_for('ratiba_mwaka_kanisa', mwaka='C') }}">📅 Mwaka C</a></li>
+                            </ul>
+                        </li>
+                        
+                        <li class="nested-dropdown">
+                            <a href="#">🎵 Makundi ya Nyimbo</a>
+                            <ul class="nested-menu">
+                                <li><a href="{{ url_for('ratiba_makundi_nyimbo', kundi='Maandamano') }}">🎶 Maandamano</a></li>
+                                <li><a href="{{ url_for('ratiba_makundi_nyimbo', kundi='Mwanzo') }}">🎵 Mwanzo</a></li>
+                                <li><a href="{{ url_for('ratiba_makundi_nyimbo', kundi='Shangilio') }}">🎉 Shangilio</a></li>
+                                <li><a href="{{ url_for('ratiba_makundi_nyimbo', kundi='Zaburi') }}">📖 Zaburi</a></li>
+                                <li><a href="{{ url_for('ratiba_makundi_nyimbo', kundi='Misa') }}">⛪ Misa</a></li>
+                                <li><a href="{{ url_for('ratiba_makundi_nyimbo', kundi='Antifona') }}">📜 Antifona</a></li>
+                                <li><a href="{{ url_for('ratiba_makundi_nyimbo', kundi='Sadaka') }}">💰 Sadaka</a></li>
+                                <li><a href="{{ url_for('ratiba_makundi_nyimbo', kundi='Komunyo') }}">🍞 Komunyo</a></li>
+                                <li><a href="{{ url_for('ratiba_makundi_nyimbo', kundi='Shukrani') }}">🙏 Shukrani</a></li>
+                                <li><a href="{{ url_for('ratiba_makundi_nyimbo', kundi='Ubatizo') }}">💧 Ubatizo</a></li>
+                                <li><a href="{{ url_for('ratiba_makundi_nyimbo', kundi='Ndoa') }}">💍 Ndoa/Harusi</a></li>
+                                <li><a href="{{ url_for('ratiba_makundi_nyimbo', kundi='Mazishi') }}">🕯️ Mazishi</a></li>
+                                <li><a href="{{ url_for('ratiba_makundi_nyimbo', kundi='Christmas') }}">🎄 Christmas</a></li>
+                                <li><a href="{{ url_for('ratiba_makundi_nyimbo', kundi='Pasaka') }}">🐣 Pasaka</a></li>
+                                <li><a href="{{ url_for('ratiba_makundi_nyimbo', kundi='Majilio') }}">🕯️ Majilio</a></li>
+                                <li><a href="{{ url_for('ratiba_makundi_nyimbo', kundi='Kwaresma') }}">✝️ Kwaresma</a></li>
+                                <li><a href="{{ url_for('ratiba_makundi_nyimbo', kundi='Mwisho') }}">🏁 Mwisho</a></li>
+                            </ul>
+                        </li>
+                        
+                        <li><a href="{{ url_for('ratiba_tengeneza') }}">✏️ Tengeneza Ratiba</a></li>
+                        <li style="border-top: 1px solid #eee; margin-top: 5px; padding-top: 5px;">
+                            <a href="{{ url_for('ratiba_ongezwa_wimbo') }}" style="color: #28a745; font-weight: bold;">➕ Ongeza Wimbo Mpya</a>
+                        </li>
+                    </ul>
+                </li>
+                
+                <li><a href="{{ url_for('mahudhurio_enhanced') }}" class="top-nav-link">📋 Mahudhurio</a></li>
+                <li><a href="{{ url_for('ada_calendar') }}" class="top-nav-link">💰 Ada</a></li>
+                <li><a href="{{ url_for('mapato') }}" class="top-nav-link">📈 Mapato</a></li>
+                <li><a href="{{ url_for('uongozi') }}" class="top-nav-link">👑 Uongozi</a></li>
+                <li><a href="{{ url_for('kamati_kuu') }}" class="top-nav-link">🤝 Kamati Kuu</a></li>
+                <li><a href="{{ url_for('assets') }}" class="top-nav-link">📦 Assets</a></li>
+                <li><a href="{{ url_for('inventory_page') }}" class="top-nav-link">📦 Inventory</a></li>
+                <li><a href="{{ url_for('login_history_page') }}" class="top-nav-link">📋 Login History</a></li>
+                <li><a href="{{ url_for('activity_log_page') }}" class="top-nav-link">📊 Activity Log</a></li>
+                <li><a href="{{ url_for('reports_export_page') }}" class="top-nav-link">📊 Export Reports</a></li>
+                <li><a href="{{ url_for('admin_requests_page') }}" class="top-nav-link">📋 Maombi ya Wanakwaya</a></li>
+                <li><a href="{{ url_for('admin_kwaya_content') }}" class="top-nav-link">✏️ Hariri Kwaya Yetu</a></li>
+                <li><a href="{{ url_for('profile_page') }}" class="top-nav-link">👤 Profile</a></li>
+                <li><a href="{{ url_for('member_directory_page') }}" class="top-nav-link">📋 Member Directory</a></li>
+                <li><a href="{{ url_for('event_calendar_page') }}" class="top-nav-link">📅 Event Calendar</a></li>
+                <li><a href="{{ url_for('financial_reports_page') }}" class="top-nav-link">📊 Financial Reports</a></li>
+                <li><a href="{{ url_for('albamu_page') }}" class="top-nav-link">🎵 Albamu na Media</a></li>
+                <li><a href="{{ url_for('attendance_certificate_page') }}" class="top-nav-link">📜 Attendance Certificate</a></li>
+                <li><a href="{{ url_for('member_id_card_page') }}" class="top-nav-link">🪪 Member ID Card</a></li>
+                <li><a href="{{ url_for('practice_schedule_page') }}" class="top-nav-link">🎵 Practice Schedule</a></li>
+            
+            <!-- ==================== MENU ZA MWENYEKITI (role_id = 2) ==================== -->
+            {% elif session.role_id == 2 %}
+                <li><a href="{{ url_for('dashboard') }}" class="top-nav-link">🏠 Home</a></li>
+                <li><a href="{{ url_for('wanakwaya') }}" class="top-nav-link">👥 Wanakwaya</a></li>
+                <li><a href="{{ url_for('mahudhurio_enhanced') }}" class="top-nav-link">📋 Mahudhurio</a></li>
+                <li><a href="{{ url_for('mapato') }}" class="top-nav-link">📈 Mapato</a></li>
+                <li><a href="{{ url_for('uongozi') }}" class="top-nav-link">👑 Uongozi</a></li>
+                <li><a href="{{ url_for('profile_page') }}" class="top-nav-link">👤 Profile</a></li>
+            
+            <!-- ==================== MENU ZA MWALIMU MKUU (role_id = 3) ==================== -->
+            {% elif session.role_id == 3 %}
+                <li><a href="{{ url_for('dashboard') }}" class="top-nav-link">🏠 Home</a></li>
+                <li><a href="{{ url_for('wanakwaya') }}" class="top-nav-link">👥 Wanakwaya</a></li>
+                <li><a href="{{ url_for('mahudhurio_enhanced') }}" class="top-nav-link">📋 Mahudhurio</a></li>
+                <li><a href="{{ url_for('profile_page') }}" class="top-nav-link">👤 Profile</a></li>
+            
+            <!-- ==================== MENU ZA MHASIBU (role_id = 4) ==================== -->
+            {% elif session.role_id == 4 %}
+                <li><a href="{{ url_for('dashboard') }}" class="top-nav-link">🏠 Home</a></li>
+                <li><a href="{{ url_for('ada_calendar') }}" class="top-nav-link">💰 Ada</a></li>
+                <li><a href="{{ url_for('mapato') }}" class="top-nav-link">📈 Mapato</a></li>
+                <li><a href="{{ url_for('profile_page') }}" class="top-nav-link">👤 Profile</a></li>
+            
+            <!-- ==================== MENU ZA MWANAKWAYA (role_id = 5) ==================== -->
+            {% elif session.role_id == 5 %}
+                <li><a href="{{ url_for('dashboard') }}" class="top-nav-link">🏠 Home</a></li>
+                
+                <li class="dropdown">
+                    <a href="#">📖 Kwaya Yetu</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ url_for('historia_kwaya') }}">📜 Historia ya Kwaya</a></li>
+                        <li><a href="{{ url_for('somo_msimamizi') }}">📖 Somo/Msimamizi wa Kwaya</a></li>
+                        <li><a href="{{ url_for('mwanzilishi') }}">⭐ Mwanzilishi wa Kwaya</a></li>
+                    </ul>
+                </li>
+                
+                <li class="dropdown">
+                    <a href="#">📅 Ratiba</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ url_for('ratiba_view_only') }}">📋 Tazama Ratiba</a></li>
+                    </ul>
+                </li>
+                
+                <li><a href="{{ url_for('member_self_profile') }}" class="top-nav-link">👤 Profile Yangu</a></li>
+                <li><a href="{{ url_for('wanakwaya') }}" class="top-nav-link">👥 Wanakwaya</a></li>
+                <li><a href="{{ url_for('ada_calendar') }}" class="top-nav-link">💰 Ada Yangu</a></li>
+            {% endif %}
+            
+            <!-- ==================== LOGOUT KWA WOTE ==================== -->
+            <li><a href="{{ url_for('logout') }}" style="background:#dc3545; color:white; border-radius:25px;">🚪 Toka</a></li>
+            
+        </ul>
+    </div>
+    {% endif %}
+    
+    <div class="flash-messages">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+    
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+    
+    <div class="footer">
+        <p>© 2026 Kwaya Ya Mtakatifu Bonifasi Askofu na Shahidi</p>
+        <p>Parokia ya Moyo Mtakatifu Wa Yesu, Sombetini - Jimbo Kuu Katoliki La Arusha</p>
+        <p style="font-size: 12px; margin-top: 8px;">"Utukufu wa Mungu kwa sauti za malaika"</p>
+    </div>
+    
+    <div id="dynamicSidebar"></div>
+    <div id="sidebarOverlay"></div>
+    
+    <script>
+    // ============ HELPER FUNCTIONS ============
+    function escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+    
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        const now = new Date();
+        const diffMs = now - date;
+        const diffMins = Math.floor(diffMs / 60000);
+        const diffHours = Math.floor(diffMs / 3600000);
+        const diffDays = Math.floor(diffMs / 86400000);
+        
+        if (diffMins < 1) return 'Sasa hivi';
+        if (diffMins < 60) return `Dakika ${diffMins} zilizopita`;
+        if (diffHours < 24) return `Saa ${diffHours} zilizopita`;
+        if (diffDays < 7) return `Siku ${diffDays} zilizopita`;
+        return date.toLocaleDateString('sw-TZ');
+    }
+    
+    // ============ NOTIFICATIONS SYSTEM ============
+    async function loadNotifications() {
+        try {
+            const response = await fetch('/api/notifications');
+            const data = await response.json();
+            if (data.success) {
+                const notifications = data.notifications || [];
+                const unreadCount = notifications.filter(n => !n.is_read).length;
+                const countSpan = document.getElementById('notificationCount');
+                if (unreadCount > 0) {
+                    countSpan.innerText = unreadCount > 9 ? '9+' : unreadCount;
+                    countSpan.style.display = 'inline-block';
+                } else {
+                    countSpan.style.display = 'none';
+                }
+                const listDiv = document.getElementById('notificationList');
+                if (notifications.length === 0) {
+                    listDiv.innerHTML = '<div class="no-notifications">📭 Hakuna arifa mpya</div>';
+                } else {
+                    listDiv.innerHTML = notifications.map(n => `
+                        <div class="notification-item ${n.is_read ? '' : 'unread'}" onclick="markNotificationRead(${n.id})">
+                            <div class="notification-title">${escapeHtml(n.title)}</div>
+                            <div class="notification-message">${escapeHtml(n.message)}</div>
+                            <div class="notification-time">${formatDate(n.created_at)}</div>
+                        </div>
+                    `).join('');
+                }
+            }
+        } catch(e) {
+            console.error('Error loading notifications:', e);
+        }
+    }
+    
+    async function markNotificationRead(notificationId) {
+        try {
+            await fetch('/api/notifications/mark-read', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ notification_id: notificationId })
+            });
+            loadNotifications();
+        } catch(e) {
+            console.error('Error marking read:', e);
+        }
+    }
+    
+    async function markAllNotificationsRead(event) {
+        if (event) event.stopPropagation();
+        try {
+            await fetch('/api/notifications/mark-read', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({})
+            });
+            loadNotifications();
+        } catch(e) {
+            console.error('Error marking all read:', e);
+        }
+    }
+    
+    function toggleNotificationDropdown() {
+        const dropdown = document.getElementById('notificationDropdown');
+        dropdown.classList.toggle('active');
+        if (dropdown.classList.contains('active')) {
+            loadNotifications();
+        }
+    }
+    
+    document.addEventListener('click', function(event) {
+        const dropdown = document.getElementById('notificationDropdown');
+        const bell = document.querySelector('.notification-bell');
+        if (dropdown && bell && !bell.contains(event.target)) {
+            dropdown.classList.remove('active');
+        }
+    });
+    
+    // ============ DARK MODE ============
+    function toggleDarkMode() {
+        document.body.classList.toggle('dark-mode');
+        localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+        const btn = document.getElementById('darkModeBtn');
+        if (btn) {
+            btn.innerHTML = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
+        }
+    }
+    
+    if (localStorage.getItem('darkMode') === 'true') {
+        document.body.classList.add('dark-mode');
+        const btn = document.getElementById('darkModeBtn');
+        if (btn) btn.innerHTML = '☀️';
+    }
+    
+    // ============ LANGUAGE TOGGLE ============
+    let currentLang = localStorage.getItem('language') || 'sw';
+    
+    function toggleLanguage() {
+        currentLang = currentLang === 'sw' ? 'en' : 'sw';
+        localStorage.setItem('language', currentLang);
+        const btn = document.getElementById('langBtn');
+        if (btn) btn.innerHTML = currentLang === 'sw' ? '🇬🇧 EN' : '🇹🇿 SW';
+        updatePageLanguage();
+    }
+    
+    function updatePageLanguage() {
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (translations[currentLang] && translations[currentLang][key]) {
+                el.innerHTML = translations[currentLang][key];
+            }
+        });
+    }
+    
+    const translations = {
+        sw: { 'home': '🏠 Nyumbani', 'dashboard': 'Dashibodi' },
+        en: { 'home': '🏠 Home', 'dashboard': 'Dashboard' }
+    };
+    
+    // ============ TOP NAVIGATION ACTIVE STATE ============
+    function setActiveTopNavItem() {
+        const currentPath = window.location.pathname;
+        document.querySelectorAll('.top-nav-link').forEach(link => {
+            if (link.getAttribute('href') === currentPath) {
+                link.classList.add('active');
+            } else {
+                link.classList.remove('active');
+            }
+        });
+    }
+    
+    // ============ SIDEBAR (FROM WORKING CODE - ILIYOKUWA INAFANYA KAZI JANA) ============
+    let currentMenuView = localStorage.getItem('menuView') || 'top';
+    
+    function toggleMenuView() {
+        console.log("Toggle clicked - current:", currentMenuView);
+        if (currentMenuView === 'top') {
+            currentMenuView = 'sidebar';
+            showSidebar();
+        } else {
+            currentMenuView = 'top';
+            showTop();
+        }
+        localStorage.setItem('menuView', currentMenuView);
+        let btn = document.getElementById('viewToggleBtn');
+        if(btn) btn.innerHTML = currentMenuView === 'sidebar' ? '☰' : '📱';
+    }
+    
+    function showTop() {
+        console.log("Showing top menu");
+        const nav = document.querySelector('.nav');
+        if (nav) nav.style.display = 'block';
+        
+        const sidebar = document.getElementById('dynamicSidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        if (sidebar) sidebar.remove();
+        if (overlay) overlay.remove();
+        
+        document.body.style.marginLeft = '0';
+        document.body.style.overflow = 'auto';
+        setActiveTopNavItem();
+    }
+    
+    function showSidebar() {
+        console.log("Showing sidebar menu");
+        const nav = document.querySelector('.nav');
+        if (nav) nav.style.display = 'none';
+        
+        const oldSidebar = document.getElementById('dynamicSidebar');
+        const oldOverlay = document.getElementById('sidebarOverlay');
+        if (oldSidebar) oldSidebar.remove();
+        if (oldOverlay) oldOverlay.remove();
+        
+        createSidebar();
+    }
+    
+    function updateViewToggleButton() {
+        const btn = document.getElementById('viewToggleBtn');
+        if (btn) btn.innerHTML = currentMenuView === 'sidebar' ? '☰' : '📱';
+    }
+    
+    // ============ CREATE SIDEBAR (FROM WORKING CODE) ============
+    function createSidebar() {
+    let roleId = {{ session.role_id | tojson }};
+    let username = {{ session.username | tojson }};
+    let currentPath = window.location.pathname;
+    
+    let menuStructure = [];
+    
+    if (roleId === 1) {
+        menuStructure = [
+            { text: "🏠 Home", url: "{{ url_for('dashboard') }}", type: "link" },
+            { 
+                text: "📖 Kwaya Yetu", type: "dropdown",
+                items: [
+                    { text: "📜 Historia ya Kwaya", url: "{{ url_for('historia_kwaya') }}" },
+                    { text: "📖 Somo/Msimamizi", url: "{{ url_for('somo_msimamizi') }}" },
+                    { text: "⭐ Mwanzilishi", url: "{{ url_for('mwanzilishi') }}" },
+                    { 
+                        text: "📋 Sifa/Vigezo", type: "nested",
+                        items: [
+                            { text: "👤 Kuwa Mwanakwaya", url: "{{ url_for('kuwa_mwanakwaya') }}" },
+                            { text: "📚 Kuwa Mwalimu", url: "{{ url_for('kuwa_mwalimu') }}" },
+                            { text: "👑 Kuwa Kiongozi", url: "{{ url_for('kuwa_kiongozi') }}" },
+                            { text: "💰 Kuwa Mfadhili", url: "{{ url_for('kuwa_mfadhili') }}" },
+                            { text: "🤝 Kuwa Rafiki", url: "{{ url_for('kuwa_rafiki') }}" },
+                            { text: "🛡️ Kuwa Mlezi", url: "{{ url_for('kuwa_mlezi') }}" }
+                        ]
+                    },
+                    { 
+                        text: "🎯 Malengo", type: "nested",
+                        items: [
+                            { text: "📅 Muda Mfupi", url: "{{ url_for('malengo_mfupi') }}" },
+                            { text: "📆 Muda wa Kati", url: "{{ url_for('malengo_kati') }}" },
+                            { text: "🗓️ Muda Mrefu", url: "{{ url_for('malengo_mrefu') }}" }
+                        ]
+                    }
+                ]
+            },
+            { text: "👥 Wanakwaya", url: "{{ url_for('wanakwaya') }}", type: "link" },
+            { 
+                text: "📅 Ratiba", type: "dropdown",
+                items: [
+                    { 
+                        text: "📖 Mwaka wa Kanisa", type: "nested",
+                        items: [
+                            { text: "📅 Mwaka A", url: "{{ url_for('ratiba_mwaka_kanisa', mwaka='A') }}" },
+                            { text: "📅 Mwaka B", url: "{{ url_for('ratiba_mwaka_kanisa', mwaka='B') }}" },
+                            { text: "📅 Mwaka C", url: "{{ url_for('ratiba_mwaka_kanisa', mwaka='C') }}" }
+                        ]
+                    },
+                    { 
+                        text: "🎵 Makundi ya Nyimbo", type: "nested",
+                        items: [
+                            { text: "🎶 Maandamano", url: "{{ url_for('ratiba_makundi_nyimbo', kundi='Maandamano') }}" },
+                            { text: "🎵 Mwanzo", url: "{{ url_for('ratiba_makundi_nyimbo', kundi='Mwanzo') }}" },
+                            { text: "🎉 Shangilio", url: "{{ url_for('ratiba_makundi_nyimbo', kundi='Shangilio') }}" },
+                            { text: "📖 Zaburi", url: "{{ url_for('ratiba_makundi_nyimbo', kundi='Zaburi') }}" },
+                            { text: "⛪ Misa", url: "{{ url_for('ratiba_makundi_nyimbo', kundi='Misa') }}" },
+                            { text: "📜 Antifona", url: "{{ url_for('ratiba_makundi_nyimbo', kundi='Antifona') }}" },
+                            { text: "💰 Sadaka", url: "{{ url_for('ratiba_makundi_nyimbo', kundi='Sadaka') }}" },
+                            { text: "🍞 Komunyo", url: "{{ url_for('ratiba_makundi_nyimbo', kundi='Komunyo') }}" },
+                            { text: "🙏 Shukrani", url: "{{ url_for('ratiba_makundi_nyimbo', kundi='Shukrani') }}" },
+                            { text: "💧 Ubatizo", url: "{{ url_for('ratiba_makundi_nyimbo', kundi='Ubatizo') }}" },
+                            { text: "💍 Ndoa", url: "{{ url_for('ratiba_makundi_nyimbo', kundi='Ndoa') }}" },
+                            { text: "🕯️ Mazishi", url: "{{ url_for('ratiba_makundi_nyimbo', kundi='Mazishi') }}" }
+                        ]
+                    },
+                    { text: "✏️ Tengeneza Ratiba", url: "{{ url_for('ratiba_tengeneza') }}" },
+                    { text: "➕ Ongeza Wimbo", url: "{{ url_for('ratiba_ongezwa_wimbo') }}" }
+                ]
+            },
+            { text: "📋 Mahudhurio", url: "{{ url_for('mahudhurio_enhanced') }}", type: "link" },
+            { text: "💰 Ada", url: "{{ url_for('ada_calendar') }}", type: "link" },
+            { text: "📈 Mapato", url: "{{ url_for('mapato') }}", type: "link" },
+            { text: "👑 Uongozi", url: "{{ url_for('uongozi') }}", type: "link" },
+            { text: "🤝 Kamati Kuu", url: "{{ url_for('kamati_kuu') }}", type: "link" },
+            { text: "📦 Assets", url: "{{ url_for('assets') }}", type: "link" },
+            { text: "📦 Inventory", url: "{{ url_for('inventory_page') }}", type: "link" },
+            { text: "👤 Profile", url: "{{ url_for('profile_page') }}", type: "link" },
+            { text: "🚪 Toka", url: "{{ url_for('logout') }}", type: "link" }
+        ];
+    } else if (roleId === 2) {
+        menuStructure = [
+            { text: "🏠 Home", url: "{{ url_for('dashboard') }}", type: "link" },
+            { text: "👥 Wanakwaya", url: "{{ url_for('wanakwaya') }}", type: "link" },
+            { text: "📋 Mahudhurio", url: "{{ url_for('mahudhurio_enhanced') }}", type: "link" },
+            { text: "📈 Mapato", url: "{{ url_for('mapato') }}", type: "link" },
+            { text: "👑 Uongozi", url: "{{ url_for('uongozi') }}", type: "link" },
+            { text: "👤 Profile", url: "{{ url_for('profile_page') }}", type: "link" },
+            { text: "🚪 Toka", url: "{{ url_for('logout') }}", type: "link" }
+        ];
+    } else if (roleId === 3) {
+        menuStructure = [
+            { text: "🏠 Home", url: "{{ url_for('dashboard') }}", type: "link" },
+            { text: "👥 Wanakwaya", url: "{{ url_for('wanakwaya') }}", type: "link" },
+            { text: "📋 Mahudhurio", url: "{{ url_for('mahudhurio_enhanced') }}", type: "link" },
+            { text: "👤 Profile", url: "{{ url_for('profile_page') }}", type: "link" },
+            { text: "🚪 Toka", url: "{{ url_for('logout') }}", type: "link" }
+        ];
+    } else if (roleId === 4) {
+        menuStructure = [
+            { text: "🏠 Home", url: "{{ url_for('dashboard') }}", type: "link" },
+            { text: "💰 Ada", url: "{{ url_for('ada_calendar') }}", type: "link" },
+            { text: "📈 Mapato", url: "{{ url_for('mapato') }}", type: "link" },
+            { text: "👤 Profile", url: "{{ url_for('profile_page') }}", type: "link" },
+            { text: "🚪 Toka", url: "{{ url_for('logout') }}", type: "link" }
+        ];
+    } else {
+        menuStructure = [
+            { text: "🏠 Home", url: "{{ url_for('dashboard') }}", type: "link" },
+            { 
+                text: "📖 Kwaya Yetu", type: "dropdown",
+                items: [
+                    { text: "📜 Historia ya Kwaya", url: "{{ url_for('historia_kwaya') }}" },
+                    { text: "📖 Somo/Msimamizi", url: "{{ url_for('somo_msimamizi') }}" },
+                    { text: "⭐ Mwanzilishi", url: "{{ url_for('mwanzilishi') }}" }
+                ]
+            },
+            { text: "👥 Wanakwaya", url: "{{ url_for('wanakwaya') }}", type: "link" },
+            { text: "💰 Ada Yangu", url: "{{ url_for('ada_calendar') }}", type: "link" },
+            { text: "👤 Profile", url: "{{ url_for('profile_page') }}", type: "link" },
+            { text: "🚪 Toka", url: "{{ url_for('logout') }}", type: "link" }
+        ];
+    }
+    
+    function buildMenu(items) {
+        let html = '';
+        for (let item of items) {
+            if (item.type === 'dropdown' || item.type === 'nested') {
+                let hasActive = false;
+                function checkActive(items) {
+                    for (let child of items) {
+                        if (child.url && currentPath === child.url) hasActive = true;
+                        if (child.items) checkActive(child.items);
+                    }
+                }
+                if (item.items) checkActive(item.items);
+                let activeClass = hasActive ? 'active' : '';
+                
+                let icon = item.text.substring(0,2);
+                let displayText = item.text.substring(2);
+                
+                html += `
+                    <div class="sidebar-dropdown">
+                        <div class="sidebar-dropdown-toggle ${activeClass}" onclick="toggleSubmenu(this)">
+                            <span class="sidebar-icon">${icon}</span>
+                            <span class="sidebar-text">${displayText}</span>
+                            <span class="sidebar-arrow">▶</span>
+                        </div>
+                        <div class="sidebar-submenu">
+                            ${buildMenu(item.items)}
+                        </div>
+                    </div>
+                `;
+            } else {
+                let isActive = item.url && currentPath === item.url;
+                let activeClass = isActive ? 'active' : '';
+                let icon = item.text.substring(0,2);
+                let displayText = item.text.substring(2);
+                
+                html += `<a href="${item.url}" class="sidebar-link ${activeClass}" data-preserve-sidebar="true"><span class="sidebar-icon">${icon}</span><span class="sidebar-text">${displayText}</span></a>`;
+            }
+        }
+        return html;
+    }
+    
+    let menuHtml = buildMenu(menuStructure);
+    
+    let existingSidebar = document.getElementById('dynamicSidebar');
+    let existingOverlay = document.getElementById('sidebarOverlay');
+    if (existingSidebar) existingSidebar.remove();
+    if (existingOverlay) existingOverlay.remove();
+    
+    let sidebarDiv = document.createElement('div');
+    sidebarDiv.id = 'dynamicSidebar';
+    sidebarDiv.innerHTML = `
+        <div style="padding:25px 20px;text-align:center;border-bottom:2px solid #FFD700;background:#1a2a6e;position:relative;">
+            <h3 style="color:#FFD700;">🎵 KWAYA</h3>
+            <p style="color:rgba(255,215,0,0.7);font-size:12px;">${escapeHtml(username)}</p>
+            <button id="closeSidebarBtn" style="position:absolute;top:15px;right:15px;background:none;border:none;color:#FFD700;font-size:24px;cursor:pointer;">✕</button>
+        </div>
+        <div style="padding:10px 0;">${menuHtml}</div>
+        <div style="text-align:center;padding:15px;border-top:1px solid rgba(255,215,0,0.2);">
+            <p style="font-size:10px;">© Kwaya Mt. Bonifasi</p>
+        </div>
+    `;
+    sidebarDiv.style.cssText = 'position:fixed;top:0;left:0;width:280px;height:100%;background:linear-gradient(135deg,#1a2a6e,#2a3a7e);z-index:999999;overflow-y:auto;box-shadow:2px 0 20px rgba(0,0,0,0.5);transform:translateX(-100%);transition:transform 0.3s ease;';
+    
+    let style = document.createElement('style');
+    style.textContent = `
+        .sidebar-dropdown { position: relative; width: 100%; }
+        .sidebar-dropdown-toggle {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+            width: 100%;
+            background: transparent;
+            border: none;
+            font-size: 14px;
+        }
+        .sidebar-dropdown-toggle:hover {
+            background: #FFD700;
+            color: #1a2a6e;
+            padding-left: 28px;
+        }
+        .sidebar-dropdown-toggle.active {
+            background: #FFD700;
+            color: #1a2a6e;
+            font-weight: bold;
+        }
+        .sidebar-arrow {
+            margin-left: auto;
+            font-size: 10px;
+            transition: transform 0.2s;
+        }
+        .sidebar-dropdown.open .sidebar-arrow {
+            transform: rotate(90deg);
+        }
+        .sidebar-submenu {
+            display: none;
+            padding-left: 25px;
+            background: rgba(0, 0, 0, 0.25);
+            border-left: 2px solid #FFD700;
+            margin-left: 10px;
+            border-radius: 0 10px 10px 0;
+        }
+        .sidebar-submenu .sidebar-link {
+            background: rgba(255, 255, 255, 0.08);
+            margin: 2px 5px 2px 0;
+            border-radius: 8px;
+            padding: 8px 15px 8px 35px !important;
+        }
+        .sidebar-submenu .sidebar-link:hover {
+            background: #FFD700;
+            color: #1a2a6e;
+            padding-left: 42px !important;
+        }
+        .sidebar-submenu .sidebar-link.active {
+            background: #FFD700;
+            color: #1a2a6e;
+            font-weight: bold;
+        }
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 20px;
+            color: rgba(255,255,255,0.85);
+            text-decoration: none;
+            transition: all 0.2s;
+            font-size: 13px;
+        }
+        .sidebar-link:hover {
+            background: #FFD700;
+            color: #1a2a6e;
+            padding-left: 28px;
+        }
+        .sidebar-link.active {
+            background: #FFD700;
+            color: #1a2a6e;
+            font-weight: bold;
+        }
+        .sidebar-icon { font-size: 16px; min-width: 28px; }
+        .sidebar-text { flex: 1; }
+    `;
+    document.head.appendChild(style);
+    
+    // NO OVERLAY - content remains clickable and not darkened
+    document.body.appendChild(sidebarDiv);
+    
+    setTimeout(() => {
+        sidebarDiv.style.transform = 'translateX(0)';
+    }, 10);
+    
+    // Close button only - no overlay
+    document.getElementById('closeSidebarBtn').onclick = () => {
+        sidebarDiv.style.transform = 'translateX(-100%)';
+        setTimeout(() => { 
+            currentMenuView = 'top';
+            localStorage.setItem('menuView', 'top');
+            showTop();
+            updateViewToggleButton();
+        }, 300);
+    };
+    
+    // Preserve sidebar mode when clicking links
+    document.querySelectorAll('.sidebar-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+            localStorage.setItem('menuView', 'sidebar');
+            currentMenuView = 'sidebar';
+        });
+    });
+    
+    document.body.style.marginLeft = '280px';
+    
+    document.querySelectorAll('.sidebar-link.active').forEach(link => {
+        let parent = link.closest('.sidebar-submenu');
+        if (parent) {
+            let dropdown = parent.closest('.sidebar-dropdown');
+            if (dropdown) {
+                dropdown.classList.add('open');
+                let toggle = dropdown.querySelector('.sidebar-dropdown-toggle');
+                if (toggle) toggle.classList.add('active');
+            }
+        }
+    });
+    
+    console.log("Sidebar created - NO overlay, content fully clickable!");
+}
+    
+    function toggleSubmenu(element) {
+        let parent = element.closest('.sidebar-dropdown');
+        if (parent) {
+            if (parent.classList.contains('open')) {
+                parent.classList.remove('open');
+            } else {
+                parent.classList.add('open');
+            }
+            let submenu = parent.querySelector('.sidebar-submenu');
+            if (submenu) {
+                submenu.style.display = parent.classList.contains('open') ? 'block' : 'none';
+            }
+        }
+    }
+    
+    // ============ INITIALIZE ============
+    document.addEventListener('DOMContentLoaded', function() {
+        setActiveTopNavItem();
+        if (currentMenuView === 'sidebar') {
+            showSidebar();
+        }
+        updateViewToggleButton();
+        loadNotifications();
+        updatePageLanguage();
+    });
+    
+    setInterval(loadNotifications, 30000);
+// ============ MOBILE MENU TOGGLE ============
+function toggleMobileMenu() {
+    const nav = document.querySelector('.nav');
+    if (nav) {
+        if (nav.style.display === 'none' || nav.style.display === '') {
+            nav.style.display = 'block';
+        } else {
+            nav.style.display = 'none';
+        }
+    }
+}
+
+// Auto close mobile menu when clicking link
+document.querySelectorAll('.top-nav-link, .dropdown-menu a').forEach(link => {
+    link.addEventListener('click', function() {
+        if (window.innerWidth <= 768) {
+            const nav = document.querySelector('.nav');
+            if (nav) nav.style.display = 'none';
+        }
+    });
+});
+</script>
+</body>
+</html>

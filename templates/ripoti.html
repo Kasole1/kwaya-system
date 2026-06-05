@@ -1,0 +1,368 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Ripoti na Analytics - Kwaya Mt. Bonifasi{% endblock %}
+
+{% block content %}
+<style>
+    .reports-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    
+    .report-header {
+        background: linear-gradient(135deg, #1a2a6e, #2a3a7e);
+        padding: 25px 30px;
+        border-radius: 20px;
+        color: white;
+        margin-bottom: 25px;
+    }
+    
+    .report-header h1 {
+        color: #FFD700;
+        margin: 0;
+        font-size: 28px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .filter-bar {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 16px;
+        margin-bottom: 25px;
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+        align-items: flex-end;
+    }
+    
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .filter-group label {
+        font-weight: bold;
+        font-size: 12px;
+        color: #666;
+    }
+    
+    .filter-group select, .filter-group input {
+        padding: 10px 15px;
+        border: 1px solid #ddd;
+        border-radius: 12px;
+        min-width: 150px;
+    }
+    
+    .btn-filter {
+        background: linear-gradient(135deg, #1a2a6e, #2a3a7e);
+        color: white;
+        border: none;
+        padding: 10px 25px;
+        border-radius: 40px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+    
+    .btn-export {
+        background: linear-gradient(135deg, #28a745, #1e7e34);
+        color: white;
+        border: none;
+        padding: 10px 25px;
+        border-radius: 40px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+    
+    .stat-card {
+        background: white;
+        border-radius: 20px;
+        padding: 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        text-align: center;
+        border-left: 5px solid;
+    }
+    
+    .stat-card.attendance { border-left-color: #28a745; }
+    .stat-card.income { border-left-color: #1a2a6e; }
+    .stat-card.penalty { border-left-color: #dc3545; }
+    .stat-card.members { border-left-color: #fd7e14; }
+    
+    .stat-icon { font-size: 40px; margin-bottom: 10px; }
+    .stat-value { font-size: 32px; font-weight: bold; color: #1a2a6e; }
+    .stat-label { font-size: 13px; color: #666; margin-top: 5px; }
+    
+    .charts-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 25px;
+        margin-bottom: 30px;
+    }
+    
+    .chart-card {
+        background: white;
+        border-radius: 20px;
+        padding: 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    
+    .chart-card h3 {
+        color: #1a2a6e;
+        margin-bottom: 20px;
+        border-left: 4px solid #FFD700;
+        padding-left: 12px;
+    }
+    
+    .chart-container {
+        height: 300px;
+        position: relative;
+    }
+    
+    .report-table {
+        background: white;
+        border-radius: 20px;
+        padding: 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        overflow-x: auto;
+    }
+    
+    .report-table h3 {
+        color: #1a2a6e;
+        margin-bottom: 15px;
+        border-left: 4px solid #FFD700;
+        padding-left: 12px;
+    }
+    
+    .report-table table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .report-table th {
+        background: #1a2a6e;
+        color: white;
+        padding: 12px;
+        text-align: left;
+    }
+    
+    .report-table td {
+        padding: 10px;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .report-table tr:hover {
+        background: #f8f9fa;
+    }
+    
+    @media (max-width: 800px) {
+        .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        .charts-row { grid-template-columns: 1fr; }
+    }
+</style>
+
+<div class="reports-container">
+    <div class="report-header">
+        <h1>📊 RIPOTI NA ANALYTICS</h1>
+        <p>Takwimu za mahudhurio, mapato na tathmini ya utendaji</p>
+    </div>
+    
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+        <div class="filter-group">
+            <label>📅 Kuanzia Tarehe</label>
+            <input type="date" id="startDate" value="2026-01-01">
+        </div>
+        <div class="filter-group">
+            <label>📅 Mpaka Tarehe</label>
+            <input type="date" id="endDate" value="2026-12-31">
+        </div>
+        <div class="filter-group">
+            <label>🎤 Sauti</label>
+            <select id="filterVoice">
+                <option value="all">Zote</option>
+                <option value="Soprano">Soprano</option>
+                <option value="Alto">Alto</option>
+                <option value="Tenor">Tenor</option>
+                <option value="Bass">Bass</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>📊 Aina ya Ripoti</label>
+            <select id="reportType">
+                <option value="attendance">Mahudhurio</option>
+                <option value="income">Mapato</option>
+                <option value="penalty">Penalty</option>
+                <option value="combined">Jumla</option>
+            </select>
+        </div>
+        <button class="btn-filter" onclick="loadReport()">🔄 Tazama</button>
+        <button class="btn-export" onclick="exportReport()">📥 Export PDF</button>
+    </div>
+    
+    <!-- Statistics Cards -->
+    <div class="stats-grid">
+        <div class="stat-card attendance">
+            <div class="stat-icon">📋</div>
+            <div class="stat-value" id="totalAttendance">0</div>
+            <div class="stat-label">Jumla ya Mahudhurio</div>
+        </div>
+        <div class="stat-card income">
+            <div class="stat-icon">💰</div>
+            <div class="stat-value" id="totalIncome">TSh 0</div>
+            <div class="stat-label">Jumla ya Mapato</div>
+        </div>
+        <div class="stat-card penalty">
+            <div class="stat-icon">⚠️</div>
+            <div class="stat-value" id="totalPenalty">TSh 0</div>
+            <div class="stat-label">Jumla ya Penalty</div>
+        </div>
+        <div class="stat-card members">
+            <div class="stat-icon">👥</div>
+            <div class="stat-value" id="activeMembers">0</div>
+            <div class="stat-label">Wanakwaya Waliojiunga</div>
+        </div>
+    </div>
+    
+    <!-- Charts Row -->
+    <div class="charts-row">
+        <div class="chart-card">
+            <h3>📈 TREND YA MAHUDHURIO KWA MWEZI</h3>
+            <div class="chart-container">
+                <canvas id="attendanceChart"></canvas>
+            </div>
+        </div>
+        <div class="chart-card">
+            <h3>💰 MAPATO KWA KILA CHANZO</h3>
+            <div class="chart-container">
+                <canvas id="incomeChart"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Detailed Report Table -->
+    <div class="report-table">
+        <h3>📋 TAKWIMU ZA KINA</h3>
+        <div id="reportTableContainer">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Mwezi</th>
+                        <th>Mahudhurio</th>
+                        <th>Mapato (TSh)</th>
+                        <th>Penalty (TSh)</th>
+                        <th>Asilimia ya Mahudhurio</th>
+                    </tr>
+                </thead>
+                <tbody id="reportTableBody">
+                    <tr><td colspan="5" style="text-align:center;">Loading...<\/td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+let attendanceChart = null;
+let incomeChart = null;
+
+async function loadReport() {
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+    const voice = document.getElementById('filterVoice').value;
+    
+    const response = await fetch(`/api/ripoti/data?start=${startDate}&end=${endDate}&voice=${voice}`);
+    const data = await response.json();
+    
+    if (data.success) {
+        updateStats(data.stats);
+        updateCharts(data);
+        updateTable(data);
+    }
+}
+
+function updateStats(stats) {
+    document.getElementById('totalAttendance').innerText = stats.total_attendance || 0;
+    document.getElementById('totalIncome').innerHTML = `TSh ${(stats.total_income || 0).toLocaleString()}`;
+    document.getElementById('totalPenalty').innerHTML = `TSh ${(stats.total_penalty || 0).toLocaleString()}`;
+    document.getElementById('activeMembers').innerText = stats.active_members || 0;
+}
+
+function updateCharts(data) {
+    // Attendance Chart
+    const attendanceCtx = document.getElementById('attendanceChart').getContext('2d');
+    if (attendanceChart) attendanceChart.destroy();
+    attendanceChart = new Chart(attendanceCtx, {
+        type: 'line',
+        data: {
+            labels: data.months,
+            datasets: [{
+                label: 'Mahudhurio',
+                data: data.attendance_data,
+                borderColor: '#28a745',
+                backgroundColor: 'rgba(40,167,69,0.1)',
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: { responsive: true, maintainAspectRatio: true }
+    });
+    
+    // Income Chart
+    const incomeCtx = document.getElementById('incomeChart').getContext('2d');
+    if (incomeChart) incomeChart.destroy();
+    incomeChart = new Chart(incomeCtx, {
+        type: 'bar',
+        data: {
+            labels: data.income_labels,
+            datasets: [{
+                label: 'Mapato (TSh)',
+                data: data.income_by_source,
+                backgroundColor: '#1a2a6e',
+                borderRadius: 10
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            scales: { y: { beginAtZero: true, ticks: { callback: (v) => `TSh ${v.toLocaleString()}` } } }
+        }
+    });
+}
+
+function updateTable(data) {
+    const tbody = document.getElementById('reportTableBody');
+    if (!data.monthly_data || data.monthly_data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">📭 Hakuna data<\/td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = data.monthly_data.map(m => `
+        <tr>
+            <td>${m.month}</td>
+            <td>${m.attendance}</td>
+            <td>TSh ${m.income.toLocaleString()}</td>
+            <td>TSh ${m.penalty.toLocaleString()}</td>
+            <td>${m.percentage}%</td>
+        </tr>
+    `).join('');
+}
+
+function exportReport() {
+    alert('Feature ya Export PDF itaongezwa hivi karibuni!\nKwa sasa unaweza kuchukua screenshot.');
+}
+
+// Load report on page load
+loadReport();
+</script>
+{% endblock %}

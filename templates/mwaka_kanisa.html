@@ -1,0 +1,529 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Mwaka wa Kanisa {{ mwaka }} - Kwaya Mt. Bonifasi{% endblock %}
+
+{% block content %}
+<style>
+    .liturgical-year {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    .year-header {
+        background: linear-gradient(135deg, #1a2a6e, #2a3a7e);
+        padding: 30px;
+        border-radius: 20px;
+        color: #FFD700;
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    .year-header h1 {
+        font-size: 48px;
+        margin-bottom: 10px;
+    }
+    .year-header h2 {
+        font-size: 24px;
+        margin-bottom: 15px;
+    }
+    .year-description {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 16px;
+        margin-bottom: 25px;
+        border-left: 4px solid #FFD700;
+    }
+    .seasons-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 25px;
+        margin-bottom: 30px;
+    }
+    .season-card {
+        border-radius: 20px;
+        padding: 25px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        transition: transform 0.3s, box-shadow 0.3s;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+    }
+    .season-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+    }
+    .season-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 5px;
+        background: rgba(255,215,0,0.6);
+    }
+    .season-icon {
+        font-size: 48px;
+        margin-bottom: 15px;
+        text-align: center;
+    }
+    .season-name {
+        font-size: 22px;
+        font-weight: bold;
+        margin-bottom: 12px;
+        text-align: center;
+    }
+    .season-dates {
+        font-size: 13px;
+        margin-bottom: 12px;
+        text-align: center;
+        opacity: 0.8;
+    }
+    .season-description {
+        font-size: 13px;
+        margin-bottom: 20px;
+        line-height: 1.5;
+        text-align: center;
+    }
+    .season-color-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 11px;
+        margin-bottom: 15px;
+        text-align: center;
+    }
+    .card-buttons {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        margin-top: 15px;
+    }
+    .btn-view {
+        background: rgba(255,255,255,0.2);
+        border: none;
+        padding: 8px 20px;
+        border-radius: 30px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: all 0.2s;
+        color: inherit;
+    }
+    .btn-view:hover {
+        background: rgba(255,255,255,0.4);
+        transform: scale(1.02);
+    }
+    .btn-edit {
+        background: rgba(255,215,0,0.3);
+        border: none;
+        padding: 8px 20px;
+        border-radius: 30px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: all 0.2s;
+        color: inherit;
+    }
+    .btn-edit:hover {
+        background: rgba(255,215,0,0.5);
+        transform: scale(1.02);
+    }
+    .songs-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.8);
+        z-index: 10000;
+        justify-content: center;
+        align-items: center;
+    }
+    .songs-modal.active {
+        display: flex;
+    }
+    .songs-modal-content {
+        background: white;
+        border-radius: 20px;
+        width: 90%;
+        max-width: 600px;
+        max-height: 80vh;
+        overflow-y: auto;
+        animation: modalFadeIn 0.3s;
+    }
+    @keyframes modalFadeIn {
+        from { opacity: 0; transform: scale(0.95); }
+        to { opacity: 1; transform: scale(1); }
+    }
+    .songs-modal-header {
+        background: linear-gradient(135deg, #1a2a6e, #2a3a7e);
+        color: #FFD700;
+        padding: 15px 20px;
+        border-radius: 20px 20px 0 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .songs-modal-body {
+        padding: 25px;
+    }
+    .song-section {
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #eee;
+    }
+    .song-title {
+        font-size: 18px;
+        font-weight: bold;
+        color: #1a2a6e;
+        margin-bottom: 10px;
+    }
+    .song-lyrics {
+        font-size: 14px;
+        line-height: 1.6;
+        color: #444;
+        white-space: pre-wrap;
+        font-style: italic;
+    }
+    .song-empty {
+        color: #999;
+        font-style: italic;
+    }
+    .close-modal {
+        background: none;
+        border: none;
+        color: #FFD700;
+        font-size: 28px;
+        cursor: pointer;
+    }
+    .sundays-list {
+        background: #f8f9fa;
+        border-radius: 16px;
+        padding: 20px;
+        margin-top: 20px;
+    }
+    .sunday-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px;
+        border-bottom: 1px solid #eee;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    .sunday-item:last-child {
+        border-bottom: none;
+    }
+    .sunday-date {
+        font-weight: bold;
+        color: #1a2a6e;
+        min-width: 200px;
+    }
+    .sunday-name {
+        color: #666;
+        flex: 1;
+    }
+    .btn-songs {
+        background: #28a745;
+        color: white;
+        border: none;
+        padding: 6px 15px;
+        border-radius: 25px;
+        cursor: pointer;
+        font-size: 12px;
+    }
+    .btn-songs:hover {
+        background: #1e7e34;
+    }
+    @media (max-width: 700px) {
+        .seasons-grid { grid-template-columns: 1fr; }
+        .year-header h1 { font-size: 32px; }
+        .sunday-item { flex-direction: column; align-items: flex-start; }
+        .sunday-date { min-width: auto; }
+    }
+</style>
+
+<div class="liturgical-year">
+    <div class="year-header">
+        <h1>📖 Mwaka wa Kanisa {{ mwaka }}</h1>
+        <h2>🎵 Mwaka wa Liturgia Katoliki</h2>
+        <p>Mwaka {{ mwaka }} unazingatia Injili ya 
+            {% if mwaka == 'A' %}Matayo{% elif mwaka == 'B' %}Marko{% else %}Luka{% endif %}
+        </p>
+    </div>
+
+    <div class="year-description">
+        <h3>📅 Kuhusu Mwaka huu</h3>
+        <p>
+            {% if mwaka == 'A' %}
+                Mwaka A unazingatia Injili ya <strong>Matayo</strong>. Ni mwaka unaosisitiza ufalme wa Mungu na mafundisho ya Yesu kama Mwalimu.
+            {% elif mwaka == 'B' %}
+                Mwaka B unazingatia Injili ya <strong>Marko</strong>. Ni mwaka mfupi na unaosisitiza matendo ya Yesu na utumishi wake.
+            {% else %}
+                Mwaka C unazingatia Injili ya <strong>Luka</strong>. Ni mwaka wa huruma, msamaha, na utunzaji wa maskini.
+            {% endif %}
+        </p>
+    </div>
+
+    <h3>📆 Majira ya Kanisa</h3>
+    <div class="seasons-grid" id="seasonsGrid">
+        <div style="text-align: center; padding: 50px;">Loading seasons...</div>
+    </div>
+
+    <div id="sundaysSection" style="display: none;">
+        <h3>📅 Jumapili na Sikukuu</h3>
+        <div class="sundays-list" id="sundaysList"></div>
+    </div>
+</div>
+
+<!-- Modal for viewing songs -->
+<div id="songsModal" class="songs-modal">
+    <div class="songs-modal-content">
+        <div class="songs-modal-header">
+            <h3 id="modalTitle">🎵 Nyimbo za Majira</h3>
+            <button class="close-modal" onclick="closeSongsModal()">&times;</button>
+        </div>
+        <div class="songs-modal-body" id="modalBody">
+            <!-- Songs will be loaded here -->
+        </div>
+    </div>
+</div>
+
+<script>
+    // Color definitions for each season (with opacity for faded look)
+    const seasonColors = {
+        'Majilio': 'linear-gradient(135deg, rgba(128,0,128,0.85), rgba(128,0,128,0.7))',      // Zambarau
+        'Krismasi': 'linear-gradient(135deg, rgba(255,255,255,0.9), rgba(240,240,240,0.8))',   // Nyeupe
+        'Kwaresma': 'linear-gradient(135deg, rgba(128,0,128,0.85), rgba(128,0,128,0.7))',      // Zambarau
+        'Pasaka': 'linear-gradient(135deg, rgba(255,215,0,0.85), rgba(255,200,0,0.7))',        // Dhahabu
+        'Mwaka wa Kawaida': 'linear-gradient(135deg, rgba(0,128,0,0.75), rgba(0,100,0,0.6))'    // Kijani
+    };
+    
+    const textColors = {
+        'Majilio': 'white',
+        'Krismasi': '#333',
+        'Kwaresma': 'white',
+        'Pasaka': '#333',
+        'Mwaka wa Kawaida': 'white'
+    };
+
+    // Nyimbo data kwa kila majira
+    const songsData = {
+        'Majilio': {
+            mwanzo: "Wakeni, wakeni! Bwana anakuja!\nTayarisheni njia zake,\nNyookeni mapito yake.\nEe Bwana, utufanyie rehema,\nWokovu wako utuangazie.",
+            katikati: "Fungueni milango,\nBwana wa majeshi anakuja!\nAtakayekuja hana budi,\nAtatuletea amani na tumaini.",
+            shangilio: "Furahini, enyi watu wa Bwana!\nKaribu ni wakati wa furaha,\nYesu anakuja kutuokoa,\nAlleluya, Alleluya!"
+        },
+        'Krismasi': {
+            mwanzo: "Usiku wa amani, usiku wa furaha!\nKristo anazaliwa Bethlehemu,\nMalaika wanaimba,\nMchungaji wanashangilia!\nGloria in excelsis Deo!",
+            katikati: "Neno limekuwa mwili,\nAkakaa kwetu.\nTumeyaona utukufu wake,\nUtukufu wa Mwana pekee wa Baba.",
+            shangilio: "Furahini, furahini!\nMwokozi amezaliwa!\nHeri ulimwengu unaompokea,\nYesu, Mwana wa Mungu, Mfalme wetu!"
+        },
+        'Kwaresma': {
+            mwanzo: "Ee Bwana, utufanyie rehema,\nKwa rehema zako kubwa.\niFUTE makosa yetu,\nUtakase mioyo yetu.",
+            katikati: "Ee Mungu, moyo safi uumbue ndani mwangu,\nRoho mpya niitie.\nUsinitupie mbali na uso wako,\nWala usiondoe Roho wako Mtakatifu.",
+            shangilio: "Tubu, tubu!\nUfalme wa Mungu umekaribia!\nAcheni dhambi, rudieni kwa Mungu,\nMsamehewe dhambi zenu."
+        },
+        'Pasaka': {
+            mwanzo: "Kristo amefufuka! Alleluya!\nAmefufuka kweli! Alleluya!\nUshindi juu ya mauti,\nUshindi juu ya dhambi!",
+            katikati: "Huu ni siku aliyoifanya Bwana,\naTufurahi na kushangilia.\nNuru inaangaza gizani,\nNa giza halikuweza kushinda.",
+            shangilio: "Sifuni Bwana, enyi watu wote!\nKwani fadhili zake ni za milele,\nUpendo wake unadumu milele!\nAlleluya, Alleluya!"
+        },
+        'Mwaka wa Kawaida': {
+            mwanzo: "Bwana ndiye mchungaji wangu,\nSitapungukiwa na kitu.\aNanilaza katika malisho ya kijani,\nNaniongoza kando ya maji yatulivu.",
+            katikati: "Huu ndio siku aliyoifanya Bwana,\nATufurahi na kushangilia.\nNjooni tumwabudu,\nNjooni tumwinue Bwana.",
+            shangilio: "Nawapa amani yangu,\nSi kama anavyotoa ulimwengu.\nMsiyumbuke mioyoni,\nWala msiogope!\nBwana yu pamoja nanyi mpaka mwisho wa nyakati."
+        }
+    };
+
+    // Data for each liturgical year
+    const liturgicalData = {
+        A: {
+            seasons: [
+                { name: "Majilio", icon: "🕯️", description: "Kujiandaa kwa kuzaliwa kwa Yesu", dates: "Novemba 30 - Desemba 24", color: "Zambarau" },
+                { name: "Krismasi", icon: "🎄", description: "Kuzaliwa kwa Yesu Kristo", dates: "Desemba 25 - Januari 13", color: "Nyeupe" },
+                { name: "Kwaresma", icon: "✝️", description: "Kujiandaa kwa Pasaka", dates: "Februari - Machi (siku 40)", color: "Zambarau" },
+                { name: "Pasaka", icon: "🐣", description: "Kufufuka kwa Yesu Kristo", dates: "Machi - Mei (siku 50)", color: "Dhahabu" },
+                { name: "Mwaka wa Kawaida", icon: "🌿", description: "Mafundisho ya Yesu", dates: "Baada ya Pasaka hadi Majilio", color: "Kijani" }
+            ],
+            gospel: "Matayo",
+            theme: "Ufalme wa Mungu"
+        },
+        B: {
+            seasons: [
+                { name: "Majilio", icon: "🕯️", description: "Kujiandaa kwa kuzaliwa kwa Yesu", dates: "Novemba 30 - Desemba 24", color: "Zambarau" },
+                { name: "Krismasi", icon: "🎄", description: "Kuzaliwa kwa Yesu Kristo", dates: "Desemba 25 - Januari 13", color: "Nyeupe" },
+                { name: "Kwaresma", icon: "✝️", description: "Kujiandaa kwa Pasaka", dates: "Februari - Machi (siku 40)", color: "Zambarau" },
+                { name: "Pasaka", icon: "🐣", description: "Kufufuka kwa Yesu Kristo", dates: "Machi - Mei (siku 50)", color: "Dhahabu" },
+                { name: "Mwaka wa Kawaida", icon: "🌿", description: "Mafundisho ya Yesu", dates: "Baada ya Pasaka hadi Majilio", color: "Kijani" }
+            ],
+            gospel: "Marko",
+            theme: "Utumishi wa Yesu"
+        },
+        C: {
+            seasons: [
+                { name: "Majilio", icon: "🕯️", description: "Kujiandaa kwa kuzaliwa kwa Yesu", dates: "Novemba 30 - Desemba 24", color: "Zambarau" },
+                { name: "Krismasi", icon: "🎄", description: "Kuzaliwa kwa Yesu Kristo", dates: "Desemba 25 - Januari 13", color: "Nyeupe" },
+                { name: "Kwaresma", icon: "✝️", description: "Kujiandaa kwa Pasaka", dates: "Februari - Machi (siku 40)", color: "Zambarau" },
+                { name: "Pasaka", icon: "🐣", description: "Kufufuka kwa Yesu Kristo", dates: "Machi - Mei (siku 50)", color: "Dhahabu" },
+                { name: "Mwaka wa Kawaida", icon: "🌿", description: "Mafundisho ya Yesu", dates: "Baada ya Pasaka hadi Majilio", color: "Kijani" }
+            ],
+            gospel: "Luka",
+            theme: "Huruma na Msamaha"
+        }
+    };
+
+    const year = '{{ mwaka }}';
+    const data = liturgicalData[year];
+
+    function loadSeasons() {
+        const grid = document.getElementById('seasonsGrid');
+        if (data && data.seasons) {
+            grid.innerHTML = data.seasons.map(season => {
+                const bgColor = seasonColors[season.name] || 'linear-gradient(135deg, #1a2a6e, #2a3a7e)';
+                const textColor = textColors[season.name] || 'white';
+                return `
+                    <div class="season-card" style="background: ${bgColor}; color: ${textColor};">
+                        <div class="season-icon">${season.icon}</div>
+                        <div class="season-name">${season.name}</div>
+                        <div class="season-dates">📅 ${season.dates}</div>
+                        <div class="season-description">${season.description}</div>
+                        <div class="season-color-badge" style="background: rgba(0,0,0,0.2);">${season.color}</div>
+                        <div class="card-buttons">
+                            <button class="btn-view" onclick="viewSeasonSongs('${season.name}')">👁️ Tazama Nyimbo</button>
+                            <button class="btn-edit" onclick="editSeasonSongs('${season.name}')">✏️ Hariri Nyimbo</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        } else {
+            grid.innerHTML = '<div style="text-align:center; padding:50px;">📭 Taarifa za mwaka huu hazipatikani</div>';
+        }
+    }
+
+    function viewSeasonSongs(seasonName) {
+        const songs = songsData[seasonName];
+        if (songs) {
+            document.getElementById('modalTitle').innerHTML = `🎵 Nyimbo za ${seasonName}`;
+            document.getElementById('modalBody').innerHTML = `
+                <div class="song-section">
+                    <div class="song-title">🎤 MWANZO / KUUINGIA</div>
+                    <div class="song-lyrics">${escapeHtml(songs.mwanzo)}</div>
+                </div>
+                <div class="song-section">
+                    <div class="song-title">🎶 KATIKATI / ZABURI</div>
+                    <div class="song-lyrics">${escapeHtml(songs.katikati)}</div>
+                </div>
+                <div class="song-section">
+                    <div class="song-title">🎉 SHANGILIO / MWISHO</div>
+                    <div class="song-lyrics">${escapeHtml(songs.shangilio)}</div>
+                </div>
+                <div style="text-align: center; margin-top: 20px;">
+                    <button onclick="closeSongsModal()" style="background: #1a2a6e; color: #FFD700; padding: 10px 25px; border: none; border-radius: 30px; cursor: pointer;">Funga</button>
+                </div>
+            `;
+            document.getElementById('songsModal').classList.add('active');
+        } else {
+            alert(`📭 Taarifa za nyimbo za ${seasonName} hazijapatikana. Unaweza kuzihariri kwa kubonyeza "Hariri Nyimbo".`);
+        }
+    }
+
+    function editSeasonSongs(seasonName) {
+        // This function can be extended to open an editor or redirect to admin page
+        const songs = songsData[seasonName];
+        if (songs) {
+            const newMwanzo = prompt(`Hariri nyimbo za MWANZO kwa ${seasonName}:`, songs.mwanzo);
+            if (newMwanzo !== null) songsData[seasonName].mwanzo = newMwanzo;
+            
+            const newKatikati = prompt(`Hariri nyimbo za KATIKATI kwa ${seasonName}:`, songs.katikati);
+            if (newKatikati !== null) songsData[seasonName].katikati = newKatikati;
+            
+            const newShangilio = prompt(`Hariri nyimbo za SHANGILIO kwa ${seasonName}:`, songs.shangilio);
+            if (newShangilio !== null) songsData[seasonName].shangilio = newShangilio;
+            
+            alert(`✅ Nyimbo za ${seasonName} zimehaririwa kikamilifu!`);
+        } else {
+            // Initialize new season songs
+            songsData[seasonName] = {
+                mwanzo: "Ingiza nyimbo ya MWANZO hapa...",
+                katikati: "Ingiza nyimbo ya KATIKATI hapa...",
+                shangilio: "Ingiza nyimbo ya SHANGILIO hapa..."
+            };
+            editSeasonSongs(seasonName);
+        }
+    }
+
+    function closeSongsModal() {
+        document.getElementById('songsModal').classList.remove('active');
+    }
+
+    function escapeHtml(text) {
+        if (!text) return '';
+        return text.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        }).replace(/\n/g, '<br>');
+    }
+
+    // Sample Sunday data
+    const sampleSundays = {
+        'Majilio': [
+            { date: 'Jumapili ya Kwanza ya Majilio', reading: 'Kesiheni, Bwana anakaribia' },
+            { date: 'Jumapili ya Pili ya Majilio', reading: 'Tayarisheni njia ya Bwana' },
+            { date: 'Jumapili ya Tatu ya Majilio', reading: 'Furahini Bwana yuko karibu' },
+            { date: 'Jumapili ya Nne ya Majilio', reading: 'Bwana yuko pamoja nanyi' }
+        ],
+        'Krismasi': [
+            { date: 'Usiku wa Krismasi', reading: 'Yesu anazaliwa Bethlehemu' },
+            { date: 'Krismasi Mchana', reading: 'Neno limekuwa mwili' },
+            { date: 'Familia Takatifu', reading: 'Yesu anapelekwa hekaluni' },
+            { date: 'Mama wa Mungu', reading: 'Maria, Mama wa Mungu' },
+            { date: 'Epifania', reading: 'Wataalamu wanamwabudu Yesu' }
+        ],
+        'Kwaresma': [
+            { date: 'Jumapili ya Kwanza ya Kwaresma', reading: 'Yesu anajaribiwa' },
+            { date: 'Jumapili ya Pili ya Kwaresma', reading: 'Kugeuka sura' },
+            { date: 'Jumapili ya Tatu ya Kwaresma', reading: 'Maji ya uzima' },
+            { date: 'Jumapili ya Nne ya Kwaresma', reading: 'Kuponya kipofu' },
+            { date: 'Jumapili ya Tano ya Kwaresma', reading: 'Ufufuo wa Lazaro' }
+        ],
+        'Pasaka': [
+            { date: 'Jumapili ya Pasaka', reading: 'Yesu amefufuka!' },
+            { date: 'Jumapili ya Pili ya Pasaka', reading: 'Mwenye heri wasioona wakaamini' },
+            { date: 'Jumapili ya Tatu ya Pasaka', reading: 'Yesu anawajia wanafunzi' },
+            { date: 'Jumapili ya Nne ya Pasaka', reading: 'Mchungaji Mwema' },
+            { date: 'Jumapili ya Tano ya Pasaka', reading: 'Mimi ni mzabibu' },
+            { date: 'Kupaa kwa Bwana', reading: 'Yesu anapaa mbinguni' },
+            { date: 'Pentekoste', reading: 'Roho Mtakatifu anashuka' }
+        ],
+        'Mwaka wa Kawaida': [
+            { date: 'Jumapili za Mwaka wa Kawaida', reading: 'Mafundisho mbalimbali ya Yesu' }
+        ]
+    };
+
+    function showSeasonSundays(seasonName) {
+        const sundaysSection = document.getElementById('sundaysSection');
+        const sundaysList = document.getElementById('sundaysList');
+        const sundays = sampleSundays[seasonName] || [{ date: `${seasonName}`, reading: 'Soma Injili ya siku hiyo' }];
+        
+        sundaysList.innerHTML = `
+            <h4 style="color: #1a2a6e; margin-bottom: 15px;">📖 ${seasonName}</h4>
+            ${sundays.map(s => `
+                <div class="sunday-item">
+                    <span class="sunday-date">${s.date}</span>
+                    <span class="sunday-name">${s.reading}</span>
+                    <button class="btn-songs" onclick="alert('Nyimbo za ${s.date} zitaongezwa hivi karibuni.\\n\\nUnaweza kuangalia kwenye sehemu ya "Makundi ya Nyimbo" kupitia menu ya Ratiba.')">🎵 Tazama Nyimbo</button>
+                </div>
+            `).join('')}
+        `;
+        
+        sundaysSection.style.display = 'block';
+        sundaysSection.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Load seasons when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        loadSeasons();
+    });
+</script>
+{% endblock %}

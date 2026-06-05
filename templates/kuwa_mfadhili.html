@@ -1,0 +1,48 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Kuwa Mfadhili wa Kwaya{% endblock %}
+
+{% block content %}
+<style>
+    .criteria-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+    .criteria-card {
+        background: white;
+        border-radius: 20px;
+        padding: 35px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        border-top: 5px solid #FFD700;
+    }
+    .badge {
+        background: linear-gradient(135deg, #FFD700, #FFA500);
+        display: inline-block;
+        padding: 5px 15px;
+        border-radius: 50px;
+        color: #1a2a6e;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+</style>
+
+<div class="criteria-container">
+    <div class="criteria-card">
+        <div class="badge">💰 SIFA ZA KUWA MFADHILI</div>
+        <h1>Kuwa Mfadhili wa Kwaya</h1>
+        
+        <ul class="criteria-list">
+            <li>✅ Kuwa na moyo wa kusaidia kwaya kiuchumi au vifaa</li>
+            <li>✅ Kusaidia kwa hiari bila kutarajia malipo</li>
+            <li>✅ Kuwa msaidizi katika shughuli za kwaya</li>
+            <li>✅ Kuheshimu dira na maadili ya kwaya</li>
+            <li>✅ Kutoa michango ya mara kwa mara au pale inapohitajika</li>
+        </ul>
+        
+        <div style="margin-top: 20px; background: #f8f9fa; padding: 20px; border-radius: 15px;">
+            <h3>📞 Wasiliana Nasi</h3>
+            <p>Kwa wale wanaotaka kuwa mfadhili, wasiliana na mweka hazina wa kwaya au msimamizi.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,199 @@
+﻿{% extends "base.html" %}
+
+{% block title %}{{ kundi }} - Makundi ya Nyimbo{% endblock %}
+
+{% block content %}
+<style>
+    .category-header {
+        background: linear-gradient(135deg, #1a2a6e 0%, #2a3a7e 100%);
+        padding: 20px 25px;
+        border-radius: 20px 20px 0 0;
+        color: white;
+    }
+    
+    .category-header h1 {
+        color: #FFD700;
+        margin: 0;
+        font-size: 24px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .category-stats {
+        background: #f8f9fa;
+        padding: 12px 25px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        border-bottom: 1px solid #e0e0e0;
+    }
+    
+    .stats-badge {
+        background: #FFD700;
+        color: #1a2a6e;
+        padding: 5px 15px;
+        border-radius: 30px;
+        font-weight: bold;
+        font-size: 13px;
+    }
+    
+    .add-btn {
+        background: #28a745;
+        color: white;
+        border: none;
+        padding: 8px 20px;
+        border-radius: 30px;
+        text-decoration: none;
+        font-weight: bold;
+        font-size: 13px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s;
+    }
+    
+    .add-btn:hover {
+        background: #1e7e34;
+        transform: translateY(-2px);
+    }
+    
+    .songs-grid {
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .song-card {
+        background: white;
+        border: 1px solid #e8e8e8;
+        border-radius: 14px;
+        padding: 12px 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        transition: all 0.2s;
+    }
+    
+    .song-card:hover {
+        border-color: #FFD700;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    
+    .song-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+    
+    .song-icon {
+        font-size: 24px;
+    }
+    
+    .song-details {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .song-title {
+        font-weight: 700;
+        color: #1a2a6e;
+        font-size: 15px;
+    }
+    
+    .song-meta {
+        font-size: 11px;
+        color: #888;
+        margin-top: 3px;
+    }
+    
+    .song-actions {
+        display: flex;
+        gap: 8px;
+    }
+    
+    .view-btn {
+        background: #17a2b8;
+        color: white;
+        padding: 5px 12px;
+        border-radius: 20px;
+        text-decoration: none;
+        font-size: 11px;
+        font-weight: bold;
+    }
+    
+    .delete-btn {
+        background: #dc3545;
+        color: white;
+        padding: 5px 12px;
+        border-radius: 20px;
+        text-decoration: none;
+        font-size: 11px;
+        font-weight: bold;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 50px;
+        color: #999;
+    }
+    
+    .empty-state i {
+        font-size: 48px;
+        margin-bottom: 15px;
+        display: block;
+    }
+</style>
+
+<div class="category-header">
+    <h1>
+        <span>🎵</span> {{ kundi }}
+    </h1>
+</div>
+
+<div class="category-stats">
+    <div>
+        📊 <strong>Jumla ya Nyimbo:</strong> {{ nyimbo|length }}
+    </div>
+    <div>
+        <a href="{{ url_for('ratiba_ongezwa_wimbo') }}" class="add-btn">➕ Ongeza Wimbo Mpya</a>
+    </div>
+</div>
+
+<div class="songs-grid">
+    {% if nyimbo %}
+        {% for w in nyimbo %}
+        <div class="song-card">
+            <div class="song-info">
+                <div class="song-icon">🎵</div>
+                <div class="song-details">
+                    <div class="song-title">{{ w.jina }}</div>
+                    <div class="song-meta">
+                        {% if w.mtunzi %}✍️ {{ w.mtunzi }} | {% endif %}
+                        {% if w.key %}🔑 {{ w.key }} | {% endif %}
+                        {% if w.tempo %}🎵 {{ w.tempo }}{% endif %}
+                        {% if not w.mtunzi and not w.key and not w.tempo %}Hakuna maelezo zaidi{% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="song-actions">
+                <a href="{{ url_for('ratiba_view_wimbo', id=w.id) }}" class="view-btn">👁️ View</a>
+                <a href="{{ url_for('ratiba_futa_wimbo', id=w.id) }}" class="delete-btn" onclick="return confirm('Una uhakika unataka kufuta wimbo huu?')">🗑️ Futa</a>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty-state">
+            <i>📭</i>
+            <p>Hakuna nyimbo zilizorekodiwa bado</p>
+            <a href="{{ url_for('ratiba_ongezwa_wimbo') }}" style="color: #28a745;">➕ Ongeza Wimbo Mpya</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

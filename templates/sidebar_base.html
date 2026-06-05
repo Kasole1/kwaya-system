@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kwaya Mt. Bonifasi - {% block title %}{% endblock %}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        /* Top Bar */
+        .top-bar {
+            background: linear-gradient(135deg, #0a1a3a 0%, #1a2a6e 100%);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid #FFD700;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+        
+        .menu-toggle {
+            background: none;
+            border: none;
+            color: #FFD700;
+            font-size: 28px;
+            cursor: pointer;
+            padding: 5px 10px;
+        }
+        
+        .logo-area {
+            flex: 1;
+            text-align: center;
+        }
+        
+        .logo-area h1 {
+            font-size: 18px;
+            color: #FFD700;
+        }
+        
+        .top-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .icon-btn {
+            background: none;
+            border: none;
+            color: #FFD700;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -280px;
+            width: 280px;
+            height: 100%;
+            background: linear-gradient(135deg, #1a2a6e 0%, #2a3a7e 100%);
+            transition: left 0.3s ease;
+            z-index: 2000;
+            overflow-y: auto;
+            box-shadow: 2px 0 20px rgba(0,0,0,0.3);
+        }
+        
+        .sidebar.open {
+            left: 0;
+        }
+        
+        .sidebar-header {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 2px solid #FFD700;
+            margin-bottom: 20px;
+        }
+        
+        .sidebar-header h3 {
+            color: #FFD700;
+            font-size: 18px;
+        }
+        
+        .sidebar-header p {
+            color: rgba(255,215,0,0.7);
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .sidebar-menu li {
+            margin-bottom: 5px;
+        }
+        
+        .sidebar-menu li a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+        
+        .sidebar-menu li a:hover {
+            background: #FFD700;
+            color: #1a2a6e;
+            padding-left: 30px;
+        }
+        
+        .sidebar-menu li a.active {
+            background: #FFD700;
+            color: #1a2a6e;
+            border-left: 4px solid #FFA500;
+        }
+        
+        .sidebar-footer {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            padding: 15px;
+            border-top: 1px solid rgba(255,215,0,0.2);
+        }
+        
+        /* Main Content */
+        .main-content {
+            margin-top: 60px;
+            padding: 20px;
+            transition: margin-left 0.3s ease;
+        }
+        
+        .main-content.sidebar-open {
+            margin-left: 280px;
+        }
+        
+        /* Overlay */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1999;
+            display: none;
+        }
+        
+        .sidebar-overlay.active {
+            display: block;
+        }
+        
+        /* Container */
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            min-height: calc(100vh - 100px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        /* Dark Mode */
+        body.dark-mode {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b2e 100%);
+        }
+        
+        body.dark-mode .container {
+            background: #1e293b;
+            color: #e2e8f0;
+        }
+        
+        body.dark-mode .sidebar {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b2e 100%);
+        }
+        
+        @media (max-width: 768px) {
+            .main-content.sidebar-open {
+                margin-left: 0;
+            }
+            .sidebar {
+                width: 260px;
+            }
+            .logo-area h1 {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+        <div class="logo-area">
+            <h1>🎵 KWAYA MT. BONIFASI 🎵</h1>
+        </div>
+        <div class="top-actions">
+            <div class="notification-bell" style="position: relative;">
+                <button class="icon-btn" onclick="toggleNotificationDropdown()">🔔</button>
+                <span id="notificationCount" class="notification-count" style="display: none;">0</span>
+            </div>
+            <button class="icon-btn" onclick="toggleDarkMode()" id="darkModeBtn">🌙</button>
+            <button class="icon-btn" onclick="toggleLanguage()" id="langBtn" style="font-size: 14px;">🇬🇧 EN</button>
+        </div>
+    </div>
+    
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3>📋 MENU KUU</h3>
+            <p>{{ session.username }} | 
+                {% if session.role_id == 1 %}👑 Admin
+                {% elif session.role_id == 2 %}👔 Mwenyekiti
+                {% elif session.role_id == 3 %}📚 Mwalimu
+                {% elif session.role_id == 4 %}💰 Mhasibu
+                {% else %}🎵 Mwanakwaya
+                {% endif %}
+            </p>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="{{ url_for('dashboard') }}">📊 Home</a></li>
+            
+            {% if session.role_id == 1 %}
+                <li><a href="{{ url_for('wanakwaya') }}">👥 Wanakwaya</a></li>
+                <li><a href="{{ url_for('mahudhurio_enhanced') }}">📋 Mahudhurio</a></li>
+                <li><a href="{{ url_for('ada_calendar') }}">💰 Ada</a></li>
+                <li><a href="{{ url_for('mapato') }}">📈 Mapato</a></li>
+                <li><a href="{{ url_for('uongozi') }}">👑 Uongozi</a></li>
+                <li><a href="{{ url_for('assets') }}">📦 Assets</a></li>
+                <li><a href="{{ url_for('inventory_page') }}">📦 Inventory</a></li>
+                <li><a href="{{ url_for('ratiba_tengeneza') }}">📅 Ratiba</a></li>
+                <li><a href="{{ url_for('users_page') }}">👥 Watumiaji</a></li>
+                <li><a href="{{ url_for('login_history_page') }}">📋 Login History</a></li>
+                <li><a href="{{ url_for('activity_log_page') }}">📊 Activity Log</a></li>
+                <li><a href="{{ url_for('reports_export_page') }}">📊 Export</a></li>
+            {% elif session.role_id == 2 %}
+                <li><a href="{{ url_for('wanakwaya') }}">👥 Wanakwaya</a></li>
+                <li><a href="{{ url_for('mahudhurio_enhanced') }}">📋 Mahudhurio</a></li>
+                <li><a href="{{ url_for('mapato') }}">📈 Mapato</a></li>
+                <li><a href="{{ url_for('uongozi') }}">👑 Uongozi</a></li>
+            {% elif session.role_id == 3 %}
+                <li><a href="{{ url_for('wanakwaya') }}">👥 Wanakwaya</a></li>
+                <li><a href="{{ url_for('mahudhurio_enhanced') }}">📋 Mahudhurio</a></li>
+            {% elif session.role_id == 4 %}
+                <li><a href="{{ url_for('ada_calendar') }}">💰 Ada</a></li>
+                <li><a href="{{ url_for('mapato') }}">📈 Mapato</a></li>
+            {% elif session.role_id == 5 %}
+                <li><a href="{{ url_for('wanakwaya') }}">👥 Wanakwaya</a></li>
+                <li><a href="{{ url_for('ada_calendar') }}">💰 Ada Yangu</a></li>
+            {% endif %}
+            
+            <li><a href="{{ url_for('profile_page') }}">👤 Profile</a></li>
+            <li><a href="{{ url_for('logout') }}" style="color: #ff6b6b;">🚪 Toka</a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <p style="font-size: 10px; color: rgba(255,215,0,0.5);">© Kwaya Mt. Bonifasi</p>
+        </div>
+    </div>
+    
+    <!-- Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+    
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <div class="flash-messages">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+        
+        <div class="container">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+    
+    <!-- Notification Dropdown -->
+    <div id="notificationDropdown" class="notification-dropdown" style="display: none;">
+        <div class="notification-header">
+            <span>🔔 Arifa Zako</span>
+            <button class="mark-all-read" onclick="markAllNotificationsRead(event)">✔️ Soma zote</button>
+        </div>
+        <div id="notificationList">
+            <div class="no-notifications">Loading...</div>
+        </div>
+    </div>
+    
+    <style>
+        .alert {
+            padding: 12px 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #FFD700;
+        }
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #FFD700;
+        }
+        
+        .notification-dropdown {
+            position: fixed;
+            top: 60px;
+            right: 20px;
+            width: 350px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            z-index: 3000;
+            max-height: 450px;
+            overflow-y: auto;
+        }
+        
+        .notification-header {
+            padding: 12px 15px;
+            background: linear-gradient(135deg, #1a2a6e, #2a3a7e);
+            color: #FFD700;
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .notification-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+        }
+        
+        .notification-item.unread {
+            background: #f0f7ff;
+        }
+        
+        .notification-title {
+            font-weight: bold;
+            color: #1a2a6e;
+        }
+        
+        .notification-message {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .notification-count {
+            position: absolute;
+            top: -8px;
+            right: -12px;
+            background: #dc3545;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 10px;
+        }
+        
+        .no-notifications {
+            padding: 30px;
+            text-align: center;
+            color: #888;
+        }
+        
+        body.dark-mode .notification-dropdown {
+            background: #1e293b;
+        }
+        body.dark-mode .notification-item {
+            border-bottom-color: #334155;
+        }
+        body.dark-mode .notification-title {
+            color: #FFD700;
+        }
+        body.dark-mode .notification-message {
+            color: #cbd5e1;
+        }
+    </style>
+    
+    <script>
+        // Sidebar Functions
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            const mainContent = document.getElementById('mainContent');
+            
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('active');
+            mainContent.classList.toggle('sidebar-open');
+        }
+        
+        function closeSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            const mainContent = document.getElementById('mainContent');
+            
+            sidebar.classList.remove('open');
+            overlay.classList.remove('active');
+            mainContent.classList.remove('sidebar-open');
+        }
+        
+        // Dark Mode
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+            const btn = document.getElementById('darkModeBtn');
+            if (btn) btn.innerHTML = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
+        }
+        
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark-mode');
+            const btn = document.getElementById('darkModeBtn');
+            if (btn) btn.innerHTML = '☀️';
+        }
+        
+        // Language
+        let currentLang = localStorage.getItem('language') || 'sw';
+        function toggleLanguage() {
+            currentLang = currentLang === 'sw' ? 'en' : 'sw';
+            localStorage.setItem('language', currentLang);
+            const btn = document.getElementById('langBtn');
+            if (btn) btn.innerHTML = currentLang === 'sw' ? '🇬🇧 EN' : '🇹🇿 SW';
+        }
+        
+        // Notifications
+        async function loadNotifications() {
+            try {
+                const response = await fetch('/api/notifications');
+                const data = await response.json();
+                if (data.success) {
+                    const unreadCount = data.notifications.filter(n => !n.is_read).length;
+                    const countSpan = document.getElementById('notificationCount');
+                    if (unreadCount > 0) {
+                        countSpan.innerText = unreadCount > 9 ? '9+' : unreadCount;
+                        countSpan.style.display = 'inline-block';
+                    } else {
+                        countSpan.style.display = 'none';
+                    }
+                }
+            } catch(e) {}
+        }
+        
+        function toggleNotificationDropdown() {
+            const dropdown = document.getElementById('notificationDropdown');
+            if (dropdown.style.display === 'none' || dropdown.style.display === '') {
+                dropdown.style.display = 'block';
+                loadNotifications();
+            } else {
+                dropdown.style.display = 'none';
+            }
+        }
+        
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('notificationDropdown');
+            const bell = document.querySelector('.notification-bell');
+            if (dropdown && bell && !bell.contains(event.target) && !dropdown.contains(event.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
+        
+        loadNotifications();
+        setInterval(loadNotifications, 30000);
+    </script>
+</body>
+</html>

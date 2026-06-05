@@ -1,0 +1,701 @@
+﻿<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Manual Kamili - Kwaya Mt. Bonifasi</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .cover {
+            text-align: center;
+            padding: 100px 50px;
+            background: linear-gradient(135deg, #1a2a6e, #2a3a7e, #1a2a6e);
+            color: #FFD700;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cover::before {
+            content: "🎵";
+            position: absolute;
+            font-size: 300px;
+            left: -50px;
+            bottom: -50px;
+            opacity: 0.1;
+            transform: rotate(-15deg);
+        }
+        
+        .cover::after {
+            content: "🎶";
+            position: absolute;
+            font-size: 300px;
+            right: -50px;
+            top: -50px;
+            opacity: 0.1;
+            transform: rotate(15deg);
+        }
+        
+        .cover h1 {
+            font-size: 56px;
+            margin-bottom: 20px;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+        }
+        
+        .cover h2 {
+            font-size: 32px;
+            margin-bottom: 15px;
+            color: white;
+        }
+        
+        .cover h3 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+        
+        .gold-line {
+            width: 120px;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, #FFD700, #FFD700, transparent);
+            margin: 30px auto;
+        }
+        
+        .cover p {
+            font-size: 18px;
+            margin-top: 40px;
+        }
+        
+        .toc {
+            background: white;
+            padding: 50px;
+            margin: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .toc h2 {
+            color: #1a2a6e;
+            border-left: 4px solid #FFD700;
+            padding-left: 15px;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+        
+        .toc-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+        
+        .toc-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .toc-item a {
+            text-decoration: none;
+            color: #1a2a6e;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .toc-item a:hover {
+            color: #FFD700;
+        }
+        
+        .section {
+            background: white;
+            margin: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            page-break-after: avoid;
+            page-break-inside: avoid;
+        }
+        
+        .section-header {
+            background: linear-gradient(135deg, #1a2a6e, #2a3a7e);
+            color: #FFD700;
+            padding: 25px 30px;
+        }
+        
+        .section-header h2 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+        
+        .section-header p {
+            opacity: 0.8;
+        }
+        
+        .section-content {
+            padding: 30px;
+        }
+        
+        .subsection {
+            margin-bottom: 40px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 30px;
+        }
+        
+        .subsection:last-child {
+            border-bottom: none;
+        }
+        
+        .subsection-title {
+            color: #1a2a6e;
+            font-size: 22px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-left: 3px solid #FFD700;
+            padding-left: 15px;
+        }
+        
+        .screenshot {
+            background: #f8f9fa;
+            border-radius: 16px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+        
+        .screenshot-title {
+            font-weight: bold;
+            color: #1a2a6e;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .mockup {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .mockup-header {
+            background: linear-gradient(135deg, #1a2a6e, #2a3a7e);
+            padding: 10px;
+            border-radius: 8px 8px 0 0;
+            color: #FFD700;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        
+        .mockup-body {
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 0 0 8px 8px;
+            min-height: 150px;
+        }
+        
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+        
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+        
+        .info-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid #FFD700;
+        }
+        
+        .info-card h4 {
+            color: #1a2a6e;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        .step {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 12px;
+            align-items: flex-start;
+        }
+        
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #1a2a6e;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        .data-table th {
+            background: linear-gradient(135deg, #1a2a6e, #2a3a7e);
+            color: #FFD700;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        .data-table td {
+            padding: 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .badge-success { background: #28a745; color: white; }
+        .badge-warning { background: #fd7e14; color: white; }
+        .badge-danger { background: #dc3545; color: white; }
+        .badge-info { background: #17a2b8; color: white; }
+        .badge-primary { background: #1a2a6e; color: #FFD700; }
+        
+        .color-box {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+        
+        .tip {
+            background: #e8f5e9;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #fd7e14;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .important {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .shortcut {
+            background: #1a2a6e;
+            color: #FFD700;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 12px;
+            display: inline-block;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, #1a2a6e, #2a3a7e);
+            color: #FFD700;
+            margin-top: 30px;
+        }
+        
+        @media print {
+            body { background: white; }
+            .toc, .section { margin: 0; margin-bottom: 20px; page-break-after: avoid; }
+            .grid-2, .grid-3, .grid-4 { break-inside: avoid; }
+            @page { size: A4; margin: 1.5cm; }
+        }
+        
+        @media (max-width: 900px) {
+            .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+            .toc-grid { grid-template-columns: 1fr; }
+            .cover h1 { font-size: 32px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="cover">
+    <h1>🎵 KWAYA YA MTAKATIFU BONIFASI 🎵</h1>
+    <div class="gold-line"></div>
+    <h2>USER MANUAL KAMILI</h2>
+    <h3>Mwongozo wa Matumizi ya Mfumo</h3>
+    <div class="gold-line"></div>
+    <p>Parokia ya Moyo Mtakatifu Wa Yesu, Sombetini</p>
+    <p>Jimbo Kuu Katoliki La Arusha</p>
+    <p style="font-size: 14px; margin-top: 50px;">Version 2.0 | Juni 2026</p>
+</div>
+
+<div class="toc">
+    <h2>📖 YALIYOMO</h2>
+    <div class="toc-grid">
+        <div class="toc-item"><a href="#section1">1. Utangulizi</a></div>
+        <div class="toc-item"><a href="#section2">2. Kuingia Mfumo</a></div>
+        <div class="toc-item"><a href="#section3">3. Dashboard</a></div>
+        <div class="toc-item"><a href="#section4">4. Usimamizi wa Wanakwaya</a></div>
+        <div class="toc-item"><a href="#section5">5. Ada na Malipo</a></div>
+        <div class="toc-item"><a href="#section6">6. Mahudhurio na Penalty</a></div>
+        <div class="toc-item"><a href="#section7">7. Mapato na Matumizi</a></div>
+        <div class="toc-item"><a href="#section8">8. Ratiba ya Nyimbo</a></div>
+        <div class="toc-item"><a href="#section9">9. Albamu na Media</a></div>
+        <div class="toc-item"><a href="#section10">10. Uongozi na Kamati</a></div>
+        <div class="toc-item"><a href="#section11">11. Assets na Inventory</a></div>
+        <div class="toc-item"><a href="#section12">12. User Management</a></div>
+        <div class="toc-item"><a href="#section13">13. Ripoti na Export</a></div>
+        <div class="toc-item"><a href="#section14">14. Profile na Mipangilio</a></div>
+        <div class="toc-item"><a href="#section15">15. Notisi na Matangazo</a></div>
+        <div class="toc-item"><a href="#section16">16. Keyboard Shortcuts</a></div>
+        <div class="toc-item"><a href="#section17">17. Troubleshooting</a></div>
+        <div class="toc-item"><a href="#section18">18. FAQ</a></div>
+        <div class="toc-item"><a href="#section19">19. Hitimisho</a></div>
+    </div>
+</div>
+
+<div id="section1" class="section">
+    <div class="section-header">
+        <h2>📋 1. UTANGULIZI</h2>
+        <p>Kusudi na vipengele vya mfumo</p>
+    </div>
+    <div class="section-content">
+        <div class="info-card">
+            <h4>🎯 Kusudi la Mfumo</h4>
+            <p>Mfumo wa Kwaya Mt. Bonifasi ni application ya kisasa iliyobuniwa kusimamia shughuli zote za kwaya kwa ufanisi mkubwa.</p>
+        </div>
+        <div class="grid-2">
+            <div class="info-card"><h4>🔧 Teknolojia</h4><p>Python 3.10+, Flask 2.3.3, SQLite3, Chart.js</p></div>
+            <div class="info-card"><h4>✨ Vipengele</h4><p>Wanakwaya, Ada Calendar, Mahudhurio, Mapato, Ratiba, Media</p></div>
+        </div>
+    </div>
+</div>
+
+<div id="section2" class="section">
+    <div class="section-header">
+        <h2>🔐 2. KUINGIA MFUMO</h2>
+        <p>Jinsi ya kuingia na kuanza kutumia mfumo</p>
+    </div>
+    <div class="section-content">
+        <div class="step"><div class="step-number">1</div><div class="step-content">Fungua browser na nenda kwenye <strong>http://127.0.0.1:5000</strong></div></div>
+        <div class="step"><div class="step-number">2</div><div class="step-content">Ingiza username: <strong>admin</strong> na password: <strong>admin123</strong></div></div>
+        <div class="step"><div class="step-number">3</div><div class="step-content">Mara ya kwanza, badilisha password yako</div></div>
+        <div class="important"><strong>⚠️ MUHIMU:</strong> Badilisha password mara ya kwanza kuingia!</div>
+    </div>
+</div>
+
+<div id="section3" class="section">
+    <div class="section-header">
+        <h2>📊 3. DASHBOARD</h2>
+        <p>Muhtasari wa shughuli zote</p>
+    </div>
+    <div class="section-content">
+        <p>Dashboard inaonyesha: Stats Cards, Charts (Mapato, Mahudhurio, Penalty), Sidebar Widgets (Calendar, Weather, Countdown, Birthday), na Quick Actions.</p>
+        <div class="tip"><strong>💡 TIP:</strong> Unaweza kubadilisha mwonekano wa saa kwa kubonyeza 🕐</div>
+    </div>
+</div>
+
+<div id="section4" class="section">
+    <div class="section-header">
+        <h2>👥 4. USIMAMIZI WA WANAKWAYA</h2>
+        <p>Kuongeza, kuhariri, kusimamisha, kufuta wanakwaya</p>
+    </div>
+    <div class="section-content">
+        <div class="step"><div class="step-number">1</div><div class="step-content">Nenda kwenye menyu <strong>Wanakwaya</strong></div></div>
+        <div class="step"><div class="step-number">2</div><div class="step-content">Bonyeza <span class="badge badge-success">➕ Mwanakwaya Mpya</span></div></div>
+        <div class="step"><div class="step-number">3</div><div class="step-content">Jaza fomu (Jina, Simu, Sauti)</div></div>
+        <div class="step"><div class="step-number">4</div><div class="step-content">Bonyeza <strong>"Hifadhi"</strong></div></div>
+        <div class="info-card"><h4>🔢 Member Number System</h4><p>Soprano: S001, Alto: A001, Tenor: T001, Bass: B001</p></div>
+    </div>
+</div>
+
+<div id="section5" class="section">
+    <div class="section-header">
+        <h2>💰 5. ADA NA MALIPO</h2>
+        <p>Kalenda ya ada na mfumo wa FIFO</p>
+    </div>
+    <div class="section-content">
+        <div class="grid-4">
+            <div><span class="color-box" style="background:#C8E6C9;"></span> 🟢 Kijani - Imelipwa 100%</div>
+            <div><span class="color-box" style="background:#FFE0B2;"></span> 🟡 Manjano - Imelipwa sehemu</div>
+            <div><span class="color-box" style="background:#B3E5FC;"></span> 🔵 Bluu - Ziada</div>
+            <div><span class="color-box" style="background:#FFCDD2;"></span> 🔴 Nyekundu - Hajalipa</div>
+        </div>
+        <div class="info-card"><h4>💰 FIFO Logic</h4><p>Malipo yanaenda kulipa madeni ya zamani kwanza. Mfano: Deni la Feb 5,000 na March 5,000, ukilipa 8,000 - Feb inalipwa kamili (5,000), March sehemu (3,000).</p></div>
+        <div class="tip"><strong>💡 TIP:</strong> Bonyeza seli ya mwezi kulipa ada</div>
+    </div>
+</div>
+
+<div id="section6" class="section">
+    <div class="section-header">
+        <h2>📋 6. MAHUDHURIO NA PENALTY</h2>
+        <p>Kurekodi mahudhurio na penalty</p>
+    </div>
+    <div class="section-content">
+        <div class="grid-3">
+            <div class="info-card"><h4>✅ Present</h4><p>Hakuna penalty</p></div>
+            <div class="info-card"><h4>❌ Absent</h4><p>Penalty inaongezwa</p></div>
+            <div class="info-card"><h4>⏰ Late</h4><p>Penalty kwa dakika</p></div>
+        </div>
+        <div class="warning"><strong>⚠️ Kumbuka:</strong> Penalty inaongezeka mara mbili baada ya siku 10</div>
+    </div>
+</div>
+
+<div id="section7" class="section">
+    <div class="section-header">
+        <h2>📈 7. MAPATO NA MATUMIZI</h2>
+        <p>Kufuatilia mapato na gharama (P&L)</p>
+    </div>
+    <div class="section-content">
+        <div class="step"><div class="step-number">1</div><div class="step-content">Nenda <strong>📈 Mapato</strong> kuongeza mapato</div></div>
+        <div class="step"><div class="step-number">2</div><div class="step-content">Nenda <strong>📊 Financial Reports</strong> kuongeza gharama</div></div>
+        <div class="tip"><strong>💡 TIP:</strong> Financial Reports ina "Read More" kwa vyanzo vyote</div>
+    </div>
+</div>
+
+<div id="section8" class="section">
+    <div class="section-header">
+        <h2>📅 8. RATIBA YA NYIMBO</h2>
+        <p>Kutengeneza ratiba za misa na ibada</p>
+    </div>
+    <div class="section-content">
+        <div class="step"><div class="step-number">1</div><div class="step-content">Nenda <strong>📅 Ratiba</strong> → <strong>Tengeneza Ratiba</strong></div></div>
+        <div class="step"><div class="step-number">2</div><div class="step-content">Chagua tarehe na tukio</div></div>
+        <div class="step"><div class="step-number">3</div><div class="step-content">Kwa kila sehemu, chagua wimbo na ubonyeze "+ Ongeza"</div></div>
+        <div class="step"><div class="step-number">4</div><div class="step-content">Bonyeza <strong>"Generate Timetable"</strong></div></div>
+    </div>
+</div>
+
+<div id="section9" class="section">
+    <div class="section-header">
+        <h2>🎵 9. ALBAMU NA MEDIA</h2>
+        <p>Kuhifadhi na kucheza nyimbo/video</p>
+    </div>
+    <div class="section-content">
+        <div class="step"><div class="step-number">1</div><div class="step-content">Nenda <strong>🎵 Albamu na Media</strong></div></div>
+        <div class="step"><div class="step-number">2</div><div class="step-content">Bonyeza <span class="badge badge-success">Ongeza Albamu</span></div></div>
+        <div class="step"><div class="step-number">3</div><div class="step-content">Jaza jina, aina (Audio/Video), mwaka</div></div>
+        <div class="info-card"><h4>📁 Aina za Faili</h4><p>Audio: MP3, WAV, OGG | Video: MP4, WEBM, AVI | Max: 10MB</p></div>
+    </div>
+</div>
+
+<div id="section10" class="section">
+    <div class="section-header">
+        <h2>👑 10. UONGOZI NA KAMATI</h2>
+        <p>Muundo wa uongozi</p>
+    </div>
+    <div class="section-content">
+        <p>Hierarchy tree inayoonyesha: Mwenyekiti (Level 1) → Wasaidizi (Level 2) → Wakuu (Level 3) → Walimu (Level 4)</p>
+    </div>
+</div>
+
+<div id="section11" class="section">
+    <div class="section-header">
+        <h2>📦 11. ASSETS NA INVENTORY</h2>
+        <p>Usimamizi wa vifaa na mauzo</p>
+    </div>
+    <div class="section-content">
+        <p><strong>Assets:</strong> Vyombo vya muziki, Mavazi, Vifaa vya sauti</p>
+        <p><strong>Inventory:</strong> Bidhaa (T-Shirts, CD, DVD), mauzo na risiti</p>
+    </div>
+</div>
+
+<div id="section12" class="section">
+    <div class="section-header">
+        <h2>👥 12. USER MANAGEMENT</h2>
+        <p>Usimamizi wa watumiaji</p>
+    </div>
+    <div class="section-content">
+        <table class="data-table">
+            <tr><th>Role ID</th><th>Jina</th><th>Level</th></tr>
+            <tr><td>1</td><td>Admin</td><td>100</td></tr>
+            <tr><td>2</td><td>Mwenyekiti</td><td>80</td></tr>
+            <tr><td>3</td><td>Mwalimu Mkuu</td><td>50</td></tr>
+            <tr><td>4</td><td>Mhasibu</td><td>60</td></tr>
+            <tr><td>5</td><td>Mwanakwaya</td><td>10</td></tr>
+        </table>
+    </div>
+</div>
+
+<div id="section13" class="section">
+    <div class="section-header">
+        <h2>📊 13. RIPOTI NA EXPORT</h2>
+        <p>Kutoa ripoti kwa PDF/Excel</p>
+    </div>
+    <div class="section-content">
+        <div class="grid-2">
+            <div class="info-card"><h4>📋 Aina</h4><p>Ada, Mapato, Mahudhurio, Wanakwaya, Assets, Inventory</p></div>
+            <div class="info-card"><h4>📄 Muundo</h4><p>PDF (chapisha) au Excel (data raw)</p></div>
+        </div>
+    </div>
+</div>
+
+<div id="section14" class="section">
+    <div class="section-header">
+        <h2>👤 14. PROFILE NA MIPANGILIO</h2>
+        <p>Kubadilisha picha na password</p>
+    </div>
+    <div class="section-content">
+        <div class="step"><div class="step-number">1</div><div class="step-content">Nenda <strong>👤 Profile</strong></div></div>
+        <div class="step"><div class="step-number">2</div><div class="step-content">Bonyeza kwenye picha kubadilisha avatar</div></div>
+        <div class="step"><div class="step-number">3</div><div class="step-content">Bonyeza <span class="badge badge-primary">🔑 Badilisha Password</span></div></div>
+    </div>
+</div>
+
+<div id="section15" class="section">
+    <div class="section-header">
+        <h2>🔔 15. NOTISI NA MATANGAZO</h2>
+        <p>Kutuma na kupokea matangazo</p>
+    </div>
+    <div class="section-content">
+        <p>Bonyeza 🔔 kuona notisi. Admin anaweza kutuma matangazo kwa wote au kwa makundi maalum.</p>
+    </div>
+</div>
+
+<div id="section16" class="section">
+    <div class="section-header">
+        <h2>⌨️ 16. KEYBOARD SHORTCUTS</h2>
+        <p>Vifungo vya haraka</p>
+    </div>
+    <div class="section-content">
+        <div class="grid-2">
+            <div><span class="shortcut">Alt+H</span> - Home</div>
+            <div><span class="shortcut">Alt+W</span> - Wanakwaya</div>
+            <div><span class="shortcut">Alt+M</span> - Mahudhurio</div>
+            <div><span class="shortcut">Alt+A</span> - Ada Calendar</div>
+            <div><span class="shortcut">Alt+P</span> - Mapato</div>
+            <div><span class="shortcut">Alt+U</span> - Profile</div>
+            <div><span class="shortcut">F5</span> - Refresh</div>
+            <div><span class="shortcut">Ctrl+P</span> - Print PDF</div>
+        </div>
+    </div>
+</div>
+
+<div id="section17" class="section">
+    <div class="section-header">
+        <h2>🔧 17. TROUBLESHOOTING</h2>
+        <p>Kutatua matatizo</p>
+    </div>
+    <div class="section-content">
+        <table class="data-table">
+            <tr><th>Tatizo</th><th>Suluhisho</th></tr>
+            <tr><td>no such table</td><td>Futa kwaya.db na restart app</td></tr>
+            <tr><td>Port 5000 inatumiwa</td><td>python app.py --port=5001</td></tr>
+            <tr><td>Login haifanyi kazi</td><td>Tumia admin/admin123</td></tr>
+            <tr><td>500 Internal Error</td><td>Angalia terminal kwa traceback</td></tr>
+        </table>
+    </div>
+</div>
+
+<div id="section18" class="section">
+    <div class="section-header">
+        <h2>❓ 18. FAQ</h2>
+        <p>Maswali na majibu</p>
+    </div>
+    <div class="section-content">
+        <div class="grid-2">
+            <div class="info-card"><h4>❓ Ninalipa ada lakini deni halipungui?</h4><p>FIFO logic - inalipa madeni ya zamani kwanza</p></div>
+            <div class="info-card"><h4>❓ Kwa nini penalty imeongezeka mara mbili?</h4><p>Haijalipwa ndani ya siku 10</p></div>
+            <div class="info-card"><h4>❓ Ninawezaje kupata risiti?</h4><p>Baada ya kulipa, risiti inazalishwa kiotomatiki</p></div>
+            <div class="info-card"><h4>❓ Mfumo unafanya kazi offline?</h4><p>Ndio, hauhitaji internet kwa matumizi ya kawaida</p></div>
+        </div>
+    </div>
+</div>
+
+<div id="section19" class="section">
+    <div class="section-header">
+        <h2>🎉 19. HITIMISHO</h2>
+        <p>Muhtasari</p>
+    </div>
+    <div class="section-content">
+        <div class="info-card">
+            <h4>✅ Checklist</h4>
+            <ul>
+                <li>✓ Python 3.10+ imesakinishwa</li>
+                <li>✓ Virtual environment imeundwa</li>
+                <li>✓ Dependencies zimesakinishwa</li>
+                <li>✓ Admin password imebadilishwa</li>
+                <li>✓ Backup imewekwa</li>
+            </ul>
+        </div>
+        <div class="info-card">
+            <h4>📞 Msaada</h4>
+            <p>Wasiliana na Admin wa mfumo kwa usaidizi zaidi.</p>
+        </div>
+    </div>
+</div>
+
+<div class="footer">
+    <p>© 2026 Kwaya Ya Mtakatifu Bonifasi Askofu na Shahidi</p>
+    <p>Parokia ya Moyo Mtakatifu Wa Yesu, Sombetini - Arusha</p>
+    <p style="font-size: 12px;">"Utukufu wa Mungu kwa sauti za malaika"</p>
+    <p style="font-size: 11px;">User Manual Version 2.0 | Juni 2026</p>
+</div>
+
+</body>
+</html>

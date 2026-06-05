@@ -1,0 +1,19 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Mipangilio ya Ada{% endblock %}
+
+{% block content %}
+<div style="max-width:600px; margin:0 auto;">
+    <div style="background:white; border-radius:20px; padding:25px; border-top:5px solid #FFD700;">
+        <h1 style="color:#1a2a6e;">⚙️ Mipangilio ya Ada</h1>
+        <form method="POST">
+            <div style="margin-bottom:15px;"><label>💰 Kiasi kwa Mwezi (TSh)</label><input type="number" name="kiasi_kwa_mwezi" value="{{ settings.kiasi_kwa_mwezi }}" class="form-control" style="width:100%; padding:10px; border-radius:10px; border:1px solid #ddd;"></div>
+            <div style="margin-bottom:15px;"><label>📅 Tarehe ya Penalty (1-31)</label><input type="number" name="tarehe_penalty" value="{{ settings.tarehe_penalty }}" class="form-control" style="width:100%; padding:10px; border-radius:10px; border:1px solid #ddd;"></div>
+            <div style="margin-bottom:15px;"><label>⚠️ Asilimia ya Penalty (%)</label><input type="number" name="penalty_asilimia" value="{{ settings.penalty_asilimia }}" class="form-control" style="width:100%; padding:10px; border-radius:10px; border:1px solid #ddd;"></div>
+            <button type="submit" style="background:#1a2a6e; color:white; padding:12px; width:100%; border:none; border-radius:40px; cursor:pointer;">💾 Hifadhi Mipangilio</button>
+        </form>
+        <div style="margin-top:20px; padding:15px; background:#f8f9fa; border-radius:12px;"><p><strong>📌 Mwongozo:</strong><br>• Penalty inaongezwa baada ya tarehe {{ settings.tarehe_penalty }} ya mwezi<br>• Penalty ni {{ settings.penalty_asilimia }}% ya deni</p></div>
+        <div style="margin-top:20px; text-align:center;"><a href="/ada" style="color:#1a2a6e;">◀ Rudi kwenye Ada</a></div>
+    </div>
+</div>
+{% endblock %}

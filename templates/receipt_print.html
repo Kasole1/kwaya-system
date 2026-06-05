@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Risiti - Kwaya Mt. Bonifasi</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            background: white;
+            padding: 20px;
+        }
+        
+        .receipt-container {
+            max-width: 450px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        /* Header ya Kwaya */
+        .receipt-header {
+            background: linear-gradient(135deg, #0a1a3a 0%, #1a2a6e 50%, #0a1a3a 100%);
+            color: #FFD700;
+            text-align: center;
+            padding: 20px 15px;
+            border-bottom: 3px solid #FFD700;
+        }
+        
+        .receipt-header h1 {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+        
+        .receipt-header h2 {
+            font-size: 12px;
+            font-weight: normal;
+        }
+        
+        .receipt-header h3 {
+            font-size: 11px;
+            font-weight: normal;
+        }
+        
+        .receipt-header p {
+            font-size: 10px;
+            opacity: 0.7;
+            margin-top: 3px;
+        }
+        
+        .gold-line {
+            width: 50px;
+            height: 2px;
+            background: #FFD700;
+            margin: 8px auto 0;
+        }
+        
+        /* Title */
+        .receipt-title {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #1a2a6e;
+            text-align: center;
+            padding: 10px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        /* Body */
+        .receipt-body {
+            padding: 15px;
+        }
+        
+        .receipt-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px dashed #e0e0e0;
+        }
+        
+        .receipt-label {
+            font-weight: bold;
+            color: #555;
+            font-size: 12px;
+        }
+        
+        .receipt-value {
+            color: #333;
+            font-size: 12px;
+        }
+        
+        .receipt-total {
+            background: linear-gradient(135deg, #1a2a6e, #2a3a7e);
+            color: #FFD700;
+            padding: 12px;
+            border-radius: 10px;
+            margin: 12px 0;
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .receipt-footer {
+            text-align: center;
+            padding: 12px;
+            background: #f8f9fa;
+            border-top: 1px solid #eee;
+            font-size: 10px;
+            color: #666;
+        }
+        
+        .receipt-footer .blessing {
+            color: #1a2a6e;
+            font-style: italic;
+            margin-top: 5px;
+        }
+        
+        .receipt-number {
+            text-align: center;
+            font-family: monospace;
+            font-size: 10px;
+            color: #999;
+            padding: 8px;
+            background: #f8f9fa;
+            border-top: 1px solid #eee;
+        }
+        
+        /* Donor Message - WAFADHILI */
+        .donor-message {
+            background: linear-gradient(135deg, #FFF8E1, #FFECB3);
+            padding: 15px;
+            border-radius: 12px;
+            margin: 15px 0;
+            text-align: center;
+            border-left: 4px solid #FFD700;
+        }
+        
+        .donor-message .thank-you {
+            font-size: 16px;
+            font-weight: bold;
+            color: #1a2a6e;
+            margin-bottom: 5px;
+        }
+        
+        .donor-message .blessing-text {
+            font-size: 12px;
+            color: #555;
+            font-style: italic;
+        }
+        
+        .donor-message .signature {
+            margin-top: 10px;
+            font-size: 11px;
+            color: #888;
+        }
+        
+        /* Inventory Sale Message */
+        .sale-message {
+            background: linear-gradient(135deg, #E8F5E9, #C8E6C9);
+            padding: 15px;
+            border-radius: 12px;
+            margin: 15px 0;
+            text-align: center;
+            border-left: 4px solid #28a745;
+        }
+        
+        .sale-message .thank-you {
+            font-size: 16px;
+            font-weight: bold;
+            color: #1e7e34;
+            margin-bottom: 5px;
+        }
+        
+        /* Action Buttons - NO PRINT */
+        .action-buttons {
+            text-align: center;
+            margin-top: 15px;
+        }
+        
+        .print-btn {
+            background: linear-gradient(135deg, #28a745, #1e7e34);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        .close-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        
+        /* Print Styles - ONE PAGE ONLY, HIDE BUTTONS */
+        @media print {
+            body {
+                margin: 0;
+                padding: 0;
+            }
+            
+            .receipt-container {
+                margin: 0;
+                box-shadow: none;
+            }
+            
+            .action-buttons {
+                display: none !important;
+            }
+            
+            @page {
+                size: A4;
+                margin: 0.2cm;
+            }
+            
+            /* Ensure colors print */
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="receipt-container">
+        <!-- Header -->
+        <div class="receipt-header">
+            <h1>🎵 KWAYA YA MTAKATIFU BONIFASI</h1>
+            <h2>Parokia ya Moyo Mtakatifu Wa Yesu, Sombetini</h2>
+            <h3>Jimbo Kuu Katoliki La Arusha</h3>
+            <p>Arusha, Tanzania</p>
+            <div class="gold-line"></div>
+        </div>
+        
+        <!-- Title -->
+        <div class="receipt-title">
+            {% if receipt_type == 'ada' %}
+                📋 RISITI YA MALIPO YA ADA
+            {% elif receipt_type == 'penalty' %}
+                ⚠️ RISITI YA MALIPO YA PENALTY
+            {% elif receipt_type == 'income' and is_donor %}
+                🙏 RISITI YA SHUKRANI - MFADHILI
+            {% elif receipt_type == 'income' %}
+                📋 RISITI YA MALIPO YA MAPATO
+            {% elif receipt_type == 'sale' %}
+                🧾 RISITI YA MUUZO
+            {% else %}
+                📋 RISITI YA MALIPO
+            {% endif %}
+        </div>
+        
+        <!-- Body -->
+        <div class="receipt-body">
+            <div class="receipt-row">
+                <span class="receipt-label">📝 Namba ya Risiti:</span>
+                <span class="receipt-value">#{{ receipt_number }}</span>
+            </div>
+            <div class="receipt-row">
+                <span class="receipt-label">📅 Tarehe:</span>
+                <span class="receipt-value">{{ receipt_date }}</span>
+            </div>
+            
+            {% if receipt_type == 'ada' or receipt_type == 'penalty' %}
+            <div class="receipt-row">
+                <span class="receipt-label">👤 Mwanakwaya:</span>
+                <span class="receipt-value">{{ member_name }}</span>
+            </div>
+            <div class="receipt-row">
+                <span class="receipt-label">🎤 Namba:</span>
+                <span class="receipt-value">#{{ member_number }}</span>
+            </div>
+            <div class="receipt-row">
+                <span class="receipt-label">🎵 Sauti:</span>
+                <span class="receipt-value">{{ member_voice }}</span>
+            </div>
+            {% else %}
+            <div class="receipt-row">
+                <span class="receipt-label">👤 Anayetoa/Mteja:</span>
+                <span class="receipt-value">{{ member_name }}</span>
+            </div>
+            {% endif %}
+            
+            {% if receipt_type == 'ada' %}
+            <div class="receipt-row">
+                <span class="receipt-label">📆 Mwezi:</span>
+                <span class="receipt-value">{{ month }} {{ year }}</span>
+            </div>
+            <div class="receipt-row">
+                <span class="receipt-label">💰 Kiasi cha Ada:</span>
+                <span class="receipt-value">TSh {{ ada_amount|int|format_number }}</span>
+            </div>
+            {% endif %}
+            
+            {% if receipt_type == 'penalty' %}
+            <div class="receipt-row">
+                <span class="receipt-label">⚠️ Aina ya Penalty:</span>
+                <span class="receipt-value">{{ penalty_type|default('General') }}</span>
+            </div>
+            {% endif %}
+            
+            {% if receipt_type == 'income' %}
+            <div class="receipt-row">
+                <span class="receipt-label">🤝 Chanzo:</span>
+                <span class="receipt-value">{{ source_name }}</span>
+            </div>
+            <div class="receipt-row">
+                <span class="receipt-label">📝 Maelezo:</span>
+                <span class="receipt-value">{{ description }}</span>
+            </div>
+            {% endif %}
+            
+            {% if receipt_type == 'sale' %}
+            <div class="receipt-row">
+                <span class="receipt-label">📦 Bidhaa:</span>
+                <span class="receipt-value">{{ items }}</span>
+            </div>
+            <div class="receipt-row">
+                <span class="receipt-label">🔢 Idadi:</span>
+                <span class="receipt-value">{{ quantity }} pcs</span>
+            </div>
+            <div class="receipt-row">
+                <span class="receipt-label">💰 Bei kwa Kipande:</span>
+                <span class="receipt-value">TSh {{ unit_price|int|format_number }}</span>
+            </div>
+            {% endif %}
+            
+            <div class="receipt-row">
+                <span class="receipt-label">💰 Kiasi Kilicholipwa:</span>
+                <span class="receipt-value" style="color: #28a745; font-weight: bold;">TSh {{ amount|int|format_number }}</span>
+            </div>
+            
+            <div class="receipt-total">
+                <span>💵 JUMLA ILIYOLIPWA:</span>
+                <span>TSh {{ amount|int|format_number }}</span>
+            </div>
+            
+            <div class="receipt-row">
+                <span class="receipt-label">💳 Njia ya Malipo:</span>
+                <span class="receipt-value">{{ payment_method|default('CASH') }}</span>
+            </div>
+            
+            <div class="receipt-row">
+                <span class="receipt-label">👨‍💼 Imepokelewa na:</span>
+                <span class="receipt-value">{{ received_by|default('Admin') }}</span>
+            </div>
+            
+            <!-- SPECIAL MESSAGE FOR DONORS (WAFADHILI) -->
+            {% if receipt_type == 'income' and is_donor %}
+            <div class="donor-message">
+                <p class="thank-you">🙏 ASANTE SANA KWA MCHANGO WAKO!</p>
+                <p class="blessing-text">Mchango wako utasaidia sana shughuli za kwaya na maendeleo yetu.</p>
+                <p class="blessing-text">"Mungu awabariki kwa wingi"</p>
+                <p class="signature">- Kwaya Mt. Bonifasi -</p>
+            </div>
+            {% endif %}
+            
+            <!-- SPECIAL MESSAGE FOR INVENTORY SALES -->
+            {% if receipt_type == 'sale' %}
+            <div class="sale-message">
+                <p class="thank-you">🎉 ASANTE KWA KUNUNUA!</p>
+                <p class="blessing-text">Tunathamini ununuzi wako. Usaidizi wako unatusaidia kukuza kwaya.</p>
+                <p class="blessing-text">Karibu tena!</p>
+            </div>
+            {% endif %}
+        </div>
+        
+        <!-- Footer -->
+        <div class="receipt-footer">
+            <p>Asante kwa malipo yako!</p>
+            <p class="blessing">"Utukufu wa Mungu kwa sauti za malaika"</p>
+        </div>
+        
+        <div class="receipt-number">
+            {{ receipt_number }} | {{ receipt_date }}
+        </div>
+    </div>
+    
+    <!-- Action Buttons (Hide on print) -->
+    <div class="action-buttons">
+        <button class="print-btn" onclick="window.print()">🖨️ Chapisha Risiti</button>
+        <button class="close-btn" onclick="window.close()">✖ Funga</button>
+    </div>
+    
+    <script>
+        // Auto print if requested
+        {% if auto_print %}
+        window.onload = function() {
+            setTimeout(function() {
+                window.print();
+            }, 500);
+        };
+        {% endif %}
+    </script>
+</body>
+</html>

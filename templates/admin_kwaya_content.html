@@ -1,0 +1,559 @@
+{% extends "base.html" %}
+
+{% block title %}Hariri Maudhui - Kwaya Yetu{% endblock %}
+
+{% block content %}
+<style>
+    .content-editor {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    
+    .editor-header {
+        background: linear-gradient(135deg, #1a2a6e, #2a3a7e);
+        padding: 20px 25px;
+        border-radius: 20px;
+        color: white;
+        margin-bottom: 25px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    
+    /* Cards Grid */
+    .cards-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+    
+    /* Smart Card Styles */
+    .smart-card {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
+        cursor: pointer;
+        border: 1px solid rgba(0,0,0,0.05);
+    }
+    
+    .smart-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 35px rgba(0,0,0,0.12);
+    }
+    
+    .smart-card.active {
+        border: 2px solid #FFD700;
+        box-shadow: 0 0 0 3px rgba(255,215,0,0.3);
+    }
+    
+    /* Card Header Colors */
+    .card-header {
+        padding: 18px 20px;
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .card-header::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        right: -20px;
+        width: 80px;
+        height: 80px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 50%;
+    }
+    
+    .card-header h3 {
+        margin: 0;
+        font-size: 18px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .card-header .icon {
+        font-size: 28px;
+    }
+    
+    .card-body {
+        padding: 18px;
+    }
+    
+    .card-preview {
+        font-size: 13px;
+        color: #666;
+        line-height: 1.5;
+        margin-bottom: 15px;
+        max-height: 80px;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .card-preview::after {
+        content: "...";
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        background: linear-gradient(to right, transparent, white);
+        padding-left: 20px;
+    }
+    
+    .card-footer {
+        padding: 12px 18px;
+        background: #f8f9fa;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 11px;
+        color: #888;
+        border-top: 1px solid #eee;
+    }
+    
+    .edit-badge {
+        background: #28a745;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: bold;
+    }
+    
+    /* Specific Card Header Colors */
+    .card-historia { background: linear-gradient(135deg, #1a2a6e, #2a3a7e); }
+    .card-somo { background: linear-gradient(135deg, #2c3e50, #3498db); }
+    .card-mwanzilishi { background: linear-gradient(135deg, #8e44ad, #9b59b6); }
+    .card-sifa { background: linear-gradient(135deg, #16a085, #1abc9c); }
+    .card-malengo { background: linear-gradient(135deg, #e67e22, #f39c12); }
+    .card-vigezo { background: linear-gradient(135deg, #2980b9, #3498db); }
+    .card-masharti { background: linear-gradient(135deg, #c0392b, #e74c3c); }
+    .card-default { background: linear-gradient(135deg, #7f8c8d, #95a5a6); }
+    
+    /* Editor Area */
+    .editor-area {
+        background: white;
+        border-radius: 20px;
+        padding: 25px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        display: none;
+        margin-top: 20px;
+    }
+    
+    .editor-area.active {
+        display: block;
+        animation: slideUp 0.3s ease;
+    }
+    
+    @keyframes slideUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .editor-title {
+        font-size: 24px;
+        font-weight: bold;
+        color: #1a2a6e;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #FFD700;
+    }
+    
+    .editor-toolbar {
+        background: #f8f9fa;
+        padding: 12px;
+        border-radius: 12px;
+        margin-bottom: 15px;
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    
+    .toolbar-btn {
+        background: white;
+        border: 1px solid #ddd;
+        padding: 6px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: all 0.2s;
+    }
+    
+    .toolbar-btn:hover {
+        background: #1a2a6e;
+        color: white;
+        border-color: #1a2a6e;
+    }
+    
+    .content-editable {
+        width: 100%;
+        min-height: 400px;
+        padding: 15px;
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        font-family: 'Times New Roman', Times, serif;
+        font-size: 14px;
+        line-height: 1.6;
+        resize: vertical;
+        background: #fefef5;
+    }
+    
+    .content-editable:focus {
+        outline: none;
+        border-color: #FFD700;
+        background: white;
+    }
+    
+    .action-buttons {
+        margin-top: 20px;
+        display: flex;
+        gap: 15px;
+        justify-content: flex-end;
+    }
+    
+    .btn-save {
+        background: linear-gradient(135deg, #28a745, #1e7e34);
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 40px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: all 0.2s;
+    }
+    
+    .btn-save:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(40,167,69,0.3);
+    }
+    
+    .btn-cancel {
+        background: #6c757d;
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 40px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: all 0.2s;
+    }
+    
+    .btn-cancel:hover {
+        background: #5a6268;
+    }
+    
+    .success-msg, .error-msg {
+        padding: 12px 20px;
+        border-radius: 10px;
+        margin-bottom: 15px;
+        display: none;
+        animation: fadeIn 0.3s ease;
+    }
+    
+    .success-msg {
+        background: #d4edda;
+        color: #155724;
+        border-left: 4px solid #28a745;
+    }
+    
+    .error-msg {
+        background: #f8d7da;
+        color: #721c24;
+        border-left: 4px solid #dc3545;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    
+    body.dark-mode .smart-card {
+        background: #1e293b;
+    }
+    
+    body.dark-mode .card-preview {
+        color: #94a3b8;
+    }
+    
+    body.dark-mode .card-preview::after {
+        background: linear-gradient(to right, transparent, #1e293b);
+    }
+    
+    body.dark-mode .card-footer {
+        background: #2d3a4e;
+        border-top-color: #334155;
+    }
+    
+    body.dark-mode .editor-area {
+        background: #1e293b;
+    }
+    
+    body.dark-mode .editor-toolbar {
+        background: #2d3a4e;
+    }
+    
+    body.dark-mode .toolbar-btn {
+        background: #1e293b;
+        color: white;
+        border-color: #334155;
+    }
+    
+    body.dark-mode .content-editable {
+        background: #2d3a4e;
+        color: #e2e8f0;
+        border-color: #334155;
+    }
+    
+    body.dark-mode .content-editable:focus {
+        background: #1e293b;
+    }
+    
+    @media (max-width: 700px) {
+        .cards-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="content-editor">
+    <div class="editor-header">
+        <h1>✏️ Hariri Maudhui ya "Kwaya Yetu"</h1>
+        <div>
+            <span style="background: #FFD700; color: #1a2a6e; padding: 5px 12px; border-radius: 20px; font-size: 12px;">👑 Admin Mode</span>
+        </div>
+    </div>
+    
+    <div id="successMsg" class="success-msg"></div>
+    <div id="errorMsg" class="error-msg"></div>
+    
+    <!-- Smart Cards Grid -->
+    <div class="cards-grid" id="cardsGrid"></div>
+    
+    <!-- Editor Area -->
+    <div id="editorArea" class="editor-area">
+        <div class="editor-title" id="editorTitle"></div>
+        
+        <div class="editor-toolbar">
+            <button type="button" class="toolbar-btn" onclick="formatText('bold')"><b>Bold</b></button>
+            <button type="button" class="toolbar-btn" onclick="formatText('italic')"><i>Italic</i></button>
+            <button type="button" class="toolbar-btn" onclick="formatText('underline')"><u>Underline</u></button>
+            <button type="button" class="toolbar-btn" onclick="insertList('bullet')">• Bullet List</button>
+            <button type="button" class="toolbar-btn" onclick="insertList('number')">1. Numbered List</button>
+            <button type="button" class="toolbar-btn" onclick="insertHeading()">H Heading</button>
+            <button type="button" class="toolbar-btn" onclick="insertSubheading()">H Subheading</button>
+            <button type="button" class="toolbar-btn" onclick="insertLine()">─ Line</button>
+        </div>
+        
+        <div id="contentHtml" class="content-editable" contenteditable="true"></div>
+        
+        <div class="action-buttons">
+            <button type="button" class="btn-cancel" onclick="cancelEdit()">✖ Ghairi</button>
+            <button type="button" class="btn-save" onclick="saveContent()">💾 Hifadhi Mabadiliko</button>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentPage = null;
+let originalContent = '';
+let currentPageTitle = '';
+
+// Page configuration with colors and icons
+const pageConfig = {
+    'historia': { icon: '📜', title: 'Historia ya Kwaya', colorClass: 'card-historia' },
+    'somo_msimamizi': { icon: '📖', title: 'Somo / Msimamizi wa Kwaya', colorClass: 'card-somo' },
+    'mwanzilishi': { icon: '⭐', title: 'Mwanzilishi wa Kwaya', colorClass: 'card-mwanzilishi' },
+    'kuwa_mwanakwaya': { icon: '👤', title: 'Kuwa Mwanakwaya', colorClass: 'card-sifa' },
+    'kuwa_mwalimu': { icon: '📚', title: 'Kuwa Mwalimu', colorClass: 'card-sifa' },
+    'kuwa_kiongozi': { icon: '👑', title: 'Kuwa Kiongozi', colorClass: 'card-sifa' },
+    'kuwa_mfadhili': { icon: '💰', title: 'Kuwa Mfadhili', colorClass: 'card-sifa' },
+    'kuwa_rafiki': { icon: '🤝', title: 'Kuwa Rafiki wa Kwaya', colorClass: 'card-sifa' },
+    'kuwa_mlezi': { icon: '🛡️', title: 'Kuwa Mlezi', colorClass: 'card-sifa' },
+    'malengo_mfupi': { icon: '📅', title: 'Malengo ya Muda Mfupi', colorClass: 'card-malengo' },
+    'malengo_kati': { icon: '📆', title: 'Malengo ya Muda wa Kati', colorClass: 'card-malengo' },
+    'malengo_mrefu': { icon: '🗓️', title: 'Malengo ya Muda Mrefu', colorClass: 'card-malengo' }
+};
+
+// Load cards
+async function loadCards() {
+    try {
+        const response = await fetch('/api/kwaya/content/pages');
+        const data = await response.json();
+        
+        if (data.success) {
+            const cardsGrid = document.getElementById('cardsGrid');
+            cardsGrid.innerHTML = data.pages.map(page => {
+                const config = pageConfig[page.page_name] || { icon: '📄', title: page.title, colorClass: 'card-default' };
+                const preview = stripHtml(page.content || 'Bonyeza kuhariri maudhui...').substring(0, 100);
+                return `
+                    <div class="smart-card ${config.colorClass}" onclick="loadContent('${page.page_name}', '${config.title}')">
+                        <div class="card-header ${config.colorClass}">
+                            <h3>
+                                <span class="icon">${config.icon}</span>
+                                <span>${config.title}</span>
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-preview">${escapeHtml(preview)}</div>
+                        </div>
+                        <div class="card-footer">
+                            <span>📅 ${page.last_updated ? new Date(page.last_updated).toLocaleDateString() : 'Bado haijahaririwa'}</span>
+                            <span class="edit-badge">✏️ Hariri</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+    } catch(e) {
+        console.error('Error loading cards:', e);
+    }
+}
+
+// Load content for selected page
+async function loadContent(pageName, pageTitle) {
+    currentPage = pageName;
+    currentPageTitle = pageTitle;
+    document.getElementById('editorTitle').innerHTML = `✏️ Kuhariri: ${pageTitle}`;
+    
+    // Highlight active card
+    document.querySelectorAll('.smart-card').forEach(card => card.classList.remove('active'));
+    event.target.closest('.smart-card').classList.add('active');
+    
+    try {
+        const response = await fetch(`/api/kwaya/content/${pageName}`);
+        const data = await response.json();
+        
+        if (data.success) {
+            originalContent = data.content || '';
+            const editor = document.getElementById('contentHtml');
+            editor.innerHTML = originalContent;
+            document.getElementById('editorArea').classList.add('active');
+            
+            // Scroll to editor
+            document.getElementById('editorArea').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    } catch(e) {
+        console.error('Error loading content:', e);
+        showError('Error loading content. Jaribu tena.');
+    }
+}
+
+// Save content
+async function saveContent() {
+    if (!currentPage) {
+        showError('Tafadhali chagua ukurasa kwanza');
+        return;
+    }
+    
+    const newContent = document.getElementById('contentHtml').innerHTML;
+    
+    try {
+        const response = await fetch('/api/kwaya/content/save', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                page_name: currentPage,
+                content: newContent
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showSuccess('✅ Mabadiliko yamehifadhiwa kikamilifu!');
+            originalContent = newContent;
+            loadCards(); // Refresh cards to show updated timestamp
+        } else {
+            showError('❌ ' + (result.message || 'Hitilafu imetokea'));
+        }
+    } catch(e) {
+        console.error('Error saving content:', e);
+        showError('❌ Tatizo la mtandao. Jaribu tena.');
+    }
+}
+
+function cancelEdit() {
+    if (originalContent !== document.getElementById('contentHtml').innerHTML) {
+        if (confirm('Je, una uhakika unataka kughairi mabadiliko yako?')) {
+            document.getElementById('contentHtml').innerHTML = originalContent;
+            document.getElementById('editorArea').classList.remove('active');
+            currentPage = null;
+            document.querySelectorAll('.smart-card').forEach(card => card.classList.remove('active'));
+        }
+    } else {
+        document.getElementById('editorArea').classList.remove('active');
+        currentPage = null;
+        document.querySelectorAll('.smart-card').forEach(card => card.classList.remove('active'));
+    }
+}
+
+// Formatting functions
+function formatText(command) {
+    document.execCommand(command, false, null);
+    document.getElementById('contentHtml').focus();
+}
+
+function insertList(type) {
+    if (type === 'bullet') {
+        document.execCommand('insertUnorderedList', false, null);
+    } else {
+        document.execCommand('insertOrderedList', false, null);
+    }
+    document.getElementById('contentHtml').focus();
+}
+
+function insertHeading() {
+    document.execCommand('formatBlock', false, '<h3>');
+    document.getElementById('contentHtml').focus();
+}
+
+function insertSubheading() {
+    document.execCommand('formatBlock', false, '<h4>');
+    document.getElementById('contentHtml').focus();
+}
+
+function insertLine() {
+    document.execCommand('insertHorizontalRule', false, null);
+    document.getElementById('contentHtml').focus();
+}
+
+function stripHtml(html) {
+    const tmp = document.createElement('div');
+    tmp.innerHTML = html;
+    return tmp.textContent || tmp.innerText || '';
+}
+
+function escapeHtml(text) {
+    if (!text) return '';
+    return text.replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+    });
+}
+
+function showSuccess(message) {
+    const msgDiv = document.getElementById('successMsg');
+    msgDiv.innerHTML = message;
+    msgDiv.style.display = 'block';
+    setTimeout(() => { msgDiv.style.display = 'none'; }, 3000);
+}
+
+function showError(message) {
+    const msgDiv = document.getElementById('errorMsg');
+    msgDiv.innerHTML = message;
+    msgDiv.style.display = 'block';
+    setTimeout(() => { msgDiv.style.display = 'none'; }, 3000);
+}
+
+loadCards();
+</script>
+{% endblock %}

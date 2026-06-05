@@ -1,0 +1,659 @@
+{% extends "base.html" %}
+
+{% block title %}Inventory - Mauzo ya Bidhaa{% endblock %}
+
+{% block content %}
+<style>
+    .inventory-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    
+    .header {
+        background: linear-gradient(135deg, #1a2a6e, #2a3a7e);
+        padding: 25px 30px;
+        border-radius: 20px;
+        color: white;
+        margin-bottom: 25px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    
+    .btn-add {
+        background: linear-gradient(135deg, #28a745, #1e7e34);
+        color: white;
+        border: none;
+        padding: 12px 25px;
+        border-radius: 40px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        margin-bottom: 25px;
+    }
+    
+    .stat-card {
+        background: white;
+        border-radius: 20px;
+        padding: 20px;
+        text-align: center;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        border-left: 5px solid;
+    }
+    
+    .stat-card.total { border-left-color: #1a2a6e; }
+    .stat-card.products { border-left-color: #17a2b8; }
+    .stat-card.sales { border-left-color: #28a745; }
+    .stat-card.profit { border-left-color: #fd7e14; }
+    
+    .stat-value { font-size: 28px; font-weight: bold; color: #1a2a6e; }
+    .stat-label { font-size: 13px; color: #666; margin-top: 5px; }
+    
+    .tabs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #e0e0e0;
+    }
+    
+    .tab {
+        padding: 12px 25px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-weight: bold;
+        color: #666;
+    }
+    
+    .tab.active {
+        color: #1a2a6e;
+        border-bottom: 3px solid #FFD700;
+    }
+    
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
+    
+    .product-card {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        transition: transform 0.2s;
+    }
+    
+    .product-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .product-header {
+        background: linear-gradient(135deg, #1a2a6e, #2a3a7e);
+        padding: 15px;
+        color: white;
+    }
+    
+    .product-name {
+        font-size: 18px;
+        font-weight: bold;
+    }
+    
+    .product-category {
+        font-size: 11px;
+        opacity: 0.8;
+    }
+    
+    .product-body {
+        padding: 15px;
+    }
+    
+    .price-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+    
+    .price-label { color: #666; font-size: 12px; }
+    .price-value { font-weight: bold; }
+    .price-buy { color: #dc3545; }
+    .price-sell { color: #28a745; }
+    
+    .stock {
+        background: #f8f9fa;
+        padding: 10px;
+        border-radius: 12px;
+        text-align: center;
+        margin: 10px 0;
+    }
+    
+    .stock-value { font-size: 24px; font-weight: bold; }
+    .stock-low { color: #dc3545; }
+    .stock-medium { color: #fd7e14; }
+    .stock-high { color: #28a745; }
+    
+    .btn-sell {
+        background: linear-gradient(135deg, #28a745, #1e7e34);
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 25px;
+        cursor: pointer;
+        width: 100%;
+        font-weight: bold;
+    }
+    
+    .btn-delete {
+        background: #dc3545;
+        color: white;
+        border: none;
+        padding: 8px;
+        border-radius: 25px;
+        cursor: pointer;
+        transition: transform 0.2s;
+        flex: 1;
+    }
+    
+    .btn-delete:hover {
+        transform: scale(1.02);
+        background: #c82333;
+    }
+    
+    .sales-table {
+        background: white;
+        border-radius: 20px;
+        padding: 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        overflow-x: auto;
+    }
+    
+    .sales-table table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .sales-table th {
+        background: #1a2a6e;
+        color: white;
+        padding: 12px;
+        text-align: left;
+    }
+    
+    .sales-table td {
+        padding: 10px;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.7);
+        z-index: 2000;
+        justify-content: center;
+        align-items: center;
+    }
+    .modal.active { display: flex; }
+    .modal-content {
+        background: white;
+        border-radius: 25px;
+        width: 90%;
+        max-width: 550px;
+        max-height: 85vh;
+        overflow-y: auto;
+    }
+    .modal-header {
+        background: linear-gradient(135deg, #1a2a6e, #2a3a7e);
+        color: #FFD700;
+        padding: 18px 25px;
+        border-radius: 25px 25px 0 0;
+        display: flex;
+        justify-content: space-between;
+    }
+    .modal-body { padding: 25px; }
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; font-weight: bold; margin-bottom: 8px; color: #1a2a6e; }
+    .form-group input, .form-group select, .form-group textarea {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+    }
+    .submit-btn {
+        background: linear-gradient(135deg, #28a745, #1e7e34);
+        color: white;
+        width: 100%;
+        padding: 14px;
+        border: none;
+        border-radius: 40px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+    
+    @media (max-width: 800px) {
+        .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+</style>
+
+<div class="inventory-container">
+    <div class="header">
+        <h1>📦 MAUZO NA INVENTORY</h1>
+        <div style="display: flex; gap: 10px;">
+            <button class="btn-add" onclick="exportInventory()" style="background: linear-gradient(135deg, #17a2b8, #138496);">📊 Export Report</button>
+            <button class="btn-add" id="addProductBtn" onclick="openAddProductModal()">➕ Ongeza Bidhaa</button>
+        </div>
+    </div>    
+    
+    <div class="stats-grid">
+        <div class="stat-card total">
+            <div class="stat-value" id="totalSales">TSh 0</div>
+            <div class="stat-label">Jumla ya Mauzo</div>
+        </div>
+        <div class="stat-card products">
+            <div class="stat-value" id="totalProducts">0</div>
+            <div class="stat-label">Jumla ya Bidhaa</div>
+        </div>
+        <div class="stat-card sales">
+            <div class="stat-value" id="totalTransactions">0</div>
+            <div class="stat-label">Mauzo Yaliyofanyika</div>
+        </div>
+        <div class="stat-card profit">
+            <div class="stat-value" id="totalProfit">TSh 0</div>
+            <div class="stat-label">Faida Jumla</div>
+        </div>
+    </div>
+    
+    <div class="tabs">
+        <button class="tab active" onclick="showTab('products', this)">📦 Bidhaa</button>
+        <button class="tab" onclick="showTab('sales', this)">💰 Historia ya Mauzo</button>
+    </div>
+    
+    <div id="productsTab" class="tab-content">
+        <div class="products-grid" id="productsGrid">
+            <div style="text-align:center; padding:50px;">Loading...</div>
+        </div>
+    </div>
+    
+    <div id="salesTab" class="tab-content" style="display:none;">
+        <div class="sales-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Receipt #</th>
+                        <th>Bidhaa</th>
+                        <th>Kiasi</th>
+                        <th>Bei</th>
+                        <th>Jumla</th>
+                        <th>Faida</th>
+                        <th>Tarehe</th>
+                        <th>Mteja</th>
+                    </tr>
+                </thead>
+                <tbody id="salesTableBody">
+                    <tr><td colspan="8" style="text-align:center;">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Add Product Modal -->
+<div id="productModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>📦 Ongeza Bidhaa</h2>
+            <button onclick="closeProductModal()" style="background:none; border:none; color:#FFD700; font-size:24px; cursor:pointer;">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="productForm">
+                <input type="hidden" id="productId">
+                <div class="form-group"><label>Jina la Bidhaa</label><input type="text" id="productName" required></div>
+                <div class="form-group"><label>Aina</label>
+                    <select id="productCategory">
+                        <option value="Mavazi">Mavazi</option>
+                        <option value="CD/DVD">CD/DVD</option>
+                        <option value="Zingine">Zingine</option>
+                    </select>
+                </div>
+                <div class="form-group"><label>Maelezo</label><textarea id="productDesc" rows="2"></textarea></div>
+                <div class="form-group"><label>Bei ya Kununua (TSh)</label><input type="number" id="buyingPrice" value="0"></div>
+                <div class="form-group"><label>Bei ya Kuuza (TSh)</label><input type="number" id="sellingPrice" value="0" required></div>
+                <div class="form-group"><label>Idadi Iliyopo</label><input type="number" id="quantity" value="0"></div>
+                <button type="submit" class="submit-btn">💾 Hifadhi Bidhaa</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Sell Product Modal -->
+<div id="sellModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>💰 KUUZA BIDHAA</h2>
+            <button onclick="closeSellModal()" style="background:none; border:none; color:#FFD700; font-size:24px; cursor:pointer;">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="sellForm">
+                <input type="hidden" id="sellProductId">
+                <div class="form-group">
+                    <label>📦 Bidhaa</label>
+                    <input type="text" id="sellProductName" readonly style="background:#f0f0f0;">
+                </div>
+                <div class="form-group">
+                    <label>💰 Bei ya Kuuza (TSh)</label>
+                    <input type="text" id="sellPrice" readonly style="background:#f0f0f0;">
+                </div>
+                <div class="form-group">
+                    <label>🔢 Kiasi</label>
+                    <input type="number" id="sellQuantity" min="1" value="1" required>
+                </div>
+                <div class="form-group">
+                    <label>💵 Jumla (TSh)</label>
+                    <input type="text" id="sellTotal" readonly style="background:#f0f0f0; font-weight:bold; color:#28a745;">
+                </div>
+                <div class="form-group">
+                    <label>👤 Jina la Mteja (Optional)</label>
+                    <input type="text" id="customerName" placeholder="Jina la mteja">
+                </div>
+                <div class="form-group">
+                    <label>📞 Simu ya Mteja (Optional)</label>
+                    <input type="text" id="customerPhone" placeholder="Simu ya mteja">
+                </div>
+                <div class="form-group">
+                    <label>📝 Maelezo (Optional)</label>
+                    <textarea id="sellNotes" rows="2" placeholder="Maelezo ya mauzo"></textarea>
+                </div>
+                <button type="submit" class="submit-btn" style="background:#28a745;">✅ THIBITISHA MAUZO</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+let products = [];
+let sales = [];
+
+async function loadData() {
+    await loadProducts();
+    await loadSales();
+    updateStats();
+}
+
+async function deleteProduct(id, name) {
+    if (confirm(`Je, una uhakika unataka kufuta "${name}"?`)) {
+        const productSales = sales.filter(s => s.product_id === id);
+        if (productSales.length > 0) {
+            alert(`❌ Haiwezi kufuta! Bidhaa hii imeuzwa ${productSales.length} mara.`);
+            return;
+        }
+        
+        const response = await fetch(`/api/products/${id}`, { method: 'DELETE' });
+        const result = await response.json();
+        if (result.success) {
+            alert('✅ Bidhaa imefutwa!');
+            loadProducts();
+            loadSales();
+        } else {
+            alert('❌ ' + result.message);
+        }
+    }
+}
+
+async function loadProducts() {
+    try {
+        const response = await fetch('/api/products');
+        const data = await response.json();
+        console.log("Products loaded:", data);
+        
+        if (data.success && data.products) {
+            const uniqueProducts = [];
+            const seenIds = new Set();
+            
+            for (const p of data.products) {
+                if (!seenIds.has(p.id)) {
+                    seenIds.add(p.id);
+                    uniqueProducts.push(p);
+                }
+            }
+            
+            products = uniqueProducts;
+            renderProducts();
+            updateStats();
+        }
+    } catch(e) {
+        console.error('Error loading products:', e);
+    }
+}
+
+async function loadSales() {
+    try {
+        const response = await fetch('/api/sales');
+        const data = await response.json();
+        if (data.success) {
+            sales = data.sales || [];
+            renderSales();
+            updateStats();
+        }
+    } catch(e) {
+        console.error('Error loading sales:', e);
+    }
+}
+
+function renderProducts() {
+    const grid = document.getElementById('productsGrid');
+    if (!products || products.length === 0) { 
+        grid.innerHTML = '<div style="text-align:center;padding:50px;">📭 Hakuna bidhaa</div>'; 
+        return; 
+    }
+    
+    grid.innerHTML = '';
+    const displayedNames = new Set();
+    
+    for (const p of products) {
+        if (displayedNames.has(p.name)) continue;
+        displayedNames.add(p.name);
+        
+        const productSales = sales.filter(s => s.product_id === p.id);
+        const totalRevenue = productSales.reduce((sum, s) => sum + s.total_amount, 0);
+        
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        card.innerHTML = `
+            <div class="product-header">
+                <div class="product-name">${escapeHtml(p.name)}</div>
+                <div class="product-category">${p.category}</div>
+            </div>
+            <div class="product-body">
+                <div class="price-row"><span>💰 Bei ya Kununua:</span><span>TSh ${p.buying_price.toLocaleString()}</span></div>
+                <div class="price-row"><span>💵 Bei ya Kuuza:</span><span>TSh ${p.selling_price.toLocaleString()}</span></div>
+                <div class="price-row"><span>📈 Faida kwa Moja:</span><span style="color:#28a745;">TSh ${(p.selling_price - p.buying_price).toLocaleString()}</span></div>
+                <div class="stock">
+                    <span class="stock-value ${p.quantity <= 5 ? 'stock-low' : p.quantity <= 20 ? 'stock-medium' : 'stock-high'}">${p.quantity}</span> pcs zimebaki
+                </div>
+                <div class="price-row" style="background:#e8f4f8; padding:8px; border-radius:10px; margin-top:8px;">
+                    <span>💰 Jumla ya Mapato:</span>
+                    <span style="color:#1a2a6e; font-weight:bold;">TSh ${totalRevenue.toLocaleString()}</span>
+                </div>
+                <div style="display:flex; gap:10px; margin-top:10px;">
+                    <button class="btn-sell" onclick="openSellModal(${p.id}, '${escapeHtml(p.name)}', ${p.selling_price})" style="flex:2;">💰 Kuuza</button>
+                    <button class="btn-delete" onclick="deleteProduct(${p.id}, '${escapeHtml(p.name)}')" style="flex:1;">🗑️ Futa</button>
+                </div>
+            </div>
+        `;
+        grid.appendChild(card);
+    }
+}
+
+function renderSales() {
+    const tbody = document.getElementById('salesTableBody');
+    if (!sales.length) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">📭 Hakuna mauzo bado</td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = sales.map(s => `
+        <tr>
+            <td>${s.receipt_no || '-'}</td>
+            <td>${escapeHtml(s.product_name)}</td>
+            <td>${s.quantity}</td>
+            <td>TSh ${s.selling_price.toLocaleString()}</td>
+            <td>TSh ${s.total_amount.toLocaleString()}</td>
+            <td>TSh ${s.profit.toLocaleString()}</td>
+            <td>${s.sale_date}</td>
+            <td>${escapeHtml(s.customer_name) || '-'}</td>
+        </tr>
+    `).join('');
+}
+
+function updateStats() {
+    const totalSales = sales.reduce((sum, s) => sum + (s.total_amount || 0), 0);
+    const totalProfit = sales.reduce((sum, s) => sum + (s.profit || 0), 0);
+    document.getElementById('totalSales').innerHTML = `TSh ${totalSales.toLocaleString()}`;
+    document.getElementById('totalProducts').innerText = products.length;
+    document.getElementById('totalTransactions').innerText = sales.length;
+    document.getElementById('totalProfit').innerHTML = `TSh ${totalProfit.toLocaleString()}`;
+}
+
+function showTab(tab, element) {
+    document.getElementById('productsTab').style.display = tab === 'products' ? 'block' : 'none';
+    document.getElementById('salesTab').style.display = tab === 'sales' ? 'block' : 'none';
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    if (element) element.classList.add('active');
+}
+
+function openAddProductModal() {
+    document.getElementById('productId').value = '';
+    document.getElementById('productName').value = '';
+    document.getElementById('productCategory').value = 'Mavazi';
+    document.getElementById('productDesc').value = '';
+    document.getElementById('buyingPrice').value = '0';
+    document.getElementById('sellingPrice').value = '0';
+    document.getElementById('quantity').value = '0';
+    document.getElementById('productModal').classList.add('active');
+}
+
+function closeProductModal() {
+    document.getElementById('productModal').classList.remove('active');
+}
+
+// ============ SEHEMU YA MAUZO (SELL) ============
+
+function openSellModal(id, name, price) {
+    document.getElementById('sellProductId').value = id;
+    document.getElementById('sellProductName').value = name;
+    document.getElementById('sellPrice').value = price;
+    document.getElementById('sellQuantity').value = 1;
+    document.getElementById('sellTotal').value = `TSh ${price.toLocaleString()}`;
+    document.getElementById('customerName').value = '';
+    document.getElementById('customerPhone').value = '';
+    document.getElementById('sellNotes').value = '';
+    document.getElementById('sellModal').classList.add('active');
+}
+
+function closeSellModal() {
+    document.getElementById('sellModal').classList.remove('active');
+}
+
+document.getElementById('sellQuantity').addEventListener('input', function() {
+    const qty = parseInt(this.value) || 0;
+    const price = parseFloat(document.getElementById('sellPrice').value) || 0;
+    document.getElementById('sellTotal').value = `TSh ${(qty * price).toLocaleString()}`;
+});
+
+// ============ SUBMIT SELL FORM WITH RECEIPT ============
+document.getElementById('sellForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const productId = parseInt(document.getElementById('sellProductId').value);
+    const quantity = parseInt(document.getElementById('sellQuantity').value);
+    const price = parseFloat(document.getElementById('sellPrice').value);
+    const customerName = document.getElementById('customerName').value;
+    const customerPhone = document.getElementById('customerPhone').value;
+    const notes = document.getElementById('sellNotes').value;
+    
+    if (!quantity || quantity <= 0) {
+        alert('Tafadhali weka kiasi sahihi');
+        return;
+    }
+    
+    const totalAmount = quantity * price;
+    
+    if (!confirm(`Je, una uhakika unauza ${quantity} bidhaa kwa TSh ${totalAmount.toLocaleString()}?`)) {
+        return;
+    }
+    
+    const btn = e.target.querySelector('button[type="submit"]');
+    const originalText = btn.innerText;
+    btn.disabled = true;
+    btn.innerText = '⏳ Inachakata...';
+    
+    try {
+        const response = await fetch('/api/sales', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                product_id: productId,
+                quantity: quantity,
+                selling_price: price,
+                customer_name: customerName,
+                customer_phone: customerPhone,
+                notes: notes
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            const saleId = result.sale_id;
+            alert(`✅ Mauzo yamekamilika!`);
+            closeSellModal();
+            loadProducts();
+            loadSales();
+            
+            // Ask for receipt
+            const wantReceipt = confirm(`✅ Mauzo yamekamilika!\n\nJe, unataka kuchapisha risiti?`);
+            if (wantReceipt && saleId) {
+                window.open(`/receipt/sale/${saleId}?print=true&customer_name=${encodeURIComponent(customerName)}`, '_blank');
+            }
+        } else {
+            alert('❌ ' + (result.message || 'Kuna tatizo'));
+        }
+    } catch(error) {
+        console.error('Error:', error);
+        alert('❌ Kuna tatizo la mtandao');
+    } finally {
+        btn.disabled = false;
+        btn.innerText = originalText;
+    }
+});
+
+function escapeHtml(text) {
+    if (!text) return '';
+    return text.replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+    });
+}
+
+function exportInventory() {
+    const format = confirm('Export kama Excel? (OK = Excel, Cancel = PDF)');
+    window.open(`/api/export/inventory?format=${format ? 'excel' : 'pdf'}`, '_blank');
+}
+
+// Load data on page load
+loadData();
+</script>
+{% endblock %}

@@ -1,0 +1,65 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Kuwa Mwanakwaya - Sifa na Vigezo{% endblock %}
+
+{% block content %}
+<style>
+    .criteria-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+    .criteria-card {
+        background: white;
+        border-radius: 20px;
+        padding: 35px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        border-top: 5px solid #FFD700;
+    }
+    .criteria-card h1 {
+        color: #1a2a6e;
+        margin-bottom: 10px;
+    }
+    .badge {
+        background: linear-gradient(135deg, #FFD700, #FFA500);
+        display: inline-block;
+        padding: 5px 15px;
+        border-radius: 50px;
+        color: #1a2a6e;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+    .criteria-list {
+        list-style: none;
+        padding-left: 0;
+    }
+    .criteria-list li {
+        padding: 12px 0;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+</style>
+
+<div class="criteria-container">
+    <div class="criteria-card">
+        <div class="badge">👤 SIFA ZA KUWA MWANAKWAYA</div>
+        <h1>Kuwa Mwanakwaya</h1>
+        
+        <ul class="criteria-list">
+            <li>✅ Kuwa Mkristo mwaminifu</li>
+            <li>✅ Kuwa na upendo wa muziki na nyimbo za kwaya</li>
+            <li>✅ Kuhudhuria mazoezi kwa uaminifu</li>
+            <li>✅ Kulipa ada ya mwanakwaya kwa wakati</li>
+            <li>✅ Kuheshimu viongozi na wanakwaya wenzako</li>
+            <li>✅ Kuwa tayari kujifunza na kuboresha sauti yako</li>
+            <li>✅ Kushiriki katika ibada na matukio ya kwaya</li>
+        </ul>
+        
+        <div style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 15px;">
+            <h3 style="color: #1a2a6e;">📝 Jinsi ya Kujiunga</h3>
+            <p>Wasiliana na msimamizi wa kwaya au njoo kanisani Siku ya Jumapili ili uone mazoezi na kujaza fomu ya uanachama.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

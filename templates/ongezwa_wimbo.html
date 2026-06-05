@@ -1,0 +1,261 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Ongeza Wimbo Mpya{% endblock %}
+
+{% block content %}
+<style>
+    .compact-card {
+        max-width: 750px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 24px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        overflow: hidden;
+    }
+    
+    .card-header {
+        background: linear-gradient(135deg, #1a2a6e 0%, #2a3a7e 100%);
+        padding: 18px 25px;
+        text-align: center;
+    }
+    
+    .card-header h2 {
+        color: #FFD700;
+        margin: 0;
+        font-size: 22px;
+    }
+    
+    .card-header p {
+        color: rgba(255,255,255,0.8);
+        margin: 5px 0 0;
+        font-size: 12px;
+    }
+    
+    .card-body {
+        padding: 25px;
+    }
+    
+    .form-row {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+    
+    .form-group {
+        margin-bottom: 15px;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: 600;
+        color: #1a2a6e;
+        font-size: 12px;
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 12px;
+        font-size: 13px;
+        transition: all 0.2s;
+    }
+    
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: #FFD700;
+    }
+    
+    .upload-row {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+        margin: 15px 0;
+    }
+    
+    .upload-box {
+        background: #fafbfc;
+        border: 1.5px dashed #cbd5e1;
+        border-radius: 14px;
+        padding: 12px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .upload-box:hover {
+        border-color: #FFD700;
+        background: #fffbf0;
+    }
+    
+    .upload-box i {
+        font-size: 24px;
+        color: #1a2a6e;
+    }
+    
+    .upload-box strong {
+        display: block;
+        font-size: 12px;
+    }
+    
+    .upload-box small {
+        font-size: 10px;
+        color: #888;
+    }
+    
+    .file-name {
+        font-size: 10px;
+        color: #28a745;
+        margin-top: 5px;
+        word-break: break-all;
+    }
+    
+    .submit-btn {
+        background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+        color: white;
+        width: 100%;
+        padding: 12px;
+        border: none;
+        border-radius: 40px;
+        font-size: 14px;
+        font-weight: bold;
+        cursor: pointer;
+        margin-top: 15px;
+        transition: all 0.2s;
+    }
+    
+    .submit-btn:hover {
+        transform: translateY(-2px);
+    }
+    
+    input[type="file"] {
+        display: none;
+    }
+    
+    @media (max-width: 650px) {
+        .form-row, .upload-row {
+            grid-template-columns: 1fr;
+        }
+        .card-body {
+            padding: 18px;
+        }
+    }
+</style>
+
+<div class="compact-card">
+    <div class="card-header">
+        <h2>➕ Ongeza Wimbo Mpya</h2>
+        <p>Jaza taarifa za wimbo unayotaka kuongeza</p>
+    </div>
+    
+    <div class="card-body">
+        <form method="POST" enctype="multipart/form-data">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>📝 Jina la Wimbo *</label>
+                    <input type="text" name="jina" placeholder="Mfano: Halleluya" required>
+                </div>
+                <div class="form-group">
+                    <label>✍️ Mtunzi</label>
+                    <input type="text" name="mtunzi" placeholder="Mfano: Bonifasi Mwakyoma">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>🎼 Kundi *</label>
+                <select name="kundi" required>
+                    <option value="">-- Chagua Kundi --</option>
+                    <option value="Maandamano">🎶 Maandamano</option>
+                    <option value="Mwanzo">🎵 Mwanzo</option>
+                    <option value="Shangilio">🎉 Shangilio</option>
+                    <option value="Zaburi">📖 Zaburi</option>
+                    <option value="Misa">⛪ Misa</option>
+                    <option value="Antifona">📜 Antifona</option>
+                    <option value="Sadaka">💰 Sadaka</option>
+                    <option value="Komunyo">🍞 Komunyo</option>
+                    <option value="Shukrani">🙏 Shukrani</option>
+                    <option value="Ubatizo">💧 Ubatizo</option>
+                    <option value="Ndoa">💍 Ndoa</option>
+                    <option value="Mazishi">🕯️ Mazishi</option>
+                    <option value="Christmas">🎄 Christmas</option>
+                    <option value="Pasaka">🐣 Pasaka</option>
+                    <option value="Majilio">🕯️ Majilio</option>
+                    <option value="Kwaresma">✝️ Kwaresma</option>
+                    <option value="Mwisho">🏁 Mwisho</option>
+                </select>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>🔑 Key</label>
+                    <select name="key">
+                        <option value="">-- Chagua --</option>
+                        <option value="C Major">C Major</option>
+                        <option value="D Major">D Major</option>
+                        <option value="E Major">E Major</option>
+                        <option value="F Major">F Major</option>
+                        <option value="G Major">G Major</option>
+                        <option value="A Major">A Major</option>
+                        <option value="B Major">B Major</option>
+                        <option value="C Minor">C Minor</option>
+                        <option value="D Minor">D Minor</option>
+                        <option value="E Minor">E Minor</option>
+                        <option value="G Minor">G Minor</option>
+                        <option value="A Minor">A Minor</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>⏱️ Time Sig</label>
+                    <select name="time_signature">
+                        <option value="">-- Chagua --</option>
+                        <option value="2/4">2/4</option>
+                        <option value="3/4">3/4</option>
+                        <option value="4/4">4/4</option>
+                        <option value="6/8">6/8</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>🎵 Tempo</label>
+                    <select name="tempo">
+                        <option value="">-- Chagua --</option>
+                        <option value="Adagio (60-70)">Adagio (60-70)</option>
+                        <option value="Andante (70-90)">Andante (70-90)</option>
+                        <option value="Moderato (90-110)">Moderato (90-110)</option>
+                        <option value="Allegro (110-130)">Allegro (110-130)</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>📜 Maneno (Optional)</label>
+                <textarea name="maneno" rows="3" placeholder="Andika maneno ya wimbo hapa..."></textarea>
+            </div>
+            
+            <div class="upload-row">
+                <div class="upload-box" onclick="document.getElementById('nota_pdf').click()">
+                    <i>📄</i>
+                    <strong>Nota (PDF)</strong>
+                    <small>Bonyeza kupakia</small>
+                    <div id="pdfFileName" class="file-name"></div>
+                    <input type="file" id="nota_pdf" name="nota_pdf" accept=".pdf" onchange="document.getElementById('pdfFileName').innerHTML = this.files[0]?.name || ''">
+                </div>
+                <div class="upload-box" onclick="document.getElementById('midi_file').click()">
+                    <i>🎹</i>
+                    <strong>MIDI File</strong>
+                    <small>Bonyeza kupakia</small>
+                    <div id="midiFileName" class="file-name"></div>
+                    <input type="file" id="midi_file" name="midi_file" accept=".mid,.midi" onchange="document.getElementById('midiFileName').innerHTML = this.files[0]?.name || ''">
+                </div>
+            </div>
+            
+            <button type="submit" class="submit-btn">💾 Hifadhi Wimbo</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

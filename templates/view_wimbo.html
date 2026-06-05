@@ -1,0 +1,206 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Maelezo ya Wimbo{% endblock %}
+
+{% block content %}
+<style>
+    .detail-card {
+        max-width: 750px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 24px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        overflow: hidden;
+    }
+    
+    .detail-header {
+        background: linear-gradient(135deg, #1a2a6e 0%, #2a3a7e 100%);
+        padding: 20px 25px;
+        text-align: center;
+    }
+    
+    .detail-header h1 {
+        color: #FFD700;
+        margin: 0;
+        font-size: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+    
+    .detail-body {
+        padding: 25px;
+    }
+    
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+    
+    .info-item {
+        background: #f8f9fa;
+        padding: 12px;
+        border-radius: 14px;
+        border-left: 3px solid #FFD700;
+    }
+    
+    .info-label {
+        font-size: 10px;
+        text-transform: uppercase;
+        color: #1a2a6e;
+        font-weight: bold;
+        margin-bottom: 3px;
+    }
+    
+    .info-value {
+        font-size: 14px;
+        font-weight: 600;
+        color: #333;
+    }
+    
+    .lyrics-box {
+        background: #f8f9fa;
+        padding: 18px;
+        border-radius: 16px;
+        margin: 15px 0;
+        white-space: pre-wrap;
+        font-family: monospace;
+        font-size: 13px;
+        line-height: 1.5;
+        max-height: 250px;
+        overflow-y: auto;
+    }
+    
+    .file-links {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+        margin: 15px 0;
+    }
+    
+    .file-link {
+        background: #28a745;
+        color: white;
+        padding: 8px 16px;
+        border-radius: 30px;
+        text-decoration: none;
+        font-size: 13px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+    
+    .file-link:hover {
+        background: #1e7e34;
+    }
+    
+    .midi-info {
+        background: #1a2a6e;
+        color: #FFD700;
+        padding: 12px 18px;
+        border-radius: 14px;
+        margin: 15px 0;
+        text-align: center;
+        font-size: 13px;
+    }
+    
+    .midi-info a {
+        color: #FFD700;
+        text-decoration: underline;
+    }
+    
+    .back-btn {
+        background: #1a2a6e;
+        color: white;
+        padding: 10px 25px;
+        border-radius: 40px;
+        text-decoration: none;
+        display: inline-block;
+        margin-top: 15px;
+        transition: all 0.2s;
+        text-align: center;
+    }
+    
+    .back-btn:hover {
+        background: #2a3a7e;
+        transform: translateY(-2px);
+    }
+    
+    @media (max-width: 600px) {
+        .info-grid {
+            grid-template-columns: 1fr;
+        }
+        .detail-body {
+            padding: 18px;
+        }
+    }
+</style>
+
+<div class="detail-card">
+    <div class="detail-header">
+        <h1>
+            <span>🎵</span> {{ wimbo.jina }}
+        </h1>
+    </div>
+    
+    <div class="detail-body">
+        <div class="info-grid">
+            <div class="info-item">
+                <div class="info-label">✍️ Mtunzi</div>
+                <div class="info-value">{{ wimbo.mtunzi or '-' }}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">🎼 Kundi</div>
+                <div class="info-value">{{ wimbo.kundi }}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">🔑 Key</div>
+                <div class="info-value">{{ wimbo.key or '-' }}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">⏱️ Time Signature</div>
+                <div class="info-value">{{ wimbo.time_signature or '-' }}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">🎵 Tempo</div>
+                <div class="info-value">{{ wimbo.tempo or '-' }}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">📆 Imeongezwa</div>
+                <div class="info-value">{{ wimbo.tarehe_ongezwa or '-' }}</div>
+            </div>
+        </div>
+        
+        {% if wimbo.maneno %}
+        <div class="lyrics-box">
+            <strong>📝 Maneno ya Wimbo</strong><br><br>
+            {{ wimbo.maneno }}
+        </div>
+        {% endif %}
+        
+        <div class="file-links">
+            {% if wimbo.nota_pdf %}
+            <a href="{{ url_for('static', filename='uploads/' + wimbo.nota_pdf) }}" target="_blank" class="file-link">📄 Tazama Nota (PDF)</a>
+            {% endif %}
+            
+            {% if wimbo.midi_file %}
+            <a href="{{ url_for('static', filename='uploads/' + wimbo.midi_file) }}" download class="file-link">🎹 Pakua MIDI</a>
+            {% endif %}
+        </div>
+        
+        {% if wimbo.midi_file %}
+        <div class="midi-info">
+            🎵 <strong>MIDI File</strong><br>
+            Bonyeza "Pakua MIDI" ili kupata faili. Icheze kwa VLC Media Player au Windows Media Player.
+        </div>
+        {% endif %}
+        
+        <div style="text-align: center;">
+            <a href="{{ url_for('ratiba_makundi_nyimbo', kundi=wimbo.kundi) }}" class="back-btn">◀ Rudi kwenye {{ wimbo.kundi }}</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

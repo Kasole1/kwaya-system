@@ -1,0 +1,59 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Kuwa Mwalimu wa Kwaya{% endblock %}
+
+{% block content %}
+<style>
+    .criteria-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+    .criteria-card {
+        background: white;
+        border-radius: 20px;
+        padding: 35px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        border-top: 5px solid #FFD700;
+    }
+    .criteria-card h1 {
+        color: #1a2a6e;
+        margin-bottom: 10px;
+    }
+    .badge {
+        background: linear-gradient(135deg, #FFD700, #FFA500);
+        display: inline-block;
+        padding: 5px 15px;
+        border-radius: 50px;
+        color: #1a2a6e;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+    .criteria-list {
+        list-style: none;
+        padding-left: 0;
+    }
+    .criteria-list li {
+        padding: 12px 0;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+</style>
+
+<div class="criteria-container">
+    <div class="criteria-card">
+        <div class="badge">📚 SIFA ZA KUWA MWALIMU</div>
+        <h1>Kuwa Mwalimu wa Kwaya</h1>
+        
+        <ul class="criteria-list">
+            <li>✅ Kuwa na ujuzi wa nadharia na vitendo ya muziki</li>
+            <li>✅ Uwezo wa kufundisha sauti tofauti (Soprano, Alto, Tenor, Bass)</li>
+            <li>✅ Subira na ustadi wa kufundisha wanakwaya</li>
+            <li>✅ Uwezo wa kupanga mazoezi na kuchagua nyimbo</li>
+            <li>✅ Kuheshimika na kuwa mfano kwa wanakwaya</li>
+            <li>✅ Ustadi wa kucheza ala za muziki (kinanda, gitaa) ni nyongeza</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

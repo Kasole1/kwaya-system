@@ -1,0 +1,270 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Mission & Vision - Kwaya Mt. Bonifasi{% endblock %}
+
+{% block content %}
+<style>
+    .mv-container {
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+    
+    .mv-card {
+        background: white;
+        border-radius: 20px;
+        padding: 35px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        border-top: 5px solid #FFD700;
+    }
+    
+    .mv-card h1 {
+        color: #1a2a6e;
+        margin-bottom: 10px;
+        text-align: center;
+    }
+    
+    .subtitle {
+        text-align: center;
+        color: #666;
+        margin-bottom: 30px;
+    }
+    
+    .tabs-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 30px;
+        justify-content: center;
+        border-bottom: 2px solid #FFD700;
+        padding-bottom: 15px;
+    }
+    
+    .tab-btn {
+        background: linear-gradient(135deg, #1a2a6e 0%, #0a1a3a 100%);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 50px;
+        cursor: pointer;
+        font-family: 'Times New Roman', Times, serif;
+        font-size: 15px;
+        font-weight: bold;
+        transition: all 0.3s;
+    }
+    
+    .tab-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+    
+    .tab-btn.active {
+        background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+        color: #1a2a6e;
+    }
+    
+    .content-area {
+        min-height: 400px;
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 15px;
+    }
+    
+    .tab-content {
+        display: none;
+        animation: fadeIn 0.5s ease;
+    }
+    
+    .tab-content.active-content {
+        display: block;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .tab-content h2 {
+        color: #1a2a6e;
+        margin-bottom: 20px;
+        border-left: 4px solid #FFD700;
+        padding-left: 15px;
+    }
+    
+    .content-list {
+        list-style: none;
+        padding-left: 0;
+    }
+    
+    .content-list li {
+        padding: 12px 0;
+        border-bottom: 1px solid #e0e0e0;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 16px;
+    }
+    
+    .content-list li:before {
+        content: "✨";
+        color: #FFD700;
+    }
+    
+    .info-box {
+        margin-top: 30px;
+        padding: 20px;
+        background: linear-gradient(135deg, #1a2a6e 0%, #0a1a3a 100%);
+        border-radius: 15px;
+        color: white;
+    }
+    
+    .info-box h3 {
+        color: #FFD700;
+        margin-bottom: 10px;
+    }
+    
+    @media (max-width: 768px) {
+        .tab-btn {
+            padding: 8px 16px;
+            font-size: 12px;
+        }
+    }
+</style>
+
+<div class="mv-container">
+    <div class="mv-card">
+        <h1>📜 MISSION & VISION</h1>
+        <div class="subtitle">Chagua eneo la kujifunza</div>
+        
+        <div class="tabs-container">
+            <button class="tab-btn active" onclick="showTab('mission')">🎯 Mission</button>
+            <button class="tab-btn" onclick="showTab('vision')">👁️ Vision</button>
+            <button class="tab-btn" onclick="showTab('corevalues')">⭐ Core Values</button>
+            <button class="tab-btn" onclick="showTab('falsafa')">📖 Falsafa ya Kwaya</button>
+            <button class="tab-btn" onclick="showTab('principles')">🕯️ Principles</button>
+            <button class="tab-btn" onclick="showTab('code')">📜 Code of Conduct</button>
+        </div>
+        
+        <div class="content-area">
+            <!-- Mission Tab -->
+            <div id="mission" class="tab-content active-content">
+                <h2>🎯 MISSION (Dhamira ya Kwaya)</h2>
+                <ul class="content-list">
+                    <li>Kuimba nyimbo za kumsifu Mungu kwa moyo na sauti</li>
+                    <li>Kueneza Injili kupitia nyimbo za kwaya</li>
+                    <li>Kuwalea wanakwaya katika maisha ya Kikristo yenye nidhamu</li>
+                    <li>Kuwa chachu ya maendeleo ya kiroho na kijamii</li>
+                    <li>Kushirikiana na parokia katika shughuli za kanisa</li>
+                </ul>
+                <div class="info-box">
+                    <h3>📌 Dhima Yetu</h3>
+                    <p>Kila mwanakwaya ni mmisionari wa nyimbo, anayebeba ujumbe wa wokovu kwa wote.</p>
+                </div>
+            </div>
+            
+            <!-- Vision Tab -->
+            <div id="vision" class="tab-content">
+                <h2>👁️ VISION (Maono ya Kwaya)</h2>
+                <ul class="content-list">
+                    <li>Kuwa kwaya ya mfano katika Jimbo zima la Arusha</li>
+                    <li>Kuongoza kwa ubora wa uimbaji na nidhamu</li>
+                    <li>Kuwa kichocheo cha maendeleo ya kiroho kwa waumini wote</li>
+                    <li>Kutambuliwa kitaifa kwa nyimbo bora za kiroho</li>
+                    <li>Kuwa na studio ya kurekodia nyimbo za kwaya</li>
+                </ul>
+                <div class="info-box">
+                    <h3>🎯 Lengo Kuu</h3>
+                    <p>Kufikia mwaka 2030, kuwa kwaya inayotambulika kwa ubora wake katika Tanzania nzima.</p>
+                </div>
+            </div>
+            
+            <!-- Core Values Tab -->
+            <div id="corevalues" class="tab-content">
+                <h2>⭐ CORE VALUES (Kanuni za Msingi)</h2>
+                <ul class="content-list">
+                    <li>🙏 <strong>Upendo</strong> - Kupendana kama ndugu wa kwaya</li>
+                    <li>🎵 <strong>Umaalumu</strong> - Kuimba kwa ubora wa hali ya juu</li>
+                    <li>📖 <strong>Nidhamu</strong> - Kuzingatia sheria na kanuni za kwaya</li>
+                    <li>💪 <strong>Ushirikiano</strong> - Kufanya kazi kama timu moja</li>
+                    <li>⭐ <strong>Uaminifu</strong> - Kuwa waaminifu katika majukumu</li>
+                    <li>🙌 <strong>Ibada</strong> - Kuimba ni ibada kwa Mungu</li>
+                </ul>
+                <div class="info-box">
+                    <h3>📌 Kanuni Yetu</h3>
+                    <p>"Mwimbieni Bwana wimbo mpya, mwimbieni Bwana, nchi yote!" - Zaburi 96:1</p>
+                </div>
+            </div>
+            
+            <!-- Falsafa Tab -->
+            <div id="falsafa" class="tab-content">
+                <h2>📖 FALSAFA YA KWAYA</h2>
+                <ul class="content-list">
+                    <li>Kwaya ni ibada - Kila wimbo ni sala na sifa kwa Mungu</li>
+                    <li>Kuimba kwa moyo safi na nia njema</li>
+                    <li>Kujituma kikamilifu katika huduma ya nyimbo</li>
+                    <li>Kuwa na nidhamu katika mazoezi na ibada</li>
+                    <li>Kupendana na kuheshimiana kama familia moja</li>
+                </ul>
+                <div class="info-box">
+                    <h3>📖 Msingi Wetu</h3>
+                    <p>Falsafa yetu inatokana na imani kwamba nyimbo za kwaya ni njia ya kuleta watu karibu na Mungu.</p>
+                </div>
+            </div>
+            
+            <!-- Principles Tab -->
+            <div id="principles" class="tab-content">
+                <h2>🕯️ PRINCIPLES (Kanuni za Uendeshaji)</h2>
+                <ul class="content-list">
+                    <li>📅 Kuhudhuria mazoezi kwa wakati</li>
+                    <li>💰 Kulipa ada kama ilivyopangwa</li>
+                    <li>🙌 Kushiriki kikamilifu katika ibada</li>
+                    <li>🤝 Kuheshimiana na viongozi</li>
+                    <li>📜 Kuzingatia katiba ya kwaya</li>
+                    <li>🎤 Kujiandaa kabla ya ibada</li>
+                </ul>
+                <div class="info-box">
+                    <h3>📌 Kanuni za Msingi</h3>
+                    <p>Kila mwanakwaya anapaswa kuzingatia kanuni hizi kwa ajili ya maendeleo ya kwaya.</p>
+                </div>
+            </div>
+            
+            <!-- Code of Conduct Tab -->
+            <div id="code" class="tab-content">
+                <h2>📜 CODE OF CONDUCT (Kanuni za Maadili)</h2>
+                <ul class="content-list">
+                    <li>📖 Kuvaa sare za kwaya kwa utaratibu</li>
+                    <li>⏰ Kufika kwa wakati kwenye mazoezi na ibada</li>
+                    <li>🔇 Kuepuka kelele wakati wa mazoezi</li>
+                    <li>📱 Kuweka simu kimya wakati wa ibada</li>
+                    <li>💬 Kuongea kwa heshima na wenzako</li>
+                    <li>🎵 Kuhifadhi vifaa vya kwaya vizuri</li>
+                </ul>
+                <div class="info-box">
+                    <h3>📌 Adabu na Maadili</h3>
+                    <p>Maadili mema ndiyo msingi wa kwaya yenye mafanikio. Tunaheshimiana na tunajali vifaa vya kwaya.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showTab(tabName) {
+        const allContents = document.querySelectorAll('.tab-content');
+        allContents.forEach(content => {
+            content.classList.remove('active-content');
+        });
+        
+        const allButtons = document.querySelectorAll('.tab-btn');
+        allButtons.forEach(btn => {
+            btn.classList.remove('active');
+        });
+        
+        const selectedContent = document.getElementById(tabName);
+        if (selectedContent) {
+            selectedContent.classList.add('active-content');
+        }
+        
+        event.target.classList.add('active');
+    }
+</script>
+{% endblock %}

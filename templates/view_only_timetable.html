@@ -1,0 +1,594 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Tazama Ratiba - Kwaya Mt. Bonifasi{% endblock %}
+
+{% block content %}
+<style>
+    .view-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 20px;
+        position: relative;
+    }
+    
+    /* Watermark Styles with G-Clef */
+    .watermark {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) rotate(-20deg);
+        z-index: 999;
+        pointer-events: none;
+        text-align: center;
+        white-space: nowrap;
+        opacity: 0.1;
+    }
+    
+    .watermark-gclef {
+        font-size: 180px;
+        font-weight: bold;
+        color: #D4A800;
+        display: block;
+        line-height: 1;
+        margin-bottom: 20px;
+        text-shadow: 3px 3px 8px rgba(0,0,0,0.2);
+    }
+    
+    .watermark-text {
+        font-size: 65px;
+        font-weight: bold;
+        color: #D4A800;
+        text-transform: uppercase;
+        letter-spacing: 6px;
+        font-family: 'Times New Roman', Times, serif;
+        text-shadow: 2px 2px 6px rgba(0,0,0,0.2);
+        display: block;
+        margin-top: 15px;
+    }
+    
+    .watermark-sub {
+        font-size: 35px;
+        font-weight: bold;
+        color: #C29900;
+        margin-top: 10px;
+        display: block;
+        letter-spacing: 3px;
+        text-shadow: 1px 1px 4px rgba(0,0,0,0.15);
+    }
+    
+    .watermark-line {
+        width: 300px;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, #D4A800, #FFD700, #D4A800, transparent);
+        margin: 15px auto;
+    }
+    
+    /* Print Styles - Watermark visible */
+    @media print {
+        .watermark {
+            display: block !important;
+            opacity: 0.12 !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+            position: fixed;
+        }
+        
+        .watermark-gclef {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+            color: #D4A800;
+        }
+        
+        .watermark-text {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+            color: #D4A800;
+        }
+        
+        .watermark-sub {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+            color: #C29900;
+        }
+        
+        .watermark-line {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+            background: linear-gradient(90deg, transparent, #D4A800, #FFD700, #D4A800, transparent);
+            height: 2px;
+        }
+        
+        .action-buttons, .back-btn, .no-data {
+            display: none !important;
+        }
+        
+        .view-container {
+            padding: 0;
+            margin: 0;
+        }
+        
+        .print-header-page {
+            position: relative;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            page-break-after: always;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .print-header-page h2 {
+            font-size: 28px;
+            color: #1a2a6e;
+            margin-bottom: 20px;
+        }
+        
+        .print-header-page h3 {
+            font-size: 24px;
+            color: #FFD700;
+            margin-bottom: 15px;
+        }
+        
+        .print-header-page p {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .print-header-page .gold-border {
+            width: 150px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #FFD700, #FFD700, transparent);
+            margin: 20px auto;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+        
+        .print-header-page .small-text {
+            font-size: 14px;
+            color: #999;
+            margin-top: 40px;
+        }
+        
+        .timetable-section {
+            page-break-inside: avoid;
+            margin-bottom: 30px;
+            break-inside: avoid;
+        }
+        
+        .section-header {
+            background: linear-gradient(135deg, #1a2a6e 0%, #2a3a7e 100%);
+            color: #FFD700;
+            padding: 12px 20px;
+            font-weight: bold;
+            font-size: 18px;
+            text-align: center;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+        
+        .timetable-table th {
+            background: #f5f5f5;
+            color: #1a2a6e;
+            padding: 10px 8px;
+            text-align: left;
+            border-bottom: 2px solid #FFD700;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+        
+        .timetable-table td {
+            padding: 8px;
+        }
+    }
+    
+    /* Screen Styles */
+    .print-header-page {
+        display: none;
+    }
+    
+    @media screen {
+        .print-header-page {
+            display: none;
+        }
+    }
+    
+    .view-header {
+        text-align: center;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #FFD700;
+        position: relative;
+        z-index: 1;
+        background: white;
+    }
+    
+    .view-header h2 {
+        color: #1a2a6e;
+        font-size: 24px;
+        margin-bottom: 10px;
+    }
+    
+    .view-header h3 {
+        color: #FFD700;
+        font-size: 20px;
+        margin-bottom: 10px;
+    }
+    
+    .view-header p {
+        color: #666;
+        font-size: 16px;
+    }
+    
+    .gold-border {
+        width: 100px;
+        height: 3px;
+        background: #FFD700;
+        margin: 15px auto;
+    }
+    
+    .timetable-section {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        position: relative;
+        z-index: 1;
+    }
+    
+    .section-header {
+        background: linear-gradient(135deg, #1a2a6e 0%, #2a3a7e 100%);
+        color: #FFD700;
+        padding: 15px 20px;
+        font-weight: bold;
+        font-size: 20px;
+        text-align: center;
+    }
+    
+    .timetable-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+    }
+    
+    .timetable-table th {
+        background: #f5f5f5;
+        color: #1a2a6e;
+        padding: 12px 10px;
+        text-align: left;
+        font-weight: bold;
+        border-bottom: 2px solid #FFD700;
+    }
+    
+    .timetable-table td {
+        padding: 10px;
+        border-bottom: 1px solid #e8e8e8;
+        color: #333;
+    }
+    
+    .timetable-table tr:hover {
+        background: #fffbf0;
+    }
+    
+    .no-data {
+        text-align: center;
+        padding: 50px;
+        color: #999;
+        font-size: 18px;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin: 30px 0;
+        flex-wrap: wrap;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .action-btn {
+        padding: 12px 30px;
+        border: none;
+        border-radius: 40px;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 16px;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        transition: all 0.3s;
+        text-decoration: none;
+    }
+    
+    .action-btn:hover {
+        transform: translateY(-2px);
+    }
+    
+    .whatsapp-btn {
+        background: #25D366;
+        color: white;
+    }
+    
+    .print-btn {
+        background: #1a2a6e;
+        color: #FFD700;
+    }
+    
+    .back-btn {
+        background: #6c757d;
+        color: white;
+    }
+    
+    @media (max-width: 700px) {
+        .watermark-gclef {
+            font-size: 100px;
+        }
+        .watermark-text {
+            font-size: 30px;
+            letter-spacing: 3px;
+        }
+        .watermark-sub {
+            font-size: 20px;
+        }
+        .watermark-line {
+            width: 200px;
+        }
+    }
+</style>
+
+<div class="view-container">
+    <!-- Watermark with G-Clef (visible in print) -->
+    <div class="watermark">
+        <div class="watermark-gclef">🎼</div>
+        <div class="watermark-line"></div>
+        <div class="watermark-text">KWAYA YA MT. BONIFASI</div>
+        <div class="watermark-sub">ARUSHA</div>
+        <div class="watermark-line"></div>
+        <div class="watermark-gclef" style="font-size: 120px; margin-top: 15px;">🎵</div>
+    </div>
+    
+    <div id="timetableView"></div>
+    
+    <div class="action-buttons">
+        <button class="action-btn whatsapp-btn" onclick="shareToWhatsApp()">📱 Share WhatsApp</button>
+        <button class="action-btn print-btn" onclick="prepareAndPrint()">🖨️ Print</button>
+        <a href="{{ url_for('ratiba_tengeneza') }}" class="action-btn back-btn">◀ Rudi</a>
+    </div>
+</div>
+
+<script>
+    let currentTimetableData = null;
+    let currentTimetableInfo = null;
+    
+    function escapeHtml(text) {
+        if (!text) return '';
+        return text.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+    
+    function displayTimetable(timetable, info) {
+        if (!timetable || timetable.length === 0) {
+            document.getElementById('timetableView').innerHTML = '<div class="no-data">📭 Hakuna ratiba ya kutazama. Tafadhali tengeneza ratiba kwanza.</div>';
+            return;
+        }
+        
+        currentTimetableData = timetable;
+        currentTimetableInfo = info;
+        
+        const tarehe = info.tarehe ? new Date(info.tarehe).toLocaleDateString('sw-TZ', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : '';
+        
+        let html = `
+            <div class="view-header">
+                <h2>🎵 KWAYA YA MTAKATIFU BONIFASI ASKOFU NA SHAHIDI 🎵</h2>
+                <h3>Parokia ya Moyo Mtakatifu Wa Yesu, Sombetini - Jimbo Kuu Katoliki La Arusha</h3>
+                <h3>📖 RATIBA YA NYIMBO ZA MISA/IBADA TAKATIFU YA ${info.tukioText || info.tukio}</h3>
+                <p>📅 ${tarehe}</p>
+                <div class="gold-border"></div>
+            </div>
+        `;
+        
+        const grouped = {};
+        for (const item of timetable) {
+            if (!grouped[item.sehemu]) grouped[item.sehemu] = [];
+            grouped[item.sehemu].push(item);
+        }
+        
+        let serial = 1;
+        for (const [section, songs] of Object.entries(grouped)) {
+            html += `
+                <div class="timetable-section">
+                    <div class="section-header">
+                        🎵 ${section}
+                    </div>
+                    <table class="timetable-table">
+                        <thead>
+                            <tr>
+                                <th>SN</th>
+                                <th>WIMBO</th>
+                                <th>MTUNZI</th>
+                                <th>KEY</th>
+                                <th>SIGNATURE</th>
+                                <th>TEMPO</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            for (const item of songs) {
+                html += `
+                    <tr>
+                        <td>${serial++}</td>
+                        <td><strong>${escapeHtml(item.wimbo_jina)}</strong></td>
+                        <td>${escapeHtml(item.mtunzi)}</td>
+                        <td>${escapeHtml(item.key)}</td>
+                        <td>${escapeHtml(item.time_sig)}</td>
+                        <td>${escapeHtml(item.tempo)}</td>
+                    </tr>
+                `;
+            }
+            
+            html += `</tbody></table></div>`;
+        }
+        
+        document.getElementById('timetableView').innerHTML = html;
+    }
+    
+    function prepareAndPrint() {
+        if (!currentTimetableData || currentTimetableData.length === 0) {
+            alert('Hakuna ratiba ya kuchapisha. Tafadhali tengeneza ratiba kwanza.');
+            return;
+        }
+        
+        const printWindow = window.open('', '_blank');
+        const tarehe = currentTimetableInfo.tarehe ? new Date(currentTimetableInfo.tarehe).toLocaleDateString('sw-TZ', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : '';
+        
+        const grouped = {};
+        for (const item of currentTimetableData) {
+            if (!grouped[item.sehemu]) grouped[item.sehemu] = [];
+            grouped[item.sehemu].push(item);
+        }
+        
+        let timetableHtml = '';
+        let serial = 1;
+        for (const [section, songs] of Object.entries(grouped)) {
+            timetableHtml += `
+                <div class="timetable-section">
+                    <div class="section-header">🎵 ${section}</div>
+                    <table class="timetable-table">
+                        <thead><tr><th>SN</th><th>WIMBO</th><th>MTUNZI</th><th>KEY</th><th>SIGNATURE</th><th>TEMPO</th></tr></thead>
+                        <tbody>
+            `;
+            for (const item of songs) {
+                timetableHtml += `
+                    <tr>
+                        <td>${serial++}</td>
+                        <td><strong>${escapeHtml(item.wimbo_jina)}</strong></td>
+                        <td>${escapeHtml(item.mtunzi)}</td>
+                        <td>${escapeHtml(item.key)}</td>
+                        <td>${escapeHtml(item.time_sig)}</td>
+                        <td>${escapeHtml(item.tempo)}</td>
+                    </tr>
+                `;
+            }
+            timetableHtml += `</tbody></table></div>`;
+        }
+        
+        printWindow.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Ratiba ya Kwaya Mt. Bonifasi</title>
+                <meta charset="UTF-8">
+                <style>
+                    * { margin: 0; padding: 0; box-sizing: border-box; }
+                    body { font-family: 'Times New Roman', Times, serif; padding: 20px; position: relative; }
+                    
+                    .print-watermark {
+                        position: fixed;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%) rotate(-20deg);
+                        z-index: 999;
+                        pointer-events: none;
+                        text-align: center;
+                        white-space: nowrap;
+                        opacity: 0.1;
+                    }
+                    .print-watermark .gclef { font-size: 160px; font-weight: bold; color: #D4A800; display: block; line-height: 1; margin-bottom: 15px; }
+                    .print-watermark .text { font-size: 55px; font-weight: bold; color: #D4A800; text-transform: uppercase; letter-spacing: 5px; display: block; margin-top: 10px; }
+                    .print-watermark .sub { font-size: 30px; font-weight: bold; color: #C29900; margin-top: 8px; display: block; letter-spacing: 2px; }
+                    .print-watermark .line { width: 280px; height: 2px; background: linear-gradient(90deg, transparent, #D4A800, #FFD700, #D4A800, transparent); margin: 12px auto; }
+                    
+                    .print-header-page {
+                        position: relative;
+                        height: 100vh;
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: center;
+                        align-items: center;
+                        text-align: center;
+                        page-break-after: always;
+                    }
+                    .print-header-page h2 { font-size: 32px; color: #1a2a6e; margin-bottom: 20px; }
+                    .print-header-page h3 { font-size: 26px; color: #FFD700; margin-bottom: 15px; }
+                    .print-header-page p { font-size: 20px; color: #666; margin-bottom: 10px; }
+                    .print-header-page .gold-border { width: 150px; height: 3px; background: linear-gradient(90deg, transparent, #FFD700, #FFD700, transparent); margin: 25px auto; }
+                    .print-header-page .small-text { font-size: 14px; color: #999; margin-top: 40px; }
+                    
+                    .timetable-section { page-break-inside: avoid; margin-bottom: 30px; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+                    .section-header { background: linear-gradient(135deg, #1a2a6e 0%, #2a3a7e 100%); color: #FFD700; padding: 12px 20px; font-weight: bold; font-size: 20px; text-align: center; }
+                    .timetable-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+                    .timetable-table th { background: #f5f5f5; color: #1a2a6e; padding: 10px 8px; text-align: left; border-bottom: 2px solid #FFD700; }
+                    .timetable-table td { padding: 8px; border-bottom: 1px solid #e8e8e8; }
+                    
+                    @media print {
+                        body { padding: 0; margin: 0; }
+                        .timetable-section { break-inside: avoid; }
+                        .section-header { break-inside: avoid; }
+                        .print-watermark { opacity: 0.12; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="print-watermark">
+                    <div class="gclef">🎼</div>
+                    <div class="line"></div>
+                    <div class="text">KWAYA YA MT. BONIFASI</div>
+                    <div class="sub">ARUSHA</div>
+                    <div class="line"></div>
+                    <div class="gclef" style="font-size: 110px; margin-top: 10px;">🎵</div>
+                </div>
+                
+                <div class="print-header-page">
+                    <h2>🎵 KWAYA YA MTAKATIFU BONIFASI ASKOFU NA SHAHIDI 🎵</h2>
+                    <h3>Parokia ya Moyo Mtakatifu Wa Yesu, Sombetini - Jimbo Kuu Katoliki La Arusha</h3>
+                    <div class="gold-border"></div>
+                    <h3>📖 RATIBA YA NYIMBO ZA MISA/IBADA TAKATIFU YA ${currentTimetableInfo.tukioText || currentTimetableInfo.tukio}</h3>
+                    <p>📅 ${tarehe}</p>
+                    <div class="gold-border"></div>
+                    <p class="small-text">"Utukufu wa Mungu kwa sauti za malaika"</p>
+                </div>
+                
+                ${timetableHtml}
+                
+                <script>
+                    window.onload = function() {
+                        window.print();
+                        setTimeout(function() { window.close(); }, 500);
+                    };
+                <\/script>
+            </body>
+            </html>
+        `);
+        
+        printWindow.document.close();
+    }
+    
+    function shareToWhatsApp() {
+        const timetableDiv = document.getElementById('timetableView');
+        const text = timetableDiv.innerText;
+        const encodedText = encodeURIComponent(text);
+        window.open(`https://wa.me/?text=${encodedText}`, '_blank');
+    }
+    
+    const savedData = localStorage.getItem('viewTimetableData');
+    if (savedData) {
+        const data = JSON.parse(savedData);
+        currentTimetableData = data.timetable;
+        currentTimetableInfo = data.info;
+        displayTimetable(currentTimetableData, currentTimetableInfo);
+        localStorage.removeItem('viewTimetableData');
+    } else {
+        document.getElementById('timetableView').innerHTML = '<div class="no-data">📭 Hakuna ratiba ya kutazama. Tafadhali tengeneza ratiba kwanza.</div>';
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,51 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Login History - Kwaya Mt. Bonifasi{% endblock %}
+
+{% block content %}
+<style>
+    .history-container { max-width: 1200px; margin: 0 auto; }
+    .history-header { background: linear-gradient(135deg, #1a2a6e, #2a3a7e); padding: 20px; border-radius: 16px; color: #FFD700; margin-bottom: 20px; }
+    .history-table { background: white; border-radius: 16px; padding: 20px; overflow-x: auto; }
+    .history-table th { background: #1a2a6e; color: #FFD700; padding: 12px; text-align: left; }
+    .history-table td { padding: 10px; border-bottom: 1px solid #eee; }
+    .badge { background: #e8f5e9; color: #2e7d32; padding: 4px 12px; border-radius: 20px; font-size: 11px; }
+</style>
+
+<div class="history-container">
+    <div class="history-header">
+        <h1>📋 LOGIN HISTORY</h1>
+        <p>Historia ya wakati watumiaji walipoingia kwenye mfumo</p>
+    </div>
+    
+    <div class="history-table">
+        <table style="width:100%; border-collapse:collapse;">
+            <thead>
+                <tr><th>ID</th><th>Mtumiaji</th><th>Tarehe na Saa</th><th>IP Address</th><th>Kifaa / Browser</th></tr>
+            </thead>
+            <tbody id="historyBody">
+                <tr><td colspan="5" style="text-align:center;">Loading...<\/td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+async function loadHistory() {
+    const response = await fetch('/api/login-history');
+    const data = await response.json();
+    if (data.success) {
+        document.getElementById('historyBody').innerHTML = data.history.map(h => `
+            <tr>
+                <td>${h.id}</td>
+                <td><strong>${h.username}</strong></td>
+                <td>${h.login_time}</td>
+                <td>${h.ip_address || '-'}</td>
+                <td><span class="badge">${h.user_agent?.substring(0, 50) || '-'}...</span></td>
+            </tr>
+        `).join('');
+    }
+}
+loadHistory();
+</script>
+{% endblock %}

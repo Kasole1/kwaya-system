@@ -1,0 +1,950 @@
+{% extends "base.html" %}
+
+{% block title %}Wasifu Wangu - Kwaya Mt. Bonifasi{% endblock %}
+
+{% block content %}
+<style>
+    :root {
+        --primary: #1a2a6e;
+        --gold: #FFD700;
+        --success: #28a745;
+        --danger: #dc3545;
+        --warning: #fd7e14;
+        --info: #17a2b8;
+        --dark: #1a1a2e;
+        --light: #f8f9fa;
+    }
+    
+    .member-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 20px;
+        position: relative;
+    }
+    
+    /* Music Watermark Background */
+    .music-watermark-member {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 0;
+        pointer-events: none;
+        opacity: 0.03;
+        width: 80%;
+        text-align: center;
+    }
+    
+    .music-watermark-member .g-clef {
+        font-size: 300px;
+        color: var(--primary);
+    }
+    
+    .music-watermark-member .f-clef {
+        font-size: 250px;
+        color: var(--primary);
+        margin-top: -100px;
+    }
+    
+    .music-notes {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 0;
+        overflow: hidden;
+    }
+    
+    .music-note {
+        position: absolute;
+        font-size: 40px;
+        opacity: 0.04;
+        animation: floatNote 15s infinite linear;
+    }
+    
+    @keyframes floatNote {
+        0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+        10% { opacity: 0.05; }
+        90% { opacity: 0.05; }
+        100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+    }
+    
+    /* Welcome Hero Section */
+    .welcome-hero {
+        background: linear-gradient(135deg, var(--primary), #2a3a7e);
+        border-radius: 30px;
+        padding: 40px;
+        margin-bottom: 30px;
+        position: relative;
+        overflow: hidden;
+        color: white;
+        z-index: 1;
+    }
+    
+    .welcome-hero::before {
+        content: "🎵";
+        position: absolute;
+        font-size: 180px;
+        right: -20px;
+        bottom: -40px;
+        opacity: 0.1;
+        pointer-events: none;
+    }
+    
+    .welcome-hero::after {
+        content: "🎶";
+        position: absolute;
+        font-size: 120px;
+        left: -20px;
+        top: -30px;
+        opacity: 0.1;
+        pointer-events: none;
+    }
+    
+    .member-avatar {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, var(--gold), #FFA500);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 40px;
+        margin-bottom: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+    }
+    
+    /* Stats Cards */
+    .stats-modern {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        margin-bottom: 30px;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .stat-modern {
+        background: white;
+        border-radius: 24px;
+        padding: 20px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+        transition: all 0.3s;
+        border: 1px solid rgba(0,0,0,0.05);
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(5px);
+    }
+    
+    .stat-modern:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    }
+    
+    .stat-modern::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+    }
+    
+    .stat-attendance::before { background: var(--success); }
+    .stat-debt::before { background: var(--danger); }
+    .stat-penalty::before { background: var(--warning); }
+    .stat-rank::before { background: var(--gold); }
+    
+    .stat-icon {
+        font-size: 35px;
+        margin-bottom: 10px;
+    }
+    
+    .stat-title {
+        font-size: 13px;
+        color: #666;
+        margin-bottom: 8px;
+    }
+    
+    .stat-value {
+        font-size: 28px;
+        font-weight: bold;
+        color: var(--primary);
+    }
+    
+    /* Modern Cards */
+    .modern-card {
+        background: white;
+        border-radius: 24px;
+        padding: 25px;
+        margin-bottom: 25px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+        border: 1px solid rgba(0,0,0,0.05);
+        position: relative;
+        z-index: 1;
+        backdrop-filter: blur(5px);
+    }
+    
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 12px;
+        border-bottom: 2px solid #eee;
+    }
+    
+    .card-header h3 {
+        color: var(--primary);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    /* Info Grid */
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+    
+    .info-item {
+        background: var(--light);
+        border-radius: 16px;
+        padding: 15px;
+        transition: all 0.2s;
+    }
+    
+    .info-item:hover {
+        background: #fffbf0;
+        transform: translateX(5px);
+    }
+    
+    .info-label {
+        font-size: 11px;
+        color: #888;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 5px;
+    }
+    
+    .info-value {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--primary);
+    }
+    
+    /* Action Buttons */
+    .action-buttons-modern {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+    
+    .btn-action {
+        flex: 1;
+        padding: 14px 20px;
+        border: none;
+        border-radius: 50px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        font-size: 14px;
+    }
+    
+    .btn-permission {
+        background: linear-gradient(135deg, var(--info), #0d6efd);
+        color: white;
+    }
+    
+    .btn-complaint {
+        background: linear-gradient(135deg, var(--danger), #c82333);
+        color: white;
+    }
+    
+    .btn-action:hover {
+        transform: translateY(-3px);
+        filter: brightness(1.05);
+    }
+    
+    /* Edit Form */
+    .edit-form {
+        display: none;
+        margin-top: 20px;
+        background: var(--light);
+        border-radius: 20px;
+        padding: 20px;
+    }
+    
+    .edit-form.active {
+        display: block;
+        animation: slideDown 0.3s ease;
+    }
+    
+    @keyframes slideDown {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+    
+    .form-group {
+        margin-bottom: 15px;
+    }
+    
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: var(--primary);
+        font-size: 13px;
+    }
+    
+    .form-group input, .form-group textarea, .form-group select {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e0e0e0;
+        border-radius: 14px;
+        font-size: 14px;
+        transition: all 0.2s;
+    }
+    
+    .form-group input:focus, .form-group textarea:focus {
+        outline: none;
+        border-color: var(--gold);
+        box-shadow: 0 0 0 3px rgba(255,215,0,0.2);
+    }
+    
+    .btn-edit {
+        background: linear-gradient(135deg, var(--gold), #FFA500);
+        color: var(--primary);
+        border: none;
+        padding: 10px 20px;
+        border-radius: 40px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: all 0.3s;
+    }
+    
+    .btn-save {
+        background: linear-gradient(135deg, var(--success), #1e7e34);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 40px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+    
+    .btn-cancel {
+        background: #6c757d;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 40px;
+        cursor: pointer;
+        font-weight: bold;
+        margin-left: 10px;
+    }
+    
+    /* Timeline for Attendance */
+    .timeline {
+        position: relative;
+        padding-left: 30px;
+    }
+    
+    .timeline::before {
+        content: '';
+        position: absolute;
+        left: 10px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: #e0e0e0;
+    }
+    
+    .timeline-item {
+        position: relative;
+        margin-bottom: 20px;
+        padding: 12px 15px;
+        background: var(--light);
+        border-radius: 16px;
+        transition: all 0.2s;
+    }
+    
+    .timeline-item::before {
+        content: '';
+        position: absolute;
+        left: -24px;
+        top: 18px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: var(--gold);
+        border: 2px solid white;
+    }
+    
+    /* Request Cards */
+    .request-card {
+        background: var(--light);
+        border-radius: 16px;
+        padding: 15px;
+        margin-bottom: 12px;
+        border-left: 4px solid;
+        transition: all 0.2s;
+    }
+    
+    .request-card:hover {
+        transform: translateX(5px);
+    }
+    
+    .request-pending { border-left-color: var(--warning); }
+    .request-approved { border-left-color: var(--success); }
+    .request-rejected { border-left-color: var(--danger); }
+    
+    /* Modal */
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.8);
+        z-index: 9999;
+        justify-content: center;
+        align-items: center;
+    }
+    .modal.active { display: flex; }
+    .modal-content {
+        background: white;
+        border-radius: 25px;
+        width: 90%;
+        max-width: 500px;
+        max-height: 85vh;
+        overflow-y: auto;
+        animation: modalFadeIn 0.3s;
+    }
+    @keyframes modalFadeIn {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .modal-header {
+        background: linear-gradient(135deg, var(--primary), #2a3a7e);
+        color: var(--gold);
+        padding: 18px 25px;
+        border-radius: 25px 25px 0 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .modal-header h3 { margin: 0; }
+    .close-modal {
+        background: none;
+        border: none;
+        color: var(--gold);
+        font-size: 28px;
+        cursor: pointer;
+    }
+    .modal-body { padding: 25px; }
+    
+    /* Dark Mode */
+    body.dark-mode .stat-modern,
+    body.dark-mode .modern-card {
+        background: #1e293b;
+    }
+    
+    body.dark-mode .info-item {
+        background: #2d3a4e;
+    }
+    
+    body.dark-mode .info-value {
+        color: var(--gold);
+    }
+    
+    body.dark-mode .timeline-item,
+    body.dark-mode .request-card {
+        background: #2d3a4e;
+    }
+    
+    body.dark-mode .edit-form {
+        background: #2d3a4e;
+    }
+    
+    body.dark-mode .modal-content {
+        background: #1e293b;
+    }
+    
+    @media (max-width: 800px) {
+        .stats-modern {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        .info-grid {
+            grid-template-columns: 1fr;
+        }
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+        .action-buttons-modern {
+            flex-direction: column;
+        }
+    }
+</style>
+
+<!-- Music Watermark Background -->
+<div class="music-watermark-member">
+    <div class="g-clef">𝄞</div>
+    <div class="f-clef">𝄢</div>
+</div>
+<div class="music-notes">
+    <div class="music-note" style="left: 5%; animation-duration: 20s;">♪</div>
+    <div class="music-note" style="left: 15%; animation-duration: 25s; animation-delay: 2s;">♫</div>
+    <div class="music-note" style="left: 30%; animation-duration: 18s; animation-delay: 5s;">🎵</div>
+    <div class="music-note" style="left: 45%; animation-duration: 22s; animation-delay: 1s;">🎶</div>
+    <div class="music-note" style="left: 60%; animation-duration: 28s; animation-delay: 7s;">♩</div>
+    <div class="music-note" style="left: 75%; animation-duration: 16s; animation-delay: 3s;">♪</div>
+    <div class="music-note" style="left: 85%; animation-duration: 24s; animation-delay: 4s;">♬</div>
+</div>
+
+<div class="member-container">
+    <!-- Welcome Hero -->
+    <div class="welcome-hero">
+        <div class="member-avatar">
+            🎵
+        </div>
+        <h1 id="memberName">Karibu, Mwanakwaya</h1>
+        <p id="memberWelcome">"Utukufu wa Mungu kwa sauti za malaika"</p>
+    </div>
+    
+    <!-- Stats Cards -->
+    <div class="stats-modern">
+        <div class="stat-modern stat-attendance">
+            <div class="stat-icon">📋</div>
+            <div class="stat-title">Mahudhurio Yako</div>
+            <div class="stat-value" id="myAttendance">0%</div>
+            <div style="font-size: 12px; color: #888;">Mwezi huu</div>
+        </div>
+        <div class="stat-modern stat-debt">
+            <div class="stat-icon">💰</div>
+            <div class="stat-title">Deni Lako</div>
+            <div class="stat-value" id="myDebt">TSh 0</div>
+            <div style="font-size: 12px; color: #888;">Ada zisizolipwa</div>
+        </div>
+        <div class="stat-modern stat-penalty">
+            <div class="stat-icon">⚠️</div>
+            <div class="stat-title">Penalty Yako</div>
+            <div class="stat-value" id="myPenalty">TSh 0</div>
+            <div style="font-size: 12px; color: #888;">Faini zisizolipwa</div>
+        </div>
+        <div class="stat-modern stat-rank">
+            <div class="stat-icon">🏆</div>
+            <div class="stat-title">Namba Yako</div>
+            <div class="stat-value" id="memberNumber">-</div>
+            <div style="font-size: 12px; color: #888;">Sauti: <span id="memberVoice">-</span></div>
+        </div>
+    </div>
+    
+    <!-- Main Content Grid -->
+    <div class="info-grid">
+        <!-- Personal Info Card -->
+        <div class="modern-card">
+            <div class="card-header">
+                <h3>📋 Taarifa Zangu</h3>
+                <button class="btn-edit" onclick="toggleEditForm()">✏️ Hariri</button>
+            </div>
+            <div id="memberInfo"></div>
+            
+            <!-- Edit Form -->
+            <div id="editForm" class="edit-form">
+                <h4 style="margin-bottom: 15px; color: var(--primary);">Hariri Taarifa</h4>
+                <div class="form-group">
+                    <label>📞 Namba ya Simu</label>
+                    <input type="text" id="editPhone" placeholder="Namba ya simu">
+                </div>
+                <div class="form-group">
+                    <label>🏠 Anwani</label>
+                    <input type="text" id="editAddress" placeholder="Anwani yako">
+                </div>
+                <div class="form-group">
+                    <label>🔑 Password Mpya (Acha tupu kama hutaki kubadilisha)</label>
+                    <input type="password" id="editPassword" placeholder="Password mpya">
+                </div>
+                <div class="form-group">
+                    <label>🔄 Rudia Password Mpya</label>
+                    <input type="password" id="editConfirmPassword" placeholder="Rudia password mpya">
+                </div>
+                <button class="btn-save" onclick="saveProfileChanges()">💾 Hifadhi</button>
+                <button class="btn-cancel" onclick="toggleEditForm()">✖ Ghairi</button>
+            </div>
+        </div>
+        
+        <!-- Quick Actions Card -->
+        <div class="modern-card">
+            <div class="card-header">
+                <h3>⚡ Vitendo vya Haraka</h3>
+            </div>
+            <div class="action-buttons-modern">
+                <button class="btn-action btn-permission" onclick="openPermissionModal()">
+                    📝 Omba Ruhusa ya Kutokuhudhuria
+                </button>
+                <button class="btn-action btn-complaint" onclick="openComplaintModal()">
+                    💬 Tuma Malalamiko au Maoni
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Attendance History -->
+    <div class="modern-card">
+        <div class="card-header">
+            <h3>📅 Historia ya Mahudhurio</h3>
+        </div>
+        <div class="timeline" id="attendanceHistory"></div>
+    </div>
+    
+    <!-- Penalty List -->
+    <div class="modern-card">
+        <div class="card-header">
+            <h3>⚠️ Penalty Zangu</h3>
+        </div>
+        <div id="penaltyList"></div>
+    </div>
+    
+    <!-- My Requests & Complaints -->
+    <div class="modern-card">
+        <div class="card-header">
+            <h3>📝 Maombi na Malalamiko Yangu</h3>
+        </div>
+        <div id="requestsList"></div>
+    </div>
+</div>
+
+<!-- Permission Modal -->
+<div id="permissionModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>📝 Omba Ruhusa ya Kutokuhudhuria</h3>
+            <button class="close-modal" onclick="closePermissionModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>📅 Tarehe ya Kutokuhudhuria</label>
+                <input type="date" id="permissionDate" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>📝 Sababu</label>
+                <textarea id="permissionReason" rows="4" class="form-control" placeholder="Tueleze sababu yako hapa..."></textarea>
+            </div>
+            <button onclick="submitPermission()" class="btn-save" style="width:100%;">📤 Tuma Ombi</button>
+        </div>
+    </div>
+</div>
+
+<!-- Complaint Modal -->
+<div id="complaintModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>💬 Tuma Malalamiko au Maoni</h3>
+            <button class="close-modal" onclick="closeComplaintModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>📝 Malalamiko / Maoni Yako</label>
+                <textarea id="complaintMessage" rows="6" class="form-control" placeholder="Andika malalamiko au maoni yako hapa..."></textarea>
+            </div>
+            <button onclick="submitComplaint()" class="btn-save" style="width:100%;">📤 Tuma</button>
+        </div>
+    </div>
+</div>
+
+<script>
+let memberData = {};
+
+async function loadMemberProfile() {
+    try {
+        const response = await fetch('/api/member/self/profile');
+        const data = await response.json();
+        
+        if (data.success) {
+            memberData = data.member;
+            
+            // Update hero
+            document.getElementById('memberName').innerHTML = `👋 Karibu, ${escapeHtml(data.member.jina)}`;
+            document.getElementById('memberNumber').innerHTML = data.member.member_number;
+            document.getElementById('memberVoice').innerHTML = data.member.sauti;
+            
+            // Update stats
+            document.getElementById('myAttendance').innerHTML = (data.stats.attendance || 0) + '%';
+            document.getElementById('myDebt').innerHTML = 'TSh ' + (data.stats.debt || 0).toLocaleString();
+            document.getElementById('myPenalty').innerHTML = 'TSh ' + (data.stats.penalty || 0).toLocaleString();
+            
+            // Display member info
+            document.getElementById('memberInfo').innerHTML = `
+                <div class="info-item">
+                    <div class="info-label">👤 Jina Kamili</div>
+                    <div class="info-value">${escapeHtml(data.member.jina)}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">🎤 Namba ya Mwanakwaya</div>
+                    <div class="info-value">${escapeHtml(data.member.member_number)}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">🎵 Sauti</div>
+                    <div class="info-value">${escapeHtml(data.member.sauti)}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">📞 Simu</div>
+                    <div class="info-value" id="displayPhone">${escapeHtml(data.member.simu || '-')}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">🏠 Anwani</div>
+                    <div class="info-value" id="displayAddress">${escapeHtml(data.member.anwani || '-')}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">📅 Tarehe ya Kujiunga</div>
+                    <div class="info-value">${escapeHtml(data.member.tarehe_jiunga || '-')}</div>
+                </div>
+            `;
+            
+            // Set edit form values
+            document.getElementById('editPhone').value = data.member.simu || '';
+            document.getElementById('editAddress').value = data.member.anwani || '';
+            
+            // Load attendance history
+            loadAttendanceHistory(data.attendance);
+            
+            // Load penalties
+            loadPenalties(data.penalties);
+            
+            // Load requests
+            loadRequests(data.requests);
+        }
+    } catch(e) {
+        console.error('Error loading profile:', e);
+    }
+}
+
+function loadAttendanceHistory(attendance) {
+    const container = document.getElementById('attendanceHistory');
+    if (!attendance || attendance.length === 0) {
+        container.innerHTML = '<div style="text-align:center; padding:30px;">📭 Hakuna rekodi za mahudhurio</div>';
+        return;
+    }
+    
+    container.innerHTML = attendance.map(a => {
+        let statusClass = '';
+        let statusText = '';
+        if (a.status === 'present') { statusClass = 'status-present'; statusText = '✅ Amehudhuria'; }
+        else if (a.status === 'late') { statusClass = 'status-late'; statusText = '⏰ Amechelewa'; }
+        else { statusClass = 'status-absent'; statusText = '❌ Mtoro'; }
+        
+        return `
+            <div class="timeline-item">
+                <div class="timeline-date">📅 ${a.tarehe} | ${a.tukio}</div>
+                <div><span class="timeline-status ${statusClass}">${statusText}</span></div>
+                ${a.dakika_chelewa > 0 ? `<div style="font-size:12px; color:#fd7e14; margin-top:5px;">⏱️ Imechelewa dakika ${a.dakika_chelewa}</div>` : ''}
+            </div>
+        `;
+    }).join('');
+}
+
+function loadPenalties(penalties) {
+    const container = document.getElementById('penaltyList');
+    if (!penalties || penalties.length === 0) {
+        container.innerHTML = '<div style="text-align:center; padding:30px;">✅ Hakuna penalty, Endelea kuhudhuria kwa wakati!</div>';
+        return;
+    }
+    
+    container.innerHTML = penalties.map(p => `
+        <div class="request-card request-pending">
+            <div><strong>⚠️ ${p.penalty_type === 'utoro' ? 'Penalty ya Utoro' : 'Penalty ya Kuchelewa'}</strong></div>
+            <div>📅 ${p.tarehe_penalty} | ${p.tukio}</div>
+            <div style="color: #dc3545; font-weight: bold; margin-top: 5px;">TSh ${(p.remaining_amount || p.penalty_amount).toLocaleString()}</div>
+        </div>
+    `).join('');
+}
+
+function loadRequests(requests) {
+    const container = document.getElementById('requestsList');
+    if (!requests || requests.length === 0) {
+        container.innerHTML = '<div style="text-align:center; padding:30px;">📭 Hakuna maombi au malalamiko</div>';
+        return;
+    }
+    
+    container.innerHTML = requests.map(r => {
+        let statusClass = '';
+        let statusText = '';
+        if (r.status === 'pending') { statusClass = 'request-pending'; statusText = '⏳ Inasubiri'; }
+        else if (r.status === 'approved') { statusClass = 'request-approved'; statusText = '✅ Imekubaliwa'; }
+        else { statusClass = 'request-rejected'; statusText = '❌ Imekataliwa'; }
+        
+        const isComplaint = r.request_type === 'complaint';
+        const icon = isComplaint ? '💬' : '📝';
+        
+        return `
+            <div class="request-card ${statusClass}">
+                <div><strong>${icon} ${isComplaint ? 'Malalamiko / Maoni' : 'Ombi la Ruhusa'}</strong></div>
+                <div>📅 ${r.created_at ? new Date(r.created_at).toLocaleString() : '-'}</div>
+                <div style="margin-top: 8px; font-size: 13px;">${escapeHtml(r.request_data)}</div>
+                <div style="margin-top: 5px; font-size: 12px;">Status: ${statusText}</div>
+            </div>
+        `;
+    }).join('');
+}
+
+function toggleEditForm() {
+    const form = document.getElementById('editForm');
+    form.classList.toggle('active');
+}
+
+async function saveProfileChanges() {
+    const phone = document.getElementById('editPhone').value;
+    const address = document.getElementById('editAddress').value;
+    const password = document.getElementById('editPassword').value;
+    const confirmPassword = document.getElementById('editConfirmPassword').value;
+    
+    if (password && password !== confirmPassword) {
+        alert('❌ Password hazifanani!');
+        return;
+    }
+    
+    if (password && password.length < 4) {
+        alert('❌ Password lazima iwe na herufi 4 au zaidi!');
+        return;
+    }
+    
+    try {
+        const response = await fetch('/api/member/self/update', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                simu: phone,
+                anwani: address,
+                password: password
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            alert('✅ Taarifa zimehifadhiwa kikamilifu!');
+            toggleEditForm();
+            loadMemberProfile();
+            document.getElementById('editPassword').value = '';
+            document.getElementById('editConfirmPassword').value = '';
+        } else {
+            alert('❌ ' + (result.message || 'Hitilafu imetokea'));
+        }
+    } catch(e) {
+        alert('❌ Tatizo la mtandao');
+    }
+}
+
+function openPermissionModal() {
+    document.getElementById('permissionDate').value = new Date().toISOString().split('T')[0];
+    document.getElementById('permissionReason').value = '';
+    document.getElementById('permissionModal').classList.add('active');
+}
+
+function closePermissionModal() {
+    document.getElementById('permissionModal').classList.remove('active');
+}
+
+function openComplaintModal() {
+    document.getElementById('complaintMessage').value = '';
+    document.getElementById('complaintModal').classList.add('active');
+}
+
+function closeComplaintModal() {
+    document.getElementById('complaintModal').classList.remove('active');
+}
+
+async function submitPermission() {
+    const date = document.getElementById('permissionDate').value;
+    const reason = document.getElementById('permissionReason').value;
+    
+    if (!date || !reason.trim()) {
+        alert('❌ Tafadhali jaza tarehe na sababu!');
+        return;
+    }
+    
+    await sendRequest('permission', { date: date, reason: reason });
+}
+
+async function submitComplaint() {
+    const message = document.getElementById('complaintMessage').value;
+    
+    if (!message.trim()) {
+        alert('❌ Tafadhali andika malalamiko au maoni yako!');
+        return;
+    }
+    
+    await sendRequest('complaint', { message: message });
+}
+
+async function sendRequest(type, data) {
+    try {
+        const response = await fetch('/api/member/self/request', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                type: type,
+                date: data.date || '',
+                reason: data.reason || data.message || ''
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            alert('✅ ' + (type === 'permission' ? 'Ombi la ruhusa limetumwa!' : 'Malalamiko yametumwa!'));
+            closePermissionModal();
+            closeComplaintModal();
+            loadMemberProfile();
+        } else {
+            alert('❌ ' + (result.message || 'Hitilafu imetokea'));
+        }
+    } catch(e) {
+        alert('❌ Tatizo la mtandao');
+    }
+}
+
+function escapeHtml(text) {
+    if (!text) return '';
+    return text.replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+    });
+}
+
+// Close modals when clicking outside
+document.addEventListener('click', function(event) {
+    const permModal = document.getElementById('permissionModal');
+    const compModal = document.getElementById('complaintModal');
+    if (event.target === permModal) closePermissionModal();
+    if (event.target === compModal) closeComplaintModal();
+});
+
+loadMemberProfile();
+</script>
+{% endblock %}

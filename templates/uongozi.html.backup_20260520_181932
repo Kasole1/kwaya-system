@@ -1,0 +1,873 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Uongozi - Kwaya Mt. Bonifasi{% endblock %}
+
+{% block content %}
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    .leadership-container {
+        max-width: 100%;
+        margin: 0 auto;
+        padding: 20px;
+        background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
+        border-radius: 24px;
+        overflow-x: auto;
+    }
+    
+    .header {
+        background: linear-gradient(135deg, #1a2a6e, #2a3a7e);
+        padding: 30px;
+        border-radius: 20px;
+        color: white;
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    
+    .header h1 {
+        color: #FFD700;
+        font-size: 32px;
+        margin-bottom: 10px;
+    }
+    
+    /* ============ TREE/HIERARCHY STYLES - SCROLLABLE ============ */
+    .tree-wrapper {
+        overflow-x: auto;
+        overflow-y: visible;
+        padding: 20px 0;
+        margin: 0 -20px;
+    }
+    
+    .tree {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        min-width: 1200px;
+        padding: 20px;
+    }
+    
+    .tree ul {
+        padding-top: 20px;
+        position: relative;
+        display: flex;
+        justify-content: center;
+    }
+    
+    .tree li {
+        float: left;
+        text-align: center;
+        list-style-type: none;
+        position: relative;
+        padding: 20px 10px 0 10px;
+        transition: all 0.3s;
+    }
+    
+    /* Lines connecting nodes */
+    .tree li::before, .tree li::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 50%;
+        border-top: 2px solid #FFD700;
+        width: 50%;
+        height: 20px;
+    }
+    
+    .tree li::after {
+        right: auto;
+        left: 50%;
+        border-left: 2px solid #FFD700;
+    }
+    
+    .tree li:only-child::after, .tree li:only-child::before {
+        display: none;
+    }
+    
+    .tree li:only-child {
+        padding-top: 0;
+    }
+    
+    .tree li:first-child::before, .tree li:last-child::after {
+        border: none;
+    }
+    
+    .tree li:first-child::after {
+        border-radius: 5px 0 0 0;
+    }
+    
+    .tree li:last-child::before {
+        border-right: 2px solid #FFD700;
+        border-radius: 0 5px 0 0;
+    }
+    
+    .tree .node {
+        border: 2px solid #ccc;
+        padding: 12px 18px;
+        text-decoration: none;
+        color: #1a2a6e;
+        font-family: 'Times New Roman', Times, serif;
+        font-size: 14px;
+        font-weight: bold;
+        display: inline-block;
+        border-radius: 16px;
+        transition: all 0.3s;
+        background: white;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        min-width: 160px;
+        cursor: pointer;
+        position: relative;
+        z-index: 10;
+    }
+    
+    .tree .node:hover {
+        background: linear-gradient(135deg, #FFD700, #FFA500);
+        color: #1a2a6e;
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    }
+    
+    .tree .node-title {
+        font-size: 14px;
+        font-weight: bold;
+    }
+    
+    .tree .node-name {
+        font-size: 11px;
+        color: #666;
+        margin-top: 5px;
+    }
+    
+    .tree .node:hover .node-name {
+        color: #1a2a6e;
+    }
+    
+    /* Level colors */
+    .level-1 .node { background: linear-gradient(135deg, #FFD700, #FFA500); border-color: #1a2a6e; color: #1a2a6e; }
+    .level-2 .node { background: linear-gradient(135deg, #1a2a6e, #2a3a7e); color: #FFD700; border-color: #FFD700; }
+    .level-2 .node .node-name { color: rgba(255,215,0,0.8); }
+    .level-3 .node { background: white; border-color: #1a2a6e; }
+    .level-4 .node { background: #f8f9fa; border-color: #17a2b8; }
+    
+    /* ============ EDIT MODAL STYLES ============ */
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.8);
+        backdrop-filter: blur(5px);
+        z-index: 2000;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .modal.active {
+        display: flex;
+    }
+    
+    .modal-content {
+        background: white;
+        border-radius: 28px;
+        width: 90%;
+        max-width: 650px;
+        max-height: 90vh;
+        overflow-y: auto;
+        animation: modalFadeIn 0.3s ease;
+    }
+    
+    @keyframes modalFadeIn {
+        from { opacity: 0; transform: scale(0.95) translateY(-20px); }
+        to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    
+    .modal-header {
+        background: linear-gradient(135deg, #1a2a6e, #2a3a7e);
+        color: #FFD700;
+        padding: 20px 25px;
+        border-radius: 28px 28px 0 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .modal-header h2 {
+        margin: 0;
+        font-size: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .close-modal {
+        background: rgba(255,255,255,0.2);
+        border: none;
+        color: #FFD700;
+        font-size: 24px;
+        cursor: pointer;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        transition: all 0.2s;
+    }
+    
+    .close-modal:hover {
+        background: #FFD700;
+        color: #1a2a6e;
+        transform: rotate(90deg);
+    }
+    
+    .modal-body {
+        padding: 25px;
+    }
+    
+    /* Profile Section */
+    .profile-section {
+        display: flex;
+        gap: 25px;
+        margin-bottom: 25px;
+        flex-wrap: wrap;
+    }
+    
+    .profile-image {
+        text-align: center;
+        flex: 0 0 120px;
+    }
+    
+    .profile-avatar {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #FFD700, #FFA500);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 50px;
+        margin-bottom: 10px;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    
+    .profile-avatar:hover {
+        transform: scale(1.02);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+    
+    .profile-image input {
+        display: none;
+    }
+    
+    .profile-info {
+        flex: 1;
+    }
+    
+    .form-group {
+        margin-bottom: 18px;
+    }
+    
+    .form-group label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 6px;
+        color: #1a2a6e;
+        font-size: 13px;
+    }
+    
+    .form-group input, .form-group select, .form-group textarea {
+        width: 100%;
+        padding: 10px 12px;
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        font-size: 14px;
+        transition: all 0.2s;
+    }
+    
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+        outline: none;
+        border-color: #FFD700;
+    }
+    
+    .btn-save {
+        background: linear-gradient(135deg, #28a745, #1e7e34);
+        color: white;
+        border: none;
+        padding: 12px 25px;
+        border-radius: 40px;
+        cursor: pointer;
+        font-weight: bold;
+        width: 100%;
+        font-size: 16px;
+        transition: all 0.3s;
+    }
+    
+    .btn-save:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(40,167,69,0.3);
+    }
+    
+    .duties-list {
+        background: #f8f9fa;
+        border-radius: 16px;
+        padding: 15px;
+        margin-top: 15px;
+    }
+    
+    .duty-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 0;
+        border-bottom: 1px solid #e0e0e0;
+    }
+    
+    .duty-item:last-child {
+        border-bottom: none;
+    }
+    
+    .add-duty {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+    }
+    
+    .add-duty input {
+        flex: 1;
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 20px;
+    }
+    
+    .add-duty button {
+        background: #17a2b8;
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 20px;
+        cursor: pointer;
+    }
+    
+    @media (max-width: 768px) {
+        .tree-wrapper {
+            margin: 0;
+        }
+        .tree {
+            min-width: 900px;
+        }
+        .profile-section {
+            flex-direction: column;
+            align-items: center;
+        }
+    }
+</style>
+
+<div class="leadership-container">
+    <div class="header">
+        <h1>👑 UONGOZI WA KWAYA MT. BONIFASI</h1>
+        <p>Muundo wa Uongozi na Vyombo vya Kwaya</p>
+    </div>
+    
+    <div class="tree-wrapper">
+        <div class="tree">
+            <ul>
+                <li class="level-1">
+                    <div class="node" onclick="openLeaderModal('mwenyekiti')">
+                        <div class="node-title">👑 MWENYEKITI</div>
+                        <div class="node-name" id="mwenyekiti_name">John Mushi</div>
+                    </div>
+                    <ul>
+                        <!-- Wasaidizi Watatu wa Mwenyekiti -->
+                        <li class="level-2">
+                            <div class="node" onclick="openLeaderModal('mwenyekiti_msaidizi')">
+                                <div class="node-title">👔 MWENYEKITI MSAIDIZI</div>
+                                <div class="node-name" id="mwenyekiti_msaidizi_name">Peter Massawe</div>
+                            </div>
+                            <ul>
+                                <li class="level-3">
+                                    <div class="node" onclick="openLeaderModal('katibu_mkuu')">
+                                        <div class="node-title">📝 KATIBU MKUU</div>
+                                        <div class="node-name" id="katibu_mkuu_name">Anna Peter</div>
+                                    </div>
+                                    <ul>
+                                        <li class="level-4">
+                                            <div class="node" onclick="openLeaderModal('katibu_msaidizi')">
+                                                <div class="node-title">📋 KATIBU MSAIDIZI</div>
+                                                <div class="node-name" id="katibu_msaidizi_name">Grace Lucy</div>
+                                            </div>
+                                        </li>
+                                        <li class="level-4">
+                                            <div class="node" onclick="openLeaderModal('mwalimu_wa_wiki')">
+                                                <div class="node-title">📖 MWALIMU WA WIKI</div>
+                                                <div class="node-name" id="mwalimu_wa_wiki_name">Esther Joseph</div>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="level-3">
+                                    <div class="node" onclick="openLeaderModal('mweka_hazina')">
+                                        <div class="node-title">💰 MWEKA HAZINA</div>
+                                        <div class="node-name" id="mweka_hazina_name">Maria John</div>
+                                    </div>
+                                    <ul>
+                                        <li class="level-4">
+                                            <div class="node" onclick="openLeaderModal('mtunza_vifaa')">
+                                                <div class="node-title">📦 MTUNZA VIFAA</div>
+                                                <div class="node-name" id="mtunza_vifaa_name">James Mboi</div>
+                                            </div>
+                                        </li>
+                                        <li class="level-4">
+                                            <div class="node" onclick="openLeaderModal('mhasibu_msaidizi')">
+                                                <div class="node-title">🧮 MHASIBU MSAIDIZI</div>
+                                                <div class="node-name" id="mhasibu_msaidizi_name">Lucy John</div>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="level-2">
+                            <div class="node" onclick="openLeaderModal('mlezi')">
+                                <div class="node-title">🛡️ MLEZI WA KWAYA</div>
+                                <div class="node-name" id="mlezi_name">Joseph Ndesamburo</div>
+                            </div>
+                        </li>
+                        <li class="level-2">
+                            <div class="node" onclick="openLeaderModal('mwalimu_mkuu')">
+                                <div class="node-title">🎵 MWALIMU MKUU</div>
+                                <div class="node-name" id="mwalimu_mkuu_name">Kiongozi Mkuu</div>
+                            </div>
+                            <ul id="teachersList">
+                                <!-- Teachers will be dynamically added here -->
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Leader Modal -->
+<div id="leaderModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2><span id="modalIcon">👑</span> <span id="modalTitle">Hariri Kiongozi</span></h2>
+            <button class="close-modal" onclick="closeLeaderModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="leaderForm">
+                <input type="hidden" id="leaderKey">
+                
+                <div class="profile-section">
+                    <div class="profile-image">
+                        <div class="profile-avatar" id="profileAvatar" onclick="document.getElementById('profileImage').click()">
+                            📷
+                        </div>
+                        <input type="file" id="profileImage" accept="image/*" style="display:none" onchange="uploadImage()">
+                        <small style="display:block; margin-top:5px;">Bonyeza kubadilisha picha</small>
+                    </div>
+                    <div class="profile-info">
+                        <div class="form-group">
+                            <label>📝 Jina Kamili</label>
+                            <input type="text" id="leaderName" required>
+                        </div>
+                        <div class="form-group">
+                            <label>🎵 Wadhifa / Cheo</label>
+                            <input type="text" id="leaderTitle" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>📞 Namba ya Simu</label>
+                    <input type="text" id="leaderPhone" placeholder="0712345678">
+                </div>
+                
+                <div class="form-group">
+                    <label>✉️ Barua pepe</label>
+                    <input type="email" id="leaderEmail" placeholder="example@email.com">
+                </div>
+                
+                <div class="form-group">
+                    <label>📅 Tarehe ya Kujiunga</label>
+                    <input type="date" id="leaderJoinDate">
+                </div>
+                
+                <div class="form-group">
+                    <label>📝 Maelezo / Wasifu</label>
+                    <textarea id="leaderBio" rows="3" placeholder="Maelezo mafupi kuhusu kiongozi huyu..."></textarea>
+                </div>
+                
+                <div class="duties-list">
+                    <label style="font-weight:bold; display:block; margin-bottom:10px;">📋 Majukumu / Responsibilities</label>
+                    <div id="dutiesContainer"></div>
+                    <div class="add-duty">
+                        <input type="text" id="newDuty" placeholder="Ongeza jukumu jipya...">
+                        <button type="button" onclick="addDuty()">➕ Ongeza</button>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn-save">💾 Hifadhi Mabadiliko</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+// ============ LEADERS DATA STORAGE ============
+let leadersData = {};
+let currentLeaderKey = null;
+
+// Default leaders data
+const defaultLeaders = {
+    mwenyekiti: {
+        name: "John Mushi",
+        title: "Mwenyekiti",
+        phone: "0712345678",
+        email: "john.mushi@kwaya.org",
+        joinDate: "2020-01-15",
+        bio: "Mratibu mkuu wa shughuli zote za kwaya",
+        duties: ["Kusimamia shughuli zote za kwaya", "Kuratibu na viongozi wa kanisa", "Kuhakikisha nidhamu na amani"],
+        avatar: ""
+    },
+    mwenyekiti_msaidizi: {
+        name: "Peter Massawe",
+        title: "Mwenyekiti Msaidizi",
+        phone: "0745678901",
+        email: "peter@kwaya.org",
+        joinDate: "2020-06-10",
+        bio: "Anamsaidia mwenyekiti katika shughuli za kwaya",
+        duties: ["Kumsaidia mwenyekiti", "Kusimamia mahudhurio", "Kuratibu mikutano"],
+        avatar: ""
+    },
+    katibu_mkuu: {
+        name: "Anna Peter",
+        title: "Katibu Mkuu",
+        phone: "0723456789",
+        email: "anna@kwaya.org",
+        joinDate: "2021-01-20",
+        bio: "Anayesimamia kumbukumbu na mawasiliano",
+        duties: ["Kuandika kumbukumbu za mikutano", "Kusimamia mawasiliano", "Kuhifadhi nyaraka"],
+        avatar: ""
+    },
+    katibu_msaidizi: {
+        name: "Grace Lucy",
+        title: "Katibu Msaidizi",
+        phone: "0767890123",
+        email: "grace@kwaya.org",
+        joinDate: "2021-06-15",
+        bio: "Anamsaidia katibu mkuu",
+        duties: ["Kumsaidia katibu mkuu", "Kusaidia katika mawasiliano", "Kuhifadhi kumbukumbu"],
+        avatar: ""
+    },
+    mwalimu_wa_wiki: {
+        name: "Esther Joseph",
+        title: "Mwalimu wa Wiki",
+        phone: "0756789012",
+        email: "esther@kwaya.org",
+        joinDate: "2022-01-10",
+        bio: "Anayeandaa ratiba ya nyimbo za wiki",
+        duties: ["Kuandaa ratiba ya nyimbo", "Kuchagua nyimbo za ibada", "Kuratibu na walimu wengine"],
+        avatar: ""
+    },
+    mweka_hazina: {
+        name: "Maria John",
+        title: "Mweka Hazina",
+        phone: "0781234567",
+        email: "maria@kwaya.org",
+        joinDate: "2020-03-20",
+        bio: "Anayesimamia fedha na mapato ya kwaya",
+        duties: ["Kusimamia mapato na matumizi", "Kuandaa taarifa za fedha", "Kuhakikisha uwazi wa fedha"],
+        avatar: ""
+    },
+    mtunza_vifaa: {
+        name: "James Mboi",
+        title: "Mtunza Vifaa",
+        phone: "0771234567",
+        email: "james@kwaya.org",
+        joinDate: "2021-08-10",
+        bio: "Anayesimamia vifaa na mali za kwaya",
+        duties: ["Kuhifadhi vifaa vya kwaya", "Kurekodi matumizi ya vifaa", "Kuripoti vifaa vilivyoharibika"],
+        avatar: ""
+    },
+    mhasibu_msaidizi: {
+        name: "Lucy John",
+        title: "Mhasibu Msaidizi",
+        phone: "0791234567",
+        email: "lucy@kwaya.org",
+        joinDate: "2022-02-15",
+        bio: "Anamsaidia mweka hazina",
+        duties: ["Kumsaidia mweka hazina", "Kusaidia katika kumbukumbu za fedha", "Kukusanya mapato"],
+        avatar: ""
+    },
+    mlezi: {
+        name: "Joseph Ndesamburo",
+        title: "Mlezi wa Kwaya",
+        phone: "0712345678",
+        email: "joseph@kwaya.org",
+        joinDate: "2010-01-01",
+        bio: "Mwanzilishi na mlezi mkuu wa kwaya",
+        duties: ["Kuwaongoza wanakwaya kiroho", "Kutatua migogoro", "Kuwa mfano mwema"],
+        avatar: ""
+    },
+    mwalimu_mkuu: {
+        name: "Peter Massawe",
+        title: "Mwalimu Mkuu",
+        phone: "0745678901",
+        email: "peter.massawe@kwaya.org",
+        joinDate: "2020-01-10",
+        bio: "Anayeongoza mazoezi na kuendesha kwaya",
+        duties: ["Kuongoza mazoezi ya kwaya", "Kufundisha wanakwaya", "Kuchagua nyimbo zinazofaa"],
+        avatar: ""
+    }
+};
+
+// Teachers list (dynamic)
+let teachersList = [
+    { id: 1, name: "Peter Massawe", role: "Mwalimu Mkuu", phone: "0745678901", duties: ["Kuongoza mazoezi", "Kufundisha sauti"] },
+    { id: 2, name: "Esther Joseph", role: "Mwalimu wa Soprano", phone: "0756789012", duties: ["Kufundisha Soprano", "Kuongoza sehemu"] },
+    { id: 3, name: "Grace Lucy", role: "Mwalimu wa Alto", phone: "0767890123", duties: ["Kufundisha Alto", "Kuongoza sehemu"] },
+    { id: 4, name: "James Mboi", role: "Mwalimu wa Tenor", phone: "0771234567", duties: ["Kufundisha Tenor", "Kuongoza sehemu"] },
+    { id: 5, name: "John Kasole", role: "Mwalimu wa Bass", phone: "0791234567", duties: ["Kufundisha Bass", "Kuongoza sehemu"] }
+];
+
+// Load data from localStorage
+function loadLeadersData() {
+    const saved = localStorage.getItem('kwaya_leaders');
+    if (saved) {
+        const parsed = JSON.parse(saved);
+        Object.assign(leadersData, parsed);
+    } else {
+        leadersData = JSON.parse(JSON.stringify(defaultLeaders));
+    }
+    
+    const savedTeachers = localStorage.getItem('kwaya_teachers_list');
+    if (savedTeachers) {
+        teachersList = JSON.parse(savedTeachers);
+    }
+    
+    updateDisplayNames();
+    renderTeachersTree();
+}
+
+function saveLeadersData() {
+    localStorage.setItem('kwaya_leaders', JSON.stringify(leadersData));
+    updateDisplayNames();
+}
+
+function saveTeachersList() {
+    localStorage.setItem('kwaya_teachers_list', JSON.stringify(teachersList));
+    renderTeachersTree();
+}
+
+function updateDisplayNames() {
+    for (const [key, data] of Object.entries(leadersData)) {
+        const element = document.getElementById(`${key}_name`);
+        if (element && data) {
+            element.innerText = data.name;
+        }
+    }
+}
+
+function renderTeachersTree() {
+    const container = document.getElementById('teachersList');
+    if (!container) return;
+    
+    if (teachersList.length === 0) {
+        container.innerHTML = '<li class="level-3"><div class="node" onclick="openAddTeacherModal()">➕ Ongeza Mwalimu</div></li>';
+        return;
+    }
+    
+    let html = '';
+    teachersList.forEach((teacher, index) => {
+        html += `
+            <li class="level-3">
+                <div class="node" onclick="openTeacherModal(${index})">
+                    <div class="node-title">🎓 ${escapeHtml(teacher.role)}</div>
+                    <div class="node-name">${escapeHtml(teacher.name)}</div>
+                </div>
+            </li>
+        `;
+    });
+    
+    html += `
+        <li class="level-3">
+            <div class="node" onclick="openAddTeacherModal()" style="background:#e8f4f8; border-color:#17a2b8;">
+                <div class="node-title">➕ Ongeza Mwalimu</div>
+                <div class="node-name">Bonyeza kuongeza</div>
+            </div>
+        </li>
+    `;
+    
+    container.innerHTML = html;
+}
+
+function openLeaderModal(key) {
+    currentLeaderKey = key;
+    const data = leadersData[key] || { name: "", title: "", phone: "", email: "", joinDate: "", bio: "", duties: [] };
+    
+    document.getElementById('leaderKey').value = key;
+    document.getElementById('leaderName').value = data.name || '';
+    document.getElementById('leaderTitle').value = data.title || '';
+    document.getElementById('leaderPhone').value = data.phone || '';
+    document.getElementById('leaderEmail').value = data.email || '';
+    document.getElementById('leaderJoinDate').value = data.joinDate || '';
+    document.getElementById('leaderBio').value = data.bio || '';
+    
+    // Set icon based on key
+    const iconMap = {
+        mwenyekiti: '👑', mwenyekiti_msaidizi: '👔', katibu_mkuu: '📝', katibu_msaidizi: '📋',
+        mwalimu_wa_wiki: '📖', mweka_hazina: '💰', mtunza_vifaa: '📦', mhasibu_msaidizi: '🧮',
+        mlezi: '🛡️', mwalimu_mkuu: '🎵'
+    };
+    document.getElementById('modalIcon').innerHTML = iconMap[key] || '👤';
+    document.getElementById('modalTitle').innerHTML = `Hariri ${data.title || key}`;
+    
+    // Render duties
+    const dutiesContainer = document.getElementById('dutiesContainer');
+    const duties = data.duties || [];
+    dutiesContainer.innerHTML = duties.map((duty, idx) => `
+        <div class="duty-item">
+            <span>• ${escapeHtml(duty)}</span>
+            <button type="button" onclick="removeDuty(${idx})" style="background:#dc3545; color:white; border:none; padding:3px 10px; border-radius:15px; cursor:pointer;">✖</button>
+        </div>
+    `).join('');
+    
+    // Set avatar if exists
+    const avatarDiv = document.getElementById('profileAvatar');
+    if (data.avatar) {
+        avatarDiv.style.backgroundImage = `url(${data.avatar})`;
+        avatarDiv.style.backgroundSize = 'cover';
+        avatarDiv.style.backgroundPosition = 'center';
+        avatarDiv.innerHTML = '';
+    } else {
+        avatarDiv.style.backgroundImage = '';
+        avatarDiv.innerHTML = '📷';
+    }
+    
+    document.getElementById('leaderModal').classList.add('active');
+}
+
+function closeLeaderModal() {
+    document.getElementById('leaderModal').classList.remove('active');
+}
+
+function addDuty() {
+    const newDuty = document.getElementById('newDuty').value.trim();
+    if (!newDuty) return;
+    
+    const data = leadersData[currentLeaderKey] || { duties: [] };
+    if (!data.duties) data.duties = [];
+    data.duties.push(newDuty);
+    leadersData[currentLeaderKey] = data;
+    saveLeadersData();
+    
+    document.getElementById('newDuty').value = '';
+    openLeaderModal(currentLeaderKey); // Refresh
+}
+
+function removeDuty(index) {
+    const data = leadersData[currentLeaderKey];
+    if (data && data.duties) {
+        data.duties.splice(index, 1);
+        saveLeadersData();
+        openLeaderModal(currentLeaderKey);
+    }
+}
+
+function uploadImage() {
+    const file = document.getElementById('profileImage').files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const data = leadersData[currentLeaderKey] || {};
+            data.avatar = e.target.result;
+            leadersData[currentLeaderKey] = data;
+            saveLeadersData();
+            
+            const avatarDiv = document.getElementById('profileAvatar');
+            avatarDiv.style.backgroundImage = `url(${e.target.result})`;
+            avatarDiv.style.backgroundSize = 'cover';
+            avatarDiv.style.backgroundPosition = 'center';
+            avatarDiv.innerHTML = '';
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+// Form submission
+document.getElementById('leaderForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    
+    const key = document.getElementById('leaderKey').value;
+    const data = leadersData[key] || {};
+    
+    data.name = document.getElementById('leaderName').value;
+    data.title = document.getElementById('leaderTitle').value;
+    data.phone = document.getElementById('leaderPhone').value;
+    data.email = document.getElementById('leaderEmail').value;
+    data.joinDate = document.getElementById('leaderJoinDate').value;
+    data.bio = document.getElementById('leaderBio').value;
+    
+    leadersData[key] = data;
+    saveLeadersData();
+    
+    alert('✅ Mabadiliko yamehifadhiwa kikamilifu!');
+    closeLeaderModal();
+});
+
+function openTeacherModal(index) {
+    const teacher = teachersList[index];
+    if (!teacher) return;
+    
+    const newName = prompt("Hariri Jina la Mwalimu:", teacher.name);
+    if (newName && newName.trim()) {
+        teacher.name = newName.trim();
+    }
+    
+    const newRole = prompt("Hariri Wadhifa:", teacher.role);
+    if (newRole && newRole.trim()) {
+        teacher.role = newRole.trim();
+    }
+    
+    saveTeachersList();
+}
+
+function openAddTeacherModal() {
+    const name = prompt("Jina la Mwalimu:");
+    if (!name) return;
+    
+    const role = prompt("Wadhifa / Cheo:");
+    if (!role) return;
+    
+    const newId = teachersList.length > 0 ? Math.max(...teachersList.map(t => t.id)) + 1 : 1;
+    teachersList.push({
+        id: newId,
+        name: name,
+        role: role,
+        phone: "",
+        duties: []
+    });
+    
+    saveTeachersList();
+    alert('✅ Mwalimu ameongezwa!');
+}
+
+function escapeHtml(text) {
+    if (!text) return '';
+    return String(text).replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+    });
+}
+
+// Initialize
+loadLeadersData();
+</script>
+{% endblock %}

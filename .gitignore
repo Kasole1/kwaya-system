@@ -1,0 +1,28 @@
+﻿# Database files (never commit these!)
+*.db
+*.sqlite
+*.sqlite3
+*.db3
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.env
+
+# Uploaded media (too large)
+static/uploads/media/*.mp4
+static/uploads/media/*.mp3
+static/uploads/media/*.mov
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Logs
+*.log

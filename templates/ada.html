@@ -1,0 +1,367 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Ada za Kwaya - Kwaya Mt. Bonifasi{% endblock %}
+
+{% block content %}
+<style>
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+    .stat-card {
+        background: linear-gradient(135deg, #1a2a6e, #2a3a7e);
+        border-radius: 16px;
+        padding: 15px;
+        text-align: center;
+        color: white;
+        border-bottom: 3px solid #FFD700;
+    }
+    .stat-number {
+        font-size: 28px;
+        font-weight: bold;
+        color: #FFD700;
+    }
+    .action-bar {
+        background: #f8f9fa;
+        padding: 12px 20px;
+        border-radius: 16px;
+        margin-bottom: 20px;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .action-btn {
+        background: #1a2a6e;
+        color: white;
+        padding: 8px 16px;
+        border-radius: 30px;
+        text-decoration: none;
+        font-size: 13px;
+        border: none;
+        cursor: pointer;
+    }
+    .action-btn-success {
+        background: #28a745;
+    }
+    .action-btn-warning {
+        background: #fd7e14;
+    }
+    .search-box input {
+        padding: 8px 15px;
+        border-radius: 30px;
+        border: 1px solid #ddd;
+        width: 250px;
+    }
+    .member-table {
+        width: 100%;
+        background: white;
+        border-radius: 16px;
+        overflow-x: auto;
+        display: block;
+    }
+    .member-table th {
+        background: #1a2a6e;
+        color: #FFD700;
+        padding: 12px;
+        text-align: left;
+        font-size: 13px;
+    }
+    .member-table td {
+        padding: 10px;
+        border-bottom: 1px solid #eee;
+        font-size: 13px;
+    }
+    .debt-badge {
+        background: #dc3545;
+        color: white;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+    }
+    .paid-badge {
+        background: #28a745;
+        color: white;
+        padding: 3px 10px;
+        border-radius: 20px;
+    }
+    .partial-badge {
+        background: #fd7e14;
+        color: white;
+        padding: 3px 10px;
+        border-radius: 20px;
+    }
+    .pay-btn {
+        background: #28a745;
+        color: white;
+        border: none;
+        padding: 5px 12px;
+        border-radius: 20px;
+        cursor: pointer;
+    }
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.7);
+        z-index: 2000;
+        justify-content: center;
+        align-items: center;
+    }
+    .modal.active {
+        display: flex;
+    }
+    .modal-content {
+        background: white;
+        border-radius: 20px;
+        width: 90%;
+        max-width: 400px;
+    }
+    .modal-header {
+        background: #1a2a6e;
+        padding: 15px 20px;
+        border-radius: 20px 20px 0 0;
+        color: #FFD700;
+    }
+    .modal-body {
+        padding: 20px;
+    }
+    .modal-body input {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border-radius: 10px;
+        border: 1px solid #ddd;
+    }
+    .close-modal {
+        float: right;
+        cursor: pointer;
+        font-size: 24px;
+    }
+    .history-table {
+        width: 100%;
+        font-size: 12px;
+    }
+    .history-table th {
+        background: #f5f5f5;
+        padding: 8px;
+        text-align: left;
+    }
+    @media (max-width: 700px) {
+        .member-table th, .member-table td {
+            padding: 6px;
+            font-size: 11px;
+        }
+    }
+</style>
+
+<div style="max-width:1400px; margin:0 auto;">
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number">TSh {{ total_kiasi|round(0)|int|format_number }}</div>
+            <div class="stat-label">Jumla Inayotakiwa</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">TSh {{ total_kilolipwa|round(0)|int|format_number }}</div>
+            <div class="stat-label">Iliyolipwa</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">TSh {{ total_deni|round(0)|int|format_number }}</div>
+            <div class="stat-label">Deni la Sasa</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">TSh {{ total_penalty|round(0)|int|format_number }}</div>
+            <div class="stat-label">Penalty</div>
+        </div>
+    </div>
+
+    <div class="action-bar">
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Tafuta mwanakwaya...">
+        </div>
+        <div>
+            <a href="/ada_settings" class="action-btn">Mipangilio</a>
+        </div>
+        <div>
+            <a href="/ada/report" class="action-btn action-btn-success">Ripoti</a>
+        </div>
+        <div>
+            <button class="action-btn action-btn-warning" onclick="applyPenalty()">Apply Penalty</button>
+        </div>
+    </div>
+
+    <table class="member-table" id="memberTable">
+        <thead>
+            <tr>
+                <th>JINA</th>
+                <th>SAUTI</th>
+                <th>SIMU</th>
+                <th>INAYOTAKIWA</th>
+                <th>IMALIPWA</th>
+                <th>DENI</th>
+                <th>PENALTY</th>
+                <th>STATUS</th>
+                <th>KITUO</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for m in ada_records %}
+            <tr data-name="{{ m.jina|lower }}">
+                <td><strong>{{ m.jina }}</strong></td>
+                <td>{{ m.sauti }}</td>
+                <td>{{ m.simu }}</td>
+                <td>TSh {{ m.kinachotakiwa|round(0)|int|format_number }}</td>
+                <td>TSh {{ m.imelipwa|round(0)|int|format_number }}</td>
+                <td>
+                    {% if m.deni > 0 %}
+                    <span class="debt-badge">TSh {{ m.deni|round(0)|int|format_number }}</span>
+                    {% else %}
+                    <span class="paid-badge">TSh 0</span>
+                    {% endif %}
+                </td>
+                <td>TSh {{ m.penalty|round(0)|int|format_number }}</td>
+                <td>
+                    {% if m.status_ada == 1 %}
+                    <span class="paid-badge">IMELIPWA</span>
+                    {% elif m.status_ada == 2 %}
+                    <span class="partial-badge">SEHEMU</span>
+                    {% else %}
+                    <span class="debt-badge">HAJALIPA</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if m.deni > 0 %}
+                    <button class="pay-btn" onclick="openPaymentModal({{ m.id }}, '{{ m.jina }}', {{ m.monthly_id }}, {{ m.deni }})">Lipa</button>
+                    {% else %}
+                    &#10004;
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div style="margin-top:30px; background:white; border-radius:16px; padding:20px;">
+        <h3>Historia ya Malipo</h3>
+        <table class="history-table">
+            <thead>
+                <tr><th>Tarehe</th><th>Mwanakwaya</th><th>Sauti</th><th>Kiasi</th><th>Receipt</th></tr>
+            </thead>
+            <tbody>
+                {% for p in payment_history %}
+                <tr>
+                    <td>{{ p.tarehe }}</td>
+                    <td>{{ p.jina }}</td>
+                    <td>{{ p.sauti }}</td>
+                    <td>TSh {{ p.kiasi|round(0)|int|format_number }}</td>
+                    <td><a href="/ada/receipt/{{ p.receipt_no }}" target="_blank">Receipt</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div id="paymentModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span class="close-modal" onclick="closePaymentModal()">&times;</span>
+            <h3>Lipa Ada</h3>
+        </div>
+        <div class="modal-body">
+            <p><strong id="memberName"></strong></p>
+            <p>Deni: <strong id="currentDebt"></strong></p>
+            <input type="number" id="paymentAmount" placeholder="Kiasi cha kulipa">
+            <input type="text" id="paymentNote" placeholder="Maelezo">
+            <button class="pay-btn" style="width:100%; padding:10px;" onclick="submitPayment()">Thibitisha</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentMemberId = null;
+    let currentMonthlyId = null;
+    let currentMemberName = '';
+    let currentDebtAmount = 0;
+
+    function openPaymentModal(id, name, monthlyId, debt) {
+        currentMemberId = id;
+        currentMonthlyId = monthlyId;
+        currentMemberName = name;
+        currentDebtAmount = debt;
+        document.getElementById('memberName').innerHTML = name;
+        document.getElementById('currentDebt').innerHTML = 'TSh ' + debt.toLocaleString();
+        document.getElementById('paymentAmount').value = debt;
+        document.getElementById('paymentModal').classList.add('active');
+    }
+
+    function closePaymentModal() {
+        document.getElementById('paymentModal').classList.remove('active');
+    }
+
+    async function submitPayment() {
+        let amount = parseFloat(document.getElementById('paymentAmount').value);
+        let note = document.getElementById('paymentNote').value;
+        if (isNaN(amount) || amount <= 0) {
+            alert('Tafadhali weka kiasi sahihi');
+            return;
+        }
+        let response = await fetch('/api/ada/make_payment', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                member_id: currentMemberId,
+                kiasi: amount,
+                monthly_id: currentMonthlyId,
+                maelezo: note
+            })
+        });
+        let result = await response.json();
+        if (result.success) {
+            alert(result.message);
+            if (result.receipt_no) {
+                window.open('/ada/receipt/' + result.receipt_no, '_blank');
+            }
+            location.reload();
+        } else {
+            alert(result.message);
+        }
+    }
+
+    async function applyPenalty() {
+        if (confirm('Je, una uhakika unataka kuongeza penalty kwa wanakwaya wanaodaiwa?')) {
+            let response = await fetch('/api/ada/apply_penalty', {method: 'POST'});
+            let result = await response.json();
+            alert(result.message);
+            if (result.success) {
+                location.reload();
+            }
+        }
+    }
+
+    document.getElementById('searchInput').addEventListener('keyup', function() {
+        let term = this.value.toLowerCase();
+        let rows = document.querySelectorAll('#memberTable tbody tr');
+        for (let i = 0; i < rows.length; i++) {
+            let name = rows[i].getAttribute('data-name') || '';
+            if (name.includes(term)) {
+                rows[i].style.display = '';
+            } else {
+                rows[i].style.display = 'none';
+            }
+        }
+    });
+
+    window.onclick = function(event) {
+        if (event.target == document.getElementById('paymentModal')) {
+            closePaymentModal();
+        }
+    }
+</script>
+{% endblock %}

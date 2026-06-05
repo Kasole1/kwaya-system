@@ -1,0 +1,273 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Calendar ya Matukio - Kwaya Mt. Bonifasi{% endblock %}
+
+{% block content %}
+<style>
+    .calendar-container {
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+    
+    .calendar-card {
+        background: white;
+        border-radius: 20px;
+        padding: 35px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        border-top: 5px solid #FFD700;
+    }
+    
+    .calendar-card h1 {
+        color: #1a2a6e;
+        margin-bottom: 10px;
+        text-align: center;
+    }
+    
+    .subtitle {
+        text-align: center;
+        color: #666;
+        margin-bottom: 30px;
+    }
+    
+    .tabs-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 30px;
+        justify-content: center;
+        border-bottom: 2px solid #FFD700;
+        padding-bottom: 15px;
+    }
+    
+    .tab-btn {
+        background: linear-gradient(135deg, #1a2a6e 0%, #0a1a3a 100%);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 50px;
+        cursor: pointer;
+        font-family: 'Times New Roman', Times, serif;
+        font-size: 15px;
+        font-weight: bold;
+        transition: all 0.3s;
+    }
+    
+    .tab-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+    
+    .tab-btn.active {
+        background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+        color: #1a2a6e;
+    }
+    
+    .content-area {
+        min-height: 400px;
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 15px;
+    }
+    
+    .tab-content {
+        display: none;
+        animation: fadeIn 0.5s ease;
+    }
+    
+    .tab-content.active-content {
+        display: block;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .tab-content h2 {
+        color: #1a2a6e;
+        margin-bottom: 20px;
+        border-left: 4px solid #FFD700;
+        padding-left: 15px;
+    }
+    
+    .event-list {
+        list-style: none;
+        padding-left: 0;
+    }
+    
+    .event-list li {
+        padding: 15px;
+        margin-bottom: 10px;
+        background: white;
+        border-radius: 12px;
+        border-left: 4px solid #FFD700;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    
+    .event-date {
+        font-weight: bold;
+        color: #1a2a6e;
+        font-size: 16px;
+    }
+    
+    .event-name {
+        font-size: 16px;
+        margin-top: 5px;
+        color: #333;
+    }
+    
+    .event-location {
+        font-size: 14px;
+        color: #666;
+        margin-top: 5px;
+    }
+    
+    .info-box {
+        margin-top: 30px;
+        padding: 20px;
+        background: linear-gradient(135deg, #1a2a6e 0%, #0a1a3a 100%);
+        border-radius: 15px;
+        color: white;
+    }
+    
+    .info-box h3 {
+        color: #FFD700;
+        margin-bottom: 10px;
+    }
+    
+    @media (max-width: 768px) {
+        .tab-btn {
+            padding: 8px 16px;
+            font-size: 12px;
+        }
+    }
+</style>
+
+<div class="calendar-container">
+    <div class="calendar-card">
+        <h1>📅 CALENDAR YA MATUKIO</h1>
+        <div class="subtitle">Chagua kipindi cha kuona matukio</div>
+        
+        <div class="tabs-container">
+            <button class="tab-btn active" onclick="showTab('weekly')">📆 Weekly Calendar</button>
+            <button class="tab-btn" onclick="showTab('monthly')">📅 Monthly Calendar</button>
+            <button class="tab-btn" onclick="showTab('yearly')">🗓️ Yearly Calendar</button>
+        </div>
+        
+        <div class="content-area">
+            <!-- Weekly Calendar -->
+            <div id="weekly" class="tab-content active-content">
+                <h2>📆 MATUKIO YA WIKI HII (Mei 10-16, 2026)</h2>
+                <ul class="event-list">
+                    <li>
+                        <div class="event-date">📅 Jumatano, Mei 11, 2026 - Saa 4:00 Asubuhi</div>
+                        <div class="event-name">🎤 Mazoezi ya Kwaya (Kujifunza nyimbo mpya)</div>
+                        <div class="event-location">📍 Kanisa Kuu, Sombetini</div>
+                    </li>
+                    <li>
+                        <div class="event-date">📅 Ijumaa, Mei 13, 2026 - Saa 4:30 Asubuhi</div>
+                        <div class="event-name">🎵 Mazoezi ya Mwisho kabla ya Jumapili</div>
+                        <div class="event-location">📍 Kanisa Kuu, Sombetini</div>
+                    </li>
+                    <li>
+                        <div class="event-date">📅 Jumapili, Mei 15, 2026 - Saa 8:00 Asubuhi</div>
+                        <div class="event-name">⛪ Ibada ya Jumapili - Kwaya inatoa huduma</div>
+                        <div class="event-location">📍 Kanisa Kuu, Sombetini</div>
+                    </li>
+                </ul>
+                <div class="info-box">
+                    <h3>📌 Maelezo</h3>
+                    <p>Mazoezi ya Jumatano na Ijumaa ni ya lazima kwa wanakwaya wote. Tafadhali fikeni kwa wakati.</p>
+                </div>
+            </div>
+            
+            <!-- Monthly Calendar -->
+            <div id="monthly" class="tab-content">
+                <h2>📅 MATUKIO YA MWEZI MEI 2026</h2>
+                <ul class="event-list">
+                    <li>
+                        <div class="event-date">📆 Wiki 1 (Mei 1-9)</div>
+                        <div class="event-name">🎤 Mazoezi ya kawaida Jumatano na Ijumaa</div>
+                        <div class="event-location">📍 Kanisa Kuu, Sombetini</div>
+                    </li>
+                    <li>
+                        <div class="event-date">📆 Wiki 2 (Mei 10-16)</div>
+                        <div class="event-name">⭐ Mazoezi Maalum - Kuandaa nyimbo mpya</div>
+                        <div class="event-location">📍 Kanisa Kuu, Sombetini</div>
+                    </li>
+                    <li>
+                        <div class="event-date">📆 Wiki 3 (Mei 17-23)</div>
+                        <div class="event-name">📢 Mkutano Mkuu wa Kwaya</div>
+                        <div class="event-location">📍 Ukumbi wa Parokia</div>
+                    </li>
+                    <li>
+                        <div class="event-date">📆 Wiki 4 (Mei 24-31)</div>
+                        <div class="event-name">🎉 Maandalizi ya Tamasha la Kwaya</div>
+                        <div class="event-location">📍 Kanisa Kuu, Sombetini</div>
+                    </li>
+                </ul>
+                <div class="info-box">
+                    <h3>📌 Maelezo</h3>
+                    <p>Mwezi huu ni maalum kwa maandalizi ya tamasha la kwaya. Kila mwanakwaya anahitajika.</p>
+                </div>
+            </div>
+            
+            <!-- Yearly Calendar -->
+            <div id="yearly" class="tab-content">
+                <h2>🗓️ MATUKIO MAKUU YA MWAKA 2026</h2>
+                <ul class="event-list">
+                    <li>
+                        <div class="event-date">📌 Januari</div>
+                        <div class="event-name">🎵 Kuanza kwa mwaka mpya - Mazoezi ya Awali</div>
+                    </li>
+                    <li>
+                        <div class="event-date">📌 Aprili</div>
+                        <div class="event-name">✝️ Wiki Takatifu - Kwaya inaongoza ibada</div>
+                    </li>
+                    <li>
+                        <div class="event-date">📌 Mei</div>
+                        <div class="event-name">🎉 Tamasha la Kwaya Jimbo la Arusha</div>
+                    </li>
+                    <li>
+                        <div class="event-date">📌 Agosti</div>
+                        <div class="event-name">⭐ Mkutano Mkuu wa Kwaya na Uchaguzi</div>
+                    </li>
+                    <li>
+                        <div class="event-date">📌 Oktoba</div>
+                        <div class="event-name">🎤 Siku ya Kwaya - Ibada Maalum</div>
+                    </li>
+                    <li>
+                        <div class="event-date">📌 Desemba</div>
+                        <div class="event-name">🎄 Krismasi na Mwisho wa Mwaka</div>
+                    </li>
+                </ul>
+                <div class="info-box">
+                    <h3>📌 Maelezo</h3>
+                    <p>Matukio haya yanaweza kubadilika kulingana na mazingira. Tafadhali fuata maelekezo ya viongozi.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showTab(tabName) {
+        const allContents = document.querySelectorAll('.tab-content');
+        allContents.forEach(content => {
+            content.classList.remove('active-content');
+        });
+        
+        const allButtons = document.querySelectorAll('.tab-btn');
+        allButtons.forEach(btn => {
+            btn.classList.remove('active');
+        });
+        
+        const selectedContent = document.getElementById(tabName);
+        if (selectedContent) {
+            selectedContent.classList.add('active-content');
+        }
+        
+        event.target.classList.add('active');
+    }
+</script>
+{% endblock %}

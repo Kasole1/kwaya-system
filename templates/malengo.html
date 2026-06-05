@@ -1,0 +1,206 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Malengo - Kwaya Mt. Bonifasi{% endblock %}
+
+{% block content %}
+<style>
+    .malengo-container {
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+    
+    .malengo-card {
+        background: white;
+        border-radius: 20px;
+        padding: 35px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        border-top: 5px solid #FFD700;
+    }
+    
+    .malengo-card h1 {
+        color: #1a2a6e;
+        margin-bottom: 10px;
+        text-align: center;
+    }
+    
+    .subtitle {
+        text-align: center;
+        color: #666;
+        margin-bottom: 30px;
+    }
+    
+    .tabs-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 30px;
+        justify-content: center;
+        border-bottom: 2px solid #FFD700;
+        padding-bottom: 15px;
+    }
+    
+    .tab-btn {
+        background: linear-gradient(135deg, #1a2a6e 0%, #0a1a3a 100%);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 50px;
+        cursor: pointer;
+        font-family: 'Times New Roman', Times, serif;
+        font-size: 15px;
+        font-weight: bold;
+        transition: all 0.3s;
+    }
+    
+    .tab-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+    
+    .tab-btn.active {
+        background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+        color: #1a2a6e;
+    }
+    
+    .content-area {
+        min-height: 400px;
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 15px;
+    }
+    
+    .tab-content {
+        display: none;
+        animation: fadeIn 0.5s ease;
+    }
+    
+    .tab-content.active-content {
+        display: block;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .tab-content h2 {
+        color: #1a2a6e;
+        margin-bottom: 20px;
+        border-left: 4px solid #FFD700;
+        padding-left: 15px;
+    }
+    
+    .goal-list {
+        list-style: none;
+        padding-left: 0;
+    }
+    
+    .goal-list li {
+        padding: 12px 0;
+        border-bottom: 1px solid #e0e0e0;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 16px;
+    }
+    
+    .goal-list li:before {
+        content: "🎯";
+        color: #FFD700;
+    }
+    
+    .info-box {
+        margin-top: 30px;
+        padding: 20px;
+        background: linear-gradient(135deg, #1a2a6e 0%, #0a1a3a 100%);
+        border-radius: 15px;
+        color: white;
+    }
+    
+    .info-box h3 {
+        color: #FFD700;
+        margin-bottom: 10px;
+    }
+</style>
+
+<div class="malengo-container">
+    <div class="malengo-card">
+        <h1>🎯 Malengo ya Kwaya</h1>
+        <div class="subtitle">Chagua kipindi cha malengo</div>
+        
+        <div class="tabs-container">
+            <button class="tab-btn active" onclick="showTab('mfupi')">📅 Muda Mfupi (Wiki)</button>
+            <button class="tab-btn" onclick="showTab('kati')">📆 Muda wa Kati (Mwezi-Mwaka)</button>
+            <button class="tab-btn" onclick="showTab('mrefu')">🗓️ Muda Mrefu (Miaka 1-5)</button>
+        </div>
+        
+        <div class="content-area">
+            <!-- Muda Mfupi -->
+            <div id="mfupi" class="tab-content active-content">
+                <h2>📅 Malengo ya Muda Mfupi (Wiki 1-2)</h2>
+                <ul class="goal-list">
+                    <li>Kukamilisha nyimbo 3 mpya kwa ibada ya Jumapili</li>
+                    <li>Kuhudhuria mazoezi yote (Jumatano na Ijumaa)</li>
+                    <li>Kukusanya ada kutoka kwa wanakwaya wote</li>
+                    <li>Kuwa na mazoezi binafsi ya sauti</li>
+                </ul>
+                <div class="info-box">
+                    <h3>📌 Hatua za Kuchukua</h3>
+                    <p>Kila mwanakwaya anapaswa kuhakikisha anahudhuria mazoezi na kujifunza nyimbo mpya kabla ya Jumapili.</p>
+                </div>
+            </div>
+            
+            <!-- Muda wa Kati -->
+            <div id="kati" class="tab-content">
+                <h2>📆 Malengo ya Muda wa Kati (Mwezi - Mwaka 1)</h2>
+                <ul class="goal-list">
+                    <li>Kuandaa tamasha la kwaya la mwaka</li>
+                    <li>Kurekodi albamu mpya yenye nyimbo 10</li>
+                    <li>Kuongeza wanakwaya wapya 10</li>
+                    <li>Kununua vifaa vya sauti (kinanda kipya, speaker)</li>
+                </ul>
+                <div class="info-box">
+                    <h3>📌 Hatua za Kuchukua</h3>
+                    <p>Kamati ya kwaya inapaswa kupanga bajeti na kuanza maandalizi ya tamasha na albamu.</p>
+                </div>
+            </div>
+            
+            <!-- Muda Mrefu -->
+            <div id="mrefu" class="tab-content">
+                <h2>🗓️ Malengo ya Muda Mrefu (Miaka 1-5)</h2>
+                <ul class="goal-list">
+                    <li>Kuwa kwaya inayoongoza Jimbo zima la Arusha</li>
+                    <li>Kununua Jengo la kwaya (chumba cha mazoezi)</li>
+                    <li>Kuanzisha studio ya kurekodia nyimbo</li>
+                    <li>Kuwa na wasifu katika ngazi ya kitaifa</li>
+                </ul>
+                <div class="info-box">
+                    <h3>📌 Hatua za Kuchukua</h3>
+                    <p>Kuunda kamati maalum ya kutafuta fedha na kufanya mipango ya miradi mirefu.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showTab(tabName) {
+        const allContents = document.querySelectorAll('.tab-content');
+        allContents.forEach(content => {
+            content.classList.remove('active-content');
+        });
+        
+        const allButtons = document.querySelectorAll('.tab-btn');
+        allButtons.forEach(btn => {
+            btn.classList.remove('active');
+        });
+        
+        const selectedContent = document.getElementById(tabName);
+        if (selectedContent) {
+            selectedContent.classList.add('active-content');
+        }
+        
+        event.target.classList.add('active');
+    }
+</script>
+{% endblock %}

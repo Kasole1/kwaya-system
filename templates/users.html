@@ -1,0 +1,433 @@
+﻿{% extends "base.html" %}
+
+{% block title %}User Management - Kwaya Mt. Bonifasi{% endblock %}
+
+{% block content %}
+<style>
+    .strength-meter { margin-top: 8px; height: 4px; background: #e0e0e0; border-radius: 4px; overflow: hidden; }
+    .strength-fill { height: 100%; transition: width 0.3s, background 0.3s; }
+    .info-box ul { margin-left: 20px; }
+    .users-container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+    .users-header { background: linear-gradient(135deg, #1a2a6e, #2a3a7e); padding: 25px 30px; border-radius: 20px; color: white; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+    .add-user-btn { background: linear-gradient(135deg, #28a745, #1e7e34); color: white; border: none; padding: 12px 25px; border-radius: 40px; cursor: pointer; font-weight: bold; }
+    .users-table { background: white; border-radius: 20px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); overflow-x: auto; }
+    .users-table table { width: 100%; border-collapse: collapse; }
+    .users-table th { background: #1a2a6e; color: #FFD700; padding: 12px; text-align: left; }
+    .users-table td { padding: 10px; border-bottom: 1px solid #eee; }
+    .role-badge { padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; display: inline-block; }
+    .role-1 { background: #dc3545; color: white; }
+    .role-2 { background: #fd7e14; color: white; }
+    .role-3 { background: #28a745; color: white; }
+    .role-4 { background: #17a2b8; color: white; }
+    .role-5 { background: #6c757d; color: white; }
+    .action-btn { background: none; border: none; cursor: pointer; font-size: 18px; margin: 0 5px; padding: 5px 8px; border-radius: 8px; transition: all 0.2s; }
+    .action-btn:hover { background: #f0f0f0; transform: scale(1.05); }
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; justify-content: center; align-items: center; }
+    .modal.active { display: flex; }
+    .modal-content { background: white; border-radius: 25px; width: 90%; max-width: 600px; max-height: 85vh; overflow-y: auto; }
+    .modal-header { background: linear-gradient(135deg, #1a2a6e, #2a3a7e); color: #FFD700; padding: 18px 25px; border-radius: 25px 25px 0 0; display: flex; justify-content: space-between; }
+    .modal-body { padding: 25px; }
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; font-weight: bold; margin-bottom: 8px; color: #1a2a6e; }
+    .form-group input, .form-group select { width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 12px; font-size: 14px; }
+    .submit-btn { background: linear-gradient(135deg, #28a745, #1e7e34); color: white; width: 100%; padding: 14px; border: none; border-radius: 40px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+    .menu-checkbox-group { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 10px; max-height: 250px; overflow-y: auto; padding: 10px; background: #f8f9fa; border-radius: 12px; }
+    .menu-checkbox { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 8px; background: white; }
+    .menu-checkbox input { width: 20px; height: 20px; cursor: pointer; }
+    .section-title { font-size: 14px; font-weight: bold; color: #1a2a6e; margin: 15px 0 10px 0; border-left: 3px solid #FFD700; padding-left: 10px; }
+</style>
+
+<div class="users-container">
+    <div class="users-header">
+        <h1>👥 USER MANAGEMENT</h1>
+        <button class="add-user-btn" onclick="openAddUserModal()">➕ Ongeza Mtumiaji</button>
+    </div>
+    
+    <div class="users-table">
+        <table>
+            <thead>
+                <tr><th>ID</th><th>Jina Kamili</th><th>Username</th><th>Role</th><th>Last Login</th><th>Actions</th></tr>
+            </thead>
+            <tbody id="usersTableBody">
+                <tr><td colspan="6" style="text-align:center; padding:40px;">Loading...<\/td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- User Modal (Add/Edit) -->
+<div id="userModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="modalTitle">👤 Ongeza Mtumiaji</h2>
+            <button onclick="closeUserModal()" style="background:none; border:none; color:#FFD700; font-size:24px; cursor:pointer;">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="userForm">
+                <input type="hidden" id="userId">
+                <div class="form-group"><label>📝 Jina Kamili</label><input type="text" id="fullName" required></div>
+                <div class="form-group"><label>👤 Username</label><input type="text" id="username" required></div>
+                <div class="form-group"><label>🔒 Password</label><input type="password" id="password" placeholder="Weka password (herufi 4+)" required></div>
+                <div class="form-group"><label>🎭 Role</label><select id="roleId">
+                    <option value="1">👑 Admin</option>
+                    <option value="2">👔 Mwenyekiti</option>
+                    <option value="3">📚 Mwalimu Mkuu</option>
+                    <option value="4">💰 Mhasibu</option>
+                    <option value="5">🎵 Mwanakwaya</option>
+                </select></div>
+                
+                <div class="section-title">📋 CHAGUA MENU KWA MTUMIAJI HUYU</div>
+                <div id="menuCheckboxes" class="menu-checkbox-group">
+                    <div style="text-align:center; padding:20px;">Loading menu...</div>
+                </div>
+                
+                <button type="submit" class="submit-btn">💾 Hifadhi Mtumiaji</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Reset Password Modal -->
+<div id="resetPasswordModal" class="modal">
+    <div class="modal-content" style="max-width: 450px;">
+        <div class="modal-header" style="background: linear-gradient(135deg, #dc3545, #c82333);">
+            <h2>🔑 Reset Password</h2>
+            <button onclick="closeResetModal()" style="background:none; border:none; color:#FFD700; font-size:28px; cursor:pointer;">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div id="resetUserInfo" style="text-align:center; margin-bottom:20px; padding:15px; background:#f8f9fa; border-radius:16px;">
+                <div style="font-size:48px; margin-bottom:10px;">👤</div>
+                <div><strong id="resetUserName">Username</strong></div>
+                <div style="font-size:12px; color:#666;" id="resetUserRole">Role</div>
+            </div>
+            
+            <div class="form-group">
+                <label>📝 Password Mpya</label>
+                <input type="password" id="newPassword" placeholder="Weka password mpya" style="width:100%; padding:12px; border:2px solid #e0e0e0; border-radius:12px;">
+                <div class="strength-meter">
+                    <div id="strengthFill" style="width:0%; height:100%; transition:width 0.3s;"></div>
+                </div>
+                <div id="strengthText" style="font-size:11px; margin-top:5px; color:#888;"></div>
+            </div>
+            
+            <div class="form-group">
+                <label>🔄 Rudia Password</label>
+                <input type="password" id="confirmPassword" placeholder="Rudia password mpya" style="width:100%; padding:12px; border:2px solid #e0e0e0; border-radius:12px;">
+                <div id="matchWarning" style="font-size:11px; margin-top:5px; color:#dc3545; display:none;">❌ Password hazifanani!</div>
+                <div id="matchSuccess" style="font-size:11px; margin-top:5px; color:#28a745; display:none;">✅ Password zinafanana!</div>
+            </div>
+            
+            <div class="info-box">
+                <div style="font-size:12px; color:#1a2a6e;">📌 <strong>Vidokezo:</strong></div>
+                <ul style="font-size:11px; color:#666; margin-left:20px; margin-top:5px;">
+                    <li>Password lazima iwe na herufi 4 au zaidi</li>
+                    <li>Tumia mchanganyiko wa herufi, namba na alama</li>
+                </ul>
+            </div>
+            
+            <button onclick="submitResetPassword()" class="submit-btn" style="background: linear-gradient(135deg, #dc3545, #c82333);">🔑 Reset Password</button>
+        </div>
+    </div>
+</div>
+
+<script>
+let allMenus = [];
+let currentResetUserId = null;
+
+// ============ LOAD USERS ============
+async function loadUsers() {
+    const response = await fetch('/api/users');
+    const data = await response.json();
+    if (data.success) {
+        document.getElementById('usersTableBody').innerHTML = data.users.map(u => `
+            <tr>
+                <td>${u.id}</td>
+                <td>${u.full_name || '-'}</td>
+                <td>${u.username}</td>
+                <td><span class="role-badge role-${u.role_id}">${u.role_name || 'User'}</span></td>
+                <td>${u.last_login || '-'}</td>
+                <td>
+                    <button class="action-btn" onclick="editUser(${u.id})" title="Hariri">✏️</button>
+                    <button class="action-btn" onclick="manageUserMenus(${u.id}, '${u.username}')" title="Chagua Menu">📋</button>
+                    <button class="action-btn" onclick="openResetModal(${u.id}, '${u.username}', '${u.role_name || 'User'}')" title="Reset Password">🔑</button>
+                    <button class="action-btn" onclick="deleteUser(${u.id})" title="Futa">🗑️</button>
+                </td>
+            </tr>`).join('');
+    }
+}
+
+// ============ LOAD MENUS ============
+async function loadMenusList() {
+    const response = await fetch('/api/menus/list');
+    const data = await response.json();
+    if (data.success) {
+        allMenus = data.menus;
+        renderMenuCheckboxes(allMenus, []);
+    }
+}
+
+function renderMenuCheckboxes(menus, selectedMenus) {
+    const container = document.getElementById('menuCheckboxes');
+    if (!container) return;
+    
+    const selectedSet = new Set(selectedMenus);
+    container.innerHTML = menus.map(menu => `
+        <label class="menu-checkbox">
+            <input type="checkbox" name="menu_${menu.name}" value="${menu.name}" ${selectedSet.has(menu.name) || menu.default ? 'checked' : ''}>
+            <span>${menu.label}</span>
+        </label>
+    `).join('');
+}
+
+function getSelectedMenus() {
+    const selected = [];
+    for (const menu of allMenus) {
+        const checkbox = document.querySelector(`input[name="menu_${menu.name}"]`);
+        if (checkbox && checkbox.checked) selected.push(menu.name);
+    }
+    return selected;
+}
+
+async function saveUserMenus(userId) {
+    const selectedMenus = getSelectedMenus();
+    await fetch(`/api/user/${userId}/menus`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ menus: selectedMenus })
+    });
+}
+
+// ============ ADD USER ============
+function openAddUserModal() {
+    document.getElementById('modalTitle').innerText = '➕ Ongeza Mtumiaji';
+    document.getElementById('userForm').reset();
+    document.getElementById('userId').value = '';
+    if (allMenus.length) renderMenuCheckboxes(allMenus, []);
+    document.getElementById('userModal').classList.add('active');
+}
+
+function closeUserModal() { 
+    document.getElementById('userModal').classList.remove('active'); 
+}
+
+// ============ EDIT USER ============
+async function editUser(id) {
+    const response = await fetch(`/api/users/${id}`);
+    const data = await response.json();
+    if (data.success) {
+        document.getElementById('modalTitle').innerText = '✏️ Hariri Mtumiaji';
+        document.getElementById('userId').value = data.user.id;
+        document.getElementById('fullName').value = data.user.full_name || '';
+        document.getElementById('username').value = data.user.username;
+        document.getElementById('roleId').value = data.user.role_id;
+        document.getElementById('password').value = '';
+        
+        const menuRes = await fetch(`/api/user/${id}/menus`);
+        const menuData = await menuRes.json();
+        const userMenus = menuData.success ? menuData.menus.filter(m => m.can_view == 1).map(m => m.menu_name) : [];
+        renderMenuCheckboxes(allMenus, userMenus);
+        
+        document.getElementById('userModal').classList.add('active');
+    }
+}
+
+// ============ MANAGE MENUS ============
+async function manageUserMenus(id, username) {
+    const menuRes = await fetch(`/api/user/${id}/menus`);
+    const menuData = await menuRes.json();
+    const userMenus = menuData.success ? menuData.menus.filter(m => m.can_view == 1).map(m => m.menu_name) : [];
+    
+    const modalHtml = `
+        <div class="modal active" id="menuModal" style="display:flex;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>📋 Chagua Menu kwa ${username}</h2>
+                    <button onclick="closeMenuModal()" style="background:none; border:none; color:#FFD700; font-size:24px;">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div id="menuModalCheckboxes" class="menu-checkbox-group"></div>
+                    <button class="submit-btn" onclick="saveMenuAssignment(${id})">💾 Hifadhi Menu</button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    const existingModal = document.getElementById('menuModal');
+    if (existingModal) existingModal.remove();
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+    
+    const container = document.getElementById('menuModalCheckboxes');
+    const selectedSet = new Set(userMenus);
+    container.innerHTML = allMenus.map(menu => `
+        <label class="menu-checkbox">
+            <input type="checkbox" name="menu_${menu.name}" value="${menu.name}" ${selectedSet.has(menu.name) || menu.default ? 'checked' : ''}>
+            <span>${menu.label}</span>
+        </label>
+    `).join('');
+}
+
+async function saveMenuAssignment(userId) {
+    const selected = [];
+    for (const menu of allMenus) {
+        const cb = document.querySelector(`#menuModal input[name="menu_${menu.name}"]`);
+        if (cb && cb.checked) selected.push(menu.name);
+    }
+    
+    const response = await fetch(`/api/user/${userId}/menus`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ menus: selected })
+    });
+    const result = await response.json();
+    if (result.success) {
+        alert('✅ Menu zimehifadhiwa!');
+        closeMenuModal();
+    } else {
+        alert('❌ Error: ' + result.message);
+    }
+}
+
+function closeMenuModal() {
+    const modal = document.getElementById('menuModal');
+    if (modal) modal.remove();
+}
+
+// ============ RESET PASSWORD ============
+function openResetModal(id, username, roleName) {
+    currentResetUserId = id;
+    document.getElementById('resetUserName').innerHTML = username;
+    document.getElementById('resetUserRole').innerHTML = roleName;
+    document.getElementById('newPassword').value = '';
+    document.getElementById('confirmPassword').value = '';
+    document.getElementById('matchWarning').style.display = 'none';
+    document.getElementById('matchSuccess').style.display = 'none';
+    document.getElementById('strengthFill').style.width = '0%';
+    document.getElementById('strengthText').innerHTML = '';
+    document.getElementById('resetPasswordModal').classList.add('active');
+}
+
+function closeResetModal() {
+    document.getElementById('resetPasswordModal').classList.remove('active');
+}
+
+function checkPasswordStrength() {
+    const password = document.getElementById('newPassword').value;
+    let strength = 0;
+    if (password.length >= 4) strength++;
+    if (password.length >= 8) strength++;
+    if (/[A-Z]/.test(password)) strength++;
+    if (/[0-9]/.test(password)) strength++;
+    if (/[^A-Za-z0-9]/.test(password)) strength++;
+    
+    let width = Math.min(strength * 20, 100);
+    let color = '#dc3545';
+    let text = 'Dhaifu sana';
+    
+    if (strength >= 4) { color = '#28a745'; text = 'Imara sana ✅'; }
+    else if (strength >= 3) { color = '#fd7e14'; text = 'Wastani ⚠️'; }
+    else if (strength >= 2) { color = '#ffc107'; text = 'Dhaifu'; }
+    
+    document.getElementById('strengthFill').style.width = width + '%';
+    document.getElementById('strengthFill').style.background = color;
+    document.getElementById('strengthText').innerHTML = text;
+    document.getElementById('strengthText').style.color = color;
+    checkMatch();
+}
+
+function checkMatch() {
+    const password = document.getElementById('newPassword').value;
+    const confirm = document.getElementById('confirmPassword').value;
+    
+    if (confirm.length === 0) {
+        document.getElementById('matchWarning').style.display = 'none';
+        document.getElementById('matchSuccess').style.display = 'none';
+        return;
+    }
+    
+    if (password === confirm) {
+        document.getElementById('matchWarning').style.display = 'none';
+        document.getElementById('matchSuccess').style.display = 'block';
+    } else {
+        document.getElementById('matchWarning').style.display = 'block';
+        document.getElementById('matchSuccess').style.display = 'none';
+    }
+}
+
+async function submitResetPassword() {
+    const newPassword = document.getElementById('newPassword').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+    
+    if (newPassword !== confirmPassword) {
+        alert('❌ Password hazifanani!');
+        return;
+    }
+    
+    if (newPassword.length < 4) {
+        alert('❌ Password lazima iwe na herufi 4 au zaidi!');
+        return;
+    }
+    
+    const response = await fetch(`/api/users/${currentResetUserId}/reset_password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: newPassword })
+    });
+    
+    const result = await response.json();
+    if (result.success) {
+        alert('✅ Password imebadilishwa kikamilifu!');
+        closeResetModal();
+        loadUsers();
+    } else {
+        alert('❌ ' + result.message);
+    }
+}
+
+// ============ DELETE USER ============
+async function deleteUser(id) {
+    if (confirm('⚠️ Una uhakika unataka kufuta mtumiaji huyu?')) {
+        const response = await fetch(`/api/users/${id}`, { method: 'DELETE' });
+        const result = await response.json();
+        if (result.success) { 
+            alert('✅ Mtumiaji amefutwa!'); 
+            loadUsers(); 
+        } else { 
+            alert('❌ Error: ' + result.message); 
+        }
+    }
+}
+
+// ============ FORM SUBMIT ============
+document.getElementById('userForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const userId = document.getElementById('userId').value;
+    const data = {
+        full_name: document.getElementById('fullName').value,
+        username: document.getElementById('username').value,
+        password: document.getElementById('password').value,
+        role_id: parseInt(document.getElementById('roleId').value)
+    };
+    const url = userId ? `/api/users/${userId}` : '/api/users';
+    const method = userId ? 'PUT' : 'POST';
+    
+    const response = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+    const result = await response.json();
+    if (result.success) { 
+        if (!userId) await saveUserMenus(parseInt(result.user_id) || (await (await fetch('/api/users')).json().users.find(u => u.username === data.username)?.id));
+        alert(result.message); 
+        closeUserModal(); 
+        loadUsers(); 
+    } else { 
+        alert('❌ Error: ' + result.message); 
+    }
+});
+
+// ============ EVENT LISTENERS ============
+document.getElementById('newPassword').addEventListener('input', checkPasswordStrength);
+document.getElementById('confirmPassword').addEventListener('input', checkMatch);
+
+// ============ LOAD ON PAGE LOAD ============
+loadMenusList();
+loadUsers();
+</script>
+{% endblock %}

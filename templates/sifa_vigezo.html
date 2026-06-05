@@ -1,0 +1,285 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Sifa na Vigezo - Kwaya Mt. Bonifasi{% endblock %}
+
+{% block content %}
+<style>
+    .sifa-container {
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+    
+    .sifa-card {
+        background: white;
+        border-radius: 20px;
+        padding: 35px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        border-top: 5px solid #FFD700;
+    }
+    
+    .sifa-card h1 {
+        color: #1a2a6e;
+        margin-bottom: 10px;
+        text-align: center;
+    }
+    
+    .subtitle {
+        text-align: center;
+        color: #666;
+        margin-bottom: 30px;
+    }
+    
+    /* Tab Buttons - Gold and Blue */
+    .tabs-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 30px;
+        justify-content: center;
+        border-bottom: 2px solid #FFD700;
+        padding-bottom: 15px;
+    }
+    
+    .tab-btn {
+        background: linear-gradient(135deg, #1a2a6e 0%, #0a1a3a 100%);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 50px;
+        cursor: pointer;
+        font-family: 'Times New Roman', Times, serif;
+        font-size: 15px;
+        font-weight: bold;
+        transition: all 0.3s;
+    }
+    
+    .tab-btn:hover {
+        background: #1a2a6e;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+    
+    .tab-btn.active {
+        background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+        color: #1a2a6e;
+        box-shadow: 0 3px 10px rgba(255, 215, 0, 0.4);
+    }
+    
+    /* Content Area */
+    .content-area {
+        min-height: 400px;
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 15px;
+    }
+    
+    .tab-content {
+        display: none;
+        animation: fadeIn 0.5s ease;
+    }
+    
+    .tab-content.active-content {
+        display: block;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .tab-content h2 {
+        color: #1a2a6e;
+        margin-bottom: 20px;
+        border-left: 4px solid #FFD700;
+        padding-left: 15px;
+    }
+    
+    .criteria-list {
+        list-style: none;
+        padding-left: 0;
+    }
+    
+    .criteria-list li {
+        padding: 12px 0;
+        border-bottom: 1px solid #e0e0e0;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 16px;
+    }
+    
+    .criteria-list li:before {
+        content: "✅";
+        color: #FFD700;
+    }
+    
+    .info-box {
+        margin-top: 30px;
+        padding: 20px;
+        background: linear-gradient(135deg, #1a2a6e 0%, #0a1a3a 100%);
+        border-radius: 15px;
+        color: white;
+    }
+    
+    .info-box h3 {
+        color: #FFD700;
+        margin-bottom: 10px;
+    }
+    
+    @media (max-width: 768px) {
+        .tab-btn {
+            padding: 8px 16px;
+            font-size: 12px;
+        }
+        .criteria-list li {
+            font-size: 14px;
+        }
+    }
+</style>
+
+<div class="sifa-container">
+    <div class="sifa-card">
+        <h1>📋 Sifa na Vigezo vya Kujiunga</h1>
+        <div class="subtitle">Chagua nafasi unayotaka Kuwa</div>
+        
+        <!-- Tab Buttons -->
+        <div class="tabs-container">
+            <button class="tab-btn active" onclick="showTab('mwanakwaya')">👤 Mwanakwaya</button>
+            <button class="tab-btn" onclick="showTab('mwalimu')">📚 Mwalimu</button>
+            <button class="tab-btn" onclick="showTab('kiongozi')">👑 Kiongozi</button>
+            <button class="tab-btn" onclick="showTab('mfadhili')">💰 Mfadhili</button>
+            <button class="tab-btn" onclick="showTab('rafiki')">🤝 Rafiki wa Kwaya</button>
+            <button class="tab-btn" onclick="showTab('mlezi')">🛡️ Mlezi</button>
+        </div>
+        
+        <!-- Content Area -->
+        <div class="content-area">
+            <!-- Mwanakwaya Content -->
+            <div id="mwanakwaya" class="tab-content active-content">
+                <h2>👤 Kuwa Mwanakwaya</h2>
+                <ul class="criteria-list">
+                    <li>Kuwa Mkristo mwaminifu</li>
+                    <li>Kuwa na upendo wa muziki na nyimbo za kwaya</li>
+                    <li>Kuhudhuria mazoezi kwa uaminifu</li>
+                    <li>Kulipa ada ya mwanakwaya kwa wakati</li>
+                    <li>Kuheshimu viongozi na wanakwaya wenzako</li>
+                    <li>Kuwa tayari kujifunza na kuboresha sauti yako</li>
+                    <li>Kushiriki katika ibada na matukio ya kwaya</li>
+                </ul>
+                <div class="info-box">
+                    <h3>📝 Jinsi ya Kujiunga</h3>
+                    <p>Wasiliana na msimamizi wa kwaya au njoo kanisani Siku ya Jumapili ili uone mazoezi na kujaza fomu ya uanachama.</p>
+                </div>
+            </div>
+            
+            <!-- Mwalimu Content -->
+            <div id="mwalimu" class="tab-content">
+                <h2>📚 Kuwa Mwalimu wa Kwaya</h2>
+                <ul class="criteria-list">
+                    <li>Kuwa na ujuzi wa nadharia na vitendo ya muziki</li>
+                    <li>Uwezo wa kufundisha sauti tofauti (Soprano, Alto, Tenor, Bass)</li>
+                    <li>Subira na ustadi wa kufundisha wanakwaya</li>
+                    <li>Uwezo wa kupanga mazoezi na kuchagua nyimbo</li>
+                    <li>Kuheshimika na kuwa mfano kwa wanakwaya</li>
+                    <li>Ustadi wa kucheza ala za muziki (kinanda, gitaa) ni nyongeza</li>
+                </ul>
+                <div class="info-box">
+                    <h3>📝 Maelezo</h3>
+                    <p>Mwalimu wa kwaya huchaguliwa kwa kupitia usaili na tathmini ya uwezo wa kufundisha.</p>
+                </div>
+            </div>
+            
+            <!-- Kiongozi Content -->
+            <div id="kiongozi" class="tab-content">
+                <h2>👑 Kuwa Kiongozi wa Kwaya</h2>
+                <ul class="criteria-list">
+                    <li>Kuwa mwanakwaya bora kwa mfano na nidhamu</li>
+                    <li>Uwezo wa kuongoza na kuhamasisha wengine</li>
+                    <li>Uaminifu na uwajibikaji</li>
+                    <li>Uwezo wa kusuluhisha migogoro</li>
+                    <li>Kuwa na maono ya maendeleo ya kwaya</li>
+                    <li>Kushirikiana na viongozi wa kanisa</li>
+                    <li>Kuchaguliwa na wanakwaya kupitia mchakato wa kidemokrasia</li>
+                </ul>
+                <div class="info-box">
+                    <h3>📝 Maelezo</h3>
+                    <p>Viongozi huchaguliwa kila baada ya miaka 2-3 kupitia kura za wanakwaya.</p>
+                </div>
+            </div>
+            
+            <!-- Mfadhili Content -->
+            <div id="mfadhili" class="tab-content">
+                <h2>💰 Kuwa Mfadhili wa Kwaya</h2>
+                <ul class="criteria-list">
+                    <li>Kuwa na moyo wa kusaidia kwaya kiuchumi au vifaa</li>
+                    <li>Kusaidia kwa hiari bila kutarajia malipo</li>
+                    <li>Kuwa msaidizi katika shughuli za kwaya</li>
+                    <li>Kuheshimu dira na maadili ya kwaya</li>
+                    <li>Kutoa michango ya mara kwa mara au pale inapohitajika</li>
+                </ul>
+                <div class="info-box">
+                    <h3>📞 Wasiliana Nasi</h3>
+                    <p>Kwa wale wanaotaka kuwa mfadhili, wasiliana na mweka hazina wa kwaya au msimamizi.</p>
+                </div>
+            </div>
+            
+            <!-- Rafiki Content -->
+            <div id="rafiki" class="tab-content">
+                <h2>🤝 Kuwa Rafiki wa Kwaya</h2>
+                <ul class="criteria-list">
+                    <li>Kukitakia kwaya mema</li>
+                    <li>Kuhudhuria matukio ya kwaya inapowezekana</li>
+                    <li>Kuwaombea wanakwaya</li>
+                    <li>Kueneza habari njema za kwaya</li>
+                    <li>Kusaidia kwa maombi na ushauri</li>
+                </ul>
+                <div class="info-box">
+                    <h3>📝 Maelezo</h3>
+                    <p>Rafiki wa kwaya ni mtu yeyote anayependa na kuitakia mema kwaya.</p>
+                </div>
+            </div>
+            
+            <!-- Mlezi Content -->
+            <div id="mlezi" class="tab-content">
+                <h2>🛡️ Kuwa Mlezi wa Kwaya</h2>
+                <ul class="criteria-list">
+                    <li>Kuwa mtu mzima mkomavu (zaidi ya miaka 30)</li>
+                    <li>Kuwa na uzoefu wa kuwaongoza vijana</li>
+                    <li>Kuwasaidia wanakwaya katika maisha ya kiroho</li>
+                    <li>Kuwa mwamini na mwenye kutegemewa</li>
+                    <li>Kutatua migogoro ndani ya kwaya</li>
+                </ul>
+                <div class="info-box">
+                    <h3>📝 Maelezo</h3>
+                    <p>Mlezi huteuliwa na Kamati Kuu ya kwaya kwa mujibu wa katiba.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showTab(tabName) {
+        // Hide all tab contents
+        const allContents = document.querySelectorAll('.tab-content');
+        allContents.forEach(content => {
+            content.classList.remove('active-content');
+        });
+        
+        // Remove active class from all buttons
+        const allButtons = document.querySelectorAll('.tab-btn');
+        allButtons.forEach(btn => {
+            btn.classList.remove('active');
+        });
+        
+        // Show selected tab content
+        const selectedContent = document.getElementById(tabName);
+        if (selectedContent) {
+            selectedContent.classList.add('active-content');
+        }
+        
+        // Add active class to clicked button
+        event.target.classList.add('active');
+    }
+</script>
+{% endblock %}

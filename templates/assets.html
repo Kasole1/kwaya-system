@@ -1,0 +1,810 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Assets - Kwaya Mt. Bonifasi{% endblock %}
+
+{% block content %}
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    .assets-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    
+    .assets-header {
+        background: linear-gradient(135deg, #1a2a6e, #2a3a7e);
+        padding: 25px 30px;
+        border-radius: 20px;
+        color: white;
+        margin-bottom: 25px;
+        text-align: center;
+    }
+    
+    .assets-header h1 {
+        color: #FFD700;
+        margin: 0;
+        font-size: 28px;
+    }
+    
+    /* Stats Cards */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+    
+    .stat-card {
+        background: white;
+        border-radius: 20px;
+        padding: 20px;
+        text-align: center;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        border-left: 5px solid;
+        transition: transform 0.2s;
+    }
+    
+    .stat-card:hover { transform: translateY(-3px); }
+    .stat-card.total { border-left-color: #1a2a6e; }
+    .stat-card.value { border-left-color: #28a745; }
+    .stat-card.maintenance { border-left-color: #fd7e14; }
+    .stat-card.categories { border-left-color: #17a2b8; }
+    
+    .stat-value { font-size: 32px; font-weight: bold; color: #1a2a6e; }
+    .stat-label { font-size: 13px; color: #666; margin-top: 5px; }
+    
+    /* Controls */
+    .controls-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+    
+    .search-box {
+        flex: 1;
+        min-width: 250px;
+        position: relative;
+    }
+    
+    .search-box input {
+        width: 100%;
+        padding: 12px 18px;
+        border: 2px solid #e0e0e0;
+        border-radius: 40px;
+        font-size: 14px;
+    }
+    
+    .filter-buttons {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    
+    .filter-btn {
+        background: #f8f9fa;
+        border: 1px solid #ddd;
+        padding: 8px 16px;
+        border-radius: 30px;
+        cursor: pointer;
+        font-size: 13px;
+        transition: all 0.2s;
+    }
+    
+    .filter-btn.active {
+        background: linear-gradient(135deg, #1a2a6e, #2a3a7e);
+        color: #FFD700;
+        border-color: #FFD700;
+    }
+    
+    .add-asset-btn {
+        background: linear-gradient(135deg, #28a745, #1e7e34);
+        color: white;
+        border: none;
+        padding: 12px 25px;
+        border-radius: 40px;
+        cursor: pointer;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    /* Assets Grid */
+    .assets-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 25px;
+        margin-bottom: 30px;
+    }
+    
+    .asset-card {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        transition: all 0.3s;
+        cursor: pointer;
+    }
+    
+    .asset-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+    
+    .asset-header {
+        padding: 18px 20px;
+        color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .asset-icon { font-size: 40px; }
+    .asset-category { font-size: 12px; opacity: 0.8; margin-top: 5px; }
+    
+    .asset-body { padding: 20px; }
+    
+    .asset-name {
+        font-size: 18px;
+        font-weight: bold;
+        color: #1a2a6e;
+        margin-bottom: 5px;
+    }
+    
+    .asset-detail-row {
+        display: flex;
+        justify-content: space-between;
+        margin: 8px 0;
+        font-size: 13px;
+    }
+    
+    .asset-label { color: #666; }
+    .asset-value { font-weight: bold; color: #333; }
+    
+    .maintenance-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: bold;
+    }
+    
+    .badge-urgent { background: #dc3545; color: white; }
+    .badge-warning { background: #fd7e14; color: white; }
+    .badge-good { background: #28a745; color: white; }
+    .badge-none { background: #6c757d; color: white; }
+    
+    .status-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: bold;
+    }
+    
+    .status-good { background: #d4edda; color: #155724; }
+    .status-warning { background: #fff3cd; color: #856404; }
+    .status-bad { background: #f8d7da; color: #721c24; }
+    
+    /* Modal Styles */
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.85);
+        backdrop-filter: blur(8px);
+        z-index: 2000;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .modal.active { display: flex; }
+    
+    .modal-content {
+        background: white;
+        border-radius: 28px;
+        width: 90%;
+        max-width: 600px;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+    
+    .modal-header {
+        background: linear-gradient(135deg, #1a2a6e, #2a3a7e);
+        color: #FFD700;
+        padding: 20px 25px;
+        border-radius: 28px 28px 0 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .close-modal {
+        background: rgba(255,255,255,0.2);
+        border: none;
+        color: #FFD700;
+        font-size: 24px;
+        cursor: pointer;
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+    }
+    
+    .modal-body { padding: 25px; }
+    
+    .form-group { margin-bottom: 18px; }
+    .form-group label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 6px;
+        color: #1a2a6e;
+        font-size: 13px;
+    }
+    
+    .form-group input, .form-group select, .form-group textarea {
+        width: 100%;
+        padding: 10px 12px;
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        font-size: 14px;
+    }
+    
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+    
+    .btn-save {
+        background: linear-gradient(135deg, #28a745, #1e7e34);
+        color: white;
+        border: none;
+        padding: 14px;
+        width: 100%;
+        border-radius: 40px;
+        font-weight: bold;
+        font-size: 16px;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+    
+    .btn-delete {
+        background: #dc3545;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 40px;
+        cursor: pointer;
+        font-weight: bold;
+        margin-top: 10px;
+        width: 100%;
+    }
+    
+    @media (max-width: 800px) {
+        .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        .assets-grid { grid-template-columns: 1fr; }
+        .form-row { grid-template-columns: 1fr; }
+    }
+</style>
+
+<div class="assets-header">
+    <h1>🎵 ASSETS ZA KWAYA MT. BONIFASI</h1>
+    <p>Usimamizi wa vifaa, vyombo na mali za kwaya</p>
+    <div style="display: flex; gap: 10px; margin-top: 15px;">
+        <button class="add-asset-btn" onclick="exportAssets()" style="background: linear-gradient(135deg, #17a2b8, #138496);">📊 Export Report</button>
+        <button class="add-asset-btn" onclick="openAddAssetModal()">➕ Ongeza Asset Mpya</button>
+    </div>
+</div>
+    
+    <div class="stats-grid">
+        <div class="stat-card total">
+            <div class="stat-value" id="totalAssets">0</div>
+            <div class="stat-label">📦 Jumla ya Assets</div>
+        </div>
+        <div class="stat-card value">
+            <div class="stat-value" id="totalValue">TSh 0</div>
+            <div class="stat-label">💰 Thamani Jumla</div>
+        </div>
+        <div class="stat-card maintenance">
+            <div class="stat-value" id="maintenanceCount">0</div>
+            <div class="stat-label">🔧 Inahitaji Maintenance</div>
+        </div>
+        <div class="stat-card categories">
+            <div class="stat-value" id="categoryCount">0</div>
+            <div class="stat-label">📂 Aina za Assets</div>
+        </div>
+    </div>
+    
+    <div class="controls-bar">
+        <div class="search-box">
+            <input type="text" id="searchAssetInput" placeholder="🔍 Tafuta asset kwa jina au aina...">
+        </div>
+        <div class="filter-buttons">
+            <button class="filter-btn active" onclick="filterAssets('all')">🌐 Zote</button>
+            <button class="filter-btn" onclick="filterAssets('Vyombo vya Muziki')">🎹 Vyombo</button>
+            <button class="filter-btn" onclick="filterAssets('Mavazi')">👕 Mavazi</button>
+            <button class="filter-btn" onclick="filterAssets('Vitabu na Nyimbo')">📚 Vitabu</button>
+            <button class="filter-btn" onclick="filterAssets('Vifaa vya Sauti')">🎤 Sauti</button>
+            <button class="filter-btn" onclick="filterAssets('Nyingine')">📌 Nyingine</button>
+        </div>
+        <button class="add-asset-btn" onclick="openAddAssetModal()">
+            <span>➕</span> Ongeza Asset Mpya
+        </button>
+    </div>
+    
+    <div class="assets-grid" id="assetsGrid">
+        <div style="text-align:center; padding:50px;">Loading assets...</div>
+    </div>
+</div>
+
+<!-- Asset Modal (View/Edit) -->
+<div id="assetModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2><span id="modalIcon">🎵</span> <span id="modalTitle">Taarifa za Asset</span></h2>
+            <button class="close-modal" onclick="closeAssetModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="assetId">
+            <div class="form-group">
+                <label>📝 Jina la Asset</label>
+                <input type="text" id="assetName" required>
+            </div>
+            <div class="form-group">
+                <label>📂 Aina / Category</label>
+                <select id="assetCategory">
+                    <option value="Vyombo vya Muziki">🎹 Vyombo vya Muziki</option>
+                    <option value="Mavazi">👕 Mavazi</option>
+                    <option value="Vitabu na Nyimbo">📚 Vitabu na Nyimbo</option>
+                    <option value="Vifaa vya Sauti">🎤 Vifaa vya Sauti</option>
+                    <option value="Nyingine">📌 Nyingine</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>💰 Thamani ya Kununua (TSh)</label>
+                <input type="number" id="assetValue" value="0">
+            </div>
+            <div class="form-group">
+                <label>📅 Tarehe ya Kununua</label>
+                <input type="date" id="assetPurchaseDate">
+            </div>
+            <div class="form-group">
+                <label>🏭 Chanzo / Wauzaji</label>
+                <input type="text" id="assetSupplier" placeholder="Mfano: Music Store Arusha">
+            </div>
+            <div class="form-group">
+                <label>📝 Maelezo / Specification</label>
+                <textarea id="assetDescription" rows="2" placeholder="Maelezo ya kina kuhusu asset hii..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>🔧 Maintenance Required</label>
+                <select id="assetMaintenance">
+                    <option value="none">❌ Hakuna</option>
+                    <option value="soon">⚠️ Inahitaji hivi karibuni</option>
+                    <option value="urgent">🚨 Inahitaji haraka</option>
+                </select>
+            </div>
+            <div class="form-group" id="maintenanceDateGroup" style="display:none;">
+                <label>📅 Tarehe ya Maintenance Inayotarajiwa</label>
+                <input type="date" id="assetMaintenanceDate">
+            </div>
+            <div class="form-group" id="maintenanceNoteGroup" style="display:none;">
+                <label>📝 Maelezo ya Maintenance</label>
+                <textarea id="assetMaintenanceNote" rows="2" placeholder="Maelezo ya maintenance inayohitajika..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>📊 Status / Hali</label>
+                <select id="assetStatus">
+                    <option value="good">✅ Nzuri / Inafanya kazi</option>
+                    <option value="warning">⚠️ Inahitaji ukarabati kidogo</option>
+                    <option value="bad">❌ Haifanyi kazi / Imeharibika</option>
+                </select>
+            </div>
+            <button class="btn-save" onclick="saveAsset()">💾 HIFADHI MABADILIKO</button>
+            <button class="btn-delete" onclick="deleteAsset()">🗑️ Futa Asset</button>
+        </div>
+    </div>
+</div>
+
+<!-- Add Asset Modal -->
+<div id="addAssetModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2><span>➕</span> Ongeza Asset Mpya</h2>
+            <button class="close-modal" onclick="closeAddAssetModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>📝 Jina la Asset *</label>
+                <input type="text" id="newAssetName" required>
+            </div>
+            <div class="form-group">
+                <label>📂 Aina / Category *</label>
+                <select id="newAssetCategory">
+                    <option value="Vyombo vya Muziki">🎹 Vyombo vya Muziki</option>
+                    <option value="Mavazi">👕 Mavazi</option>
+                    <option value="Vitabu na Nyimbo">📚 Vitabu na Nyimbo</option>
+                    <option value="Vifaa vya Sauti">🎤 Vifaa vya Sauti</option>
+                    <option value="Nyingine">📌 Nyingine</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>💰 Thamani (TSh)</label>
+                    <input type="number" id="newAssetValue" value="0">
+                </div>
+                <div class="form-group">
+                    <label>📅 Tarehe ya Kununua</label>
+                    <input type="date" id="newAssetPurchaseDate">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>🏭 Chanzo / Supplier</label>
+                <input type="text" id="newAssetSupplier" placeholder="Mfano: Music Store">
+            </div>
+            <div class="form-group">
+                <label>📝 Maelezo</label>
+                <textarea id="newAssetDescription" rows="2"></textarea>
+            </div>
+            <div class="form-group">
+                <label>🔧 Maintenance Required</label>
+                <select id="newAssetMaintenance">
+                    <option value="none">❌ Hakuna</option>
+                    <option value="soon">⚠️ Inahitaji hivi karibuni</option>
+                    <option value="urgent">🚨 Inahitaji haraka</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>📊 Status / Hali</label>
+                <select id="newAssetStatus">
+                    <option value="good">✅ Nzuri</option>
+                    <option value="warning">⚠️ Inahitaji ukarabati</option>
+                    <option value="bad">❌ Imeharibika</option>
+                </select>
+            </div>
+            <button class="btn-save" onclick="saveNewAsset()">💾 HIFADHI ASSET</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// ============ ASSETS DATA STORAGE ============
+let assets = [];
+let currentAssetId = null;
+let currentFilter = 'all';
+let searchTerm = '';
+
+// Default assets data
+const defaultAssets = [
+    { id: 1, name: "Piano / Keyboard (Yamaha)", category: "Vyombo vya Muziki", value: 850000, purchaseDate: "2022-01-15", supplier: "Music Store Arusha", description: "Piano ya kwaya, inatumika kwa mazoezi na ibada", maintenance: "soon", maintenanceDate: "2026-06-15", maintenanceNote: "Inahitaji kutuning", status: "good", icon: "🎹" },
+    { id: 2, name: "Gitaa (Acoustic)", category: "Vyombo vya Muziki", value: 250000, purchaseDate: "2023-03-10", supplier: "Guitar Center", description: "Gitaa ya acoustic", maintenance: "none", status: "good", icon: "🎸" },
+    { id: 3, name: "Drum Set", category: "Vyombo vya Muziki", value: 450000, purchaseDate: "2021-08-20", supplier: "Music Store", description: "Seti kamili ya ngoma", maintenance: "urgent", maintenanceDate: "2026-05-25", maintenanceNote: "Ngoma za msondo zinahitaji kubadilishwa", status: "warning", icon: "🥁" },
+    { id: 4, name: "Mikrofoni (Shure)", category: "Vifaa vya Sauti", value: 120000, purchaseDate: "2024-01-10", supplier: "SoundTech", description: "Mikrofoni za wireless", maintenance: "none", status: "good", icon: "🎤" },
+    { id: 5, name: "Kanzu za Kwaya", category: "Mavazi", value: 750000, purchaseDate: "2023-06-15", supplier: "Tailor Shop", description: "Kanzu 25 za wanakwaya", maintenance: "soon", maintenanceDate: "2026-07-01", maintenanceNote: "Kusafisha na kushona baadhi", status: "good", icon: "👕" },
+    { id: 6, name: "Vitabu vya Nyimbo", category: "Vitabu na Nyimbo", value: 150000, purchaseDate: "2022-09-01", supplier: "Bookstore", description: "Vitabu 100 vya nyimbo za kwaya", maintenance: "none", status: "good", icon: "📚" },
+    { id: 7, name: "Speaker (JBL)", category: "Vifaa vya Sauti", value: 350000, purchaseDate: "2024-02-20", supplier: "SoundTech", description: "Speaker za maonyesho", maintenance: "none", status: "good", icon: "🔊" },
+    { id: 8, name: "T-Shirts za Kwaya", category: "Mavazi", value: 400000, purchaseDate: "2024-03-10", supplier: "Print Shop", description: "T-Shirts 50 za wanakwaya", maintenance: "none", status: "good", icon: "👕" }
+];
+
+// ============ ESCAPE HTML FUNCTION ============
+function escapeHtml(text) {
+    if (!text) return '';
+    return text.replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+    });
+}
+
+// ============ LOAD ASSETS ============
+function loadAssets() {
+    const saved = localStorage.getItem('kwaya_assets');
+    if (saved) {
+        assets = JSON.parse(saved);
+    } else {
+        assets = defaultAssets;
+        saveAssets();
+    }
+    updateStats();
+    renderAssets();
+}
+
+function saveAssets() {
+    localStorage.setItem('kwaya_assets', JSON.stringify(assets));
+}
+
+function updateStats() {
+    const total = assets.length;
+    const totalValue = assets.reduce((sum, a) => sum + (parseFloat(a.value) || 0), 0);
+    const maintenanceCount = assets.filter(a => a.maintenance === 'soon' || a.maintenance === 'urgent').length;
+    const categories = [...new Set(assets.map(a => a.category))];
+    
+    const totalValueEl = document.getElementById('totalValue');
+    if (totalValueEl) {
+        totalValueEl.innerHTML = `TSh ${totalValue.toLocaleString()}`;
+    }
+    
+    const totalAssetsEl = document.getElementById('totalAssets');
+    if (totalAssetsEl) totalAssetsEl.innerText = total;
+    
+    const maintenanceCountEl = document.getElementById('maintenanceCount');
+    if (maintenanceCountEl) maintenanceCountEl.innerText = maintenanceCount;
+    
+    const categoryCountEl = document.getElementById('categoryCount');
+    if (categoryCountEl) categoryCountEl.innerText = categories.length;
+    
+    console.log("Stats updated - Total value:", totalValue);
+}
+
+function renderAssets() {
+    const grid = document.getElementById('assetsGrid');
+    if (!grid) return;
+    
+    let filtered = [...assets];
+    
+    if (currentFilter !== 'all') {
+        filtered = filtered.filter(a => a.category === currentFilter);
+    }
+    
+    if (searchTerm) {
+        const term = searchTerm.toLowerCase();
+        filtered = filtered.filter(a => 
+            a.name.toLowerCase().includes(term) || 
+            a.category.toLowerCase().includes(term) ||
+            (a.supplier && a.supplier.toLowerCase().includes(term))
+        );
+    }
+    
+    if (filtered.length === 0) {
+        grid.innerHTML = '<div style="text-align:center; padding:50px; grid-column:1/-1;">📭 Hakuna assets zilizopatikana</div>';
+        return;
+    }
+    
+    // Define category colors
+    const categoryColors = {
+        'Vyombo vya Muziki': 'linear-gradient(135deg, #FF69B4, #FF1493)',
+        'Mavazi': 'linear-gradient(135deg, #28a745, #1e7e34)',
+        'Vitabu na Nyimbo': 'linear-gradient(135deg, #17a2b8, #138496)',
+        'Vifaa vya Sauti': 'linear-gradient(135deg, #fd7e14, #e67e22)',
+        'Nyingine': 'linear-gradient(135deg, #6c757d, #5a6268)'
+    };
+    
+    const categoryIcons = {
+        'Vyombo vya Muziki': '🎹',
+        'Mavazi': '👕',
+        'Vitabu na Nyimbo': '📚',
+        'Vifaa vya Sauti': '🎤',
+        'Nyingine': '📦'
+    };
+    
+    grid.innerHTML = filtered.map(asset => {
+        const color = categoryColors[asset.category] || categoryColors['Nyingine'];
+        const icon = asset.icon || categoryIcons[asset.category] || '🎵';
+        
+        let maintenanceBadge = '';
+        if (asset.maintenance === 'urgent') maintenanceBadge = '<span class="maintenance-badge badge-urgent">🚨 Inahitaji haraka!</span>';
+        else if (asset.maintenance === 'soon') maintenanceBadge = '<span class="maintenance-badge badge-warning">⚠️ Inahitaji hivi karibuni</span>';
+        else maintenanceBadge = '<span class="maintenance-badge badge-none">✅ Hakuna maintenance</span>';
+        
+        let statusBadge = '';
+        if (asset.status === 'good') statusBadge = '<span class="status-badge status-good">✅ Nzuri</span>';
+        else if (asset.status === 'warning') statusBadge = '<span class="status-badge status-warning">⚠️ Inahitaji ukarabati</span>';
+        else statusBadge = '<span class="status-badge status-bad">❌ Imeharibika</span>';
+        
+        return `
+            <div class="asset-card" onclick="openAssetModal(${asset.id})">
+                <div class="asset-header" style="background: ${color}">
+                    <div>
+                        <div class="asset-icon">${icon}</div>
+                        <div class="asset-category">${asset.category}</div>
+                    </div>
+                    ${statusBadge}
+                </div>
+                <div class="asset-body">
+                    <div class="asset-name">${escapeHtml(asset.name)}</div>
+                    <div class="asset-detail-row">
+                        <span class="asset-label">💰 Thamani:</span>
+                        <span class="asset-value">TSh ${(asset.value || 0).toLocaleString()}</span>
+                    </div>
+                    <div class="asset-detail-row">
+                        <span class="asset-label">📅 Kununuliwa:</span>
+                        <span class="asset-value">${asset.purchaseDate || '-'}</span>
+                    </div>
+                    <div class="asset-detail-row">
+                        <span class="asset-label">🔧 Maintenance:</span>
+                        <span class="asset-value">${maintenanceBadge}</span>
+                    </div>
+                    ${asset.maintenanceDate ? `<div class="asset-detail-row"><span class="asset-label">📅 Next Maintenance:</span><span class="asset-value">${asset.maintenanceDate}</span></div>` : ''}
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function filterAssets(category) {
+    currentFilter = category;
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.innerText.includes(category === 'all' ? 'Zote' : category)) {
+            btn.classList.add('active');
+        }
+    });
+    renderAssets();
+}
+
+function searchAssets() {
+    searchTerm = document.getElementById('searchAssetInput').value;
+    renderAssets();
+}
+
+function openAssetModal(id) {
+    currentAssetId = id;
+    const asset = assets.find(a => a.id === id);
+    if (!asset) return;
+    
+    document.getElementById('assetId').value = asset.id;
+    document.getElementById('assetName').value = asset.name;
+    document.getElementById('assetCategory').value = asset.category;
+    document.getElementById('assetValue').value = asset.value || 0;
+    document.getElementById('assetPurchaseDate').value = asset.purchaseDate || '';
+    document.getElementById('assetSupplier').value = asset.supplier || '';
+    document.getElementById('assetDescription').value = asset.description || '';
+    document.getElementById('assetMaintenance').value = asset.maintenance || 'none';
+    document.getElementById('assetStatus').value = asset.status || 'good';
+    
+    // Show/hide maintenance fields
+    const maintVal = asset.maintenance || 'none';
+    document.getElementById('maintenanceDateGroup').style.display = (maintVal !== 'none') ? 'block' : 'none';
+    document.getElementById('maintenanceNoteGroup').style.display = (maintVal !== 'none') ? 'block' : 'none';
+    document.getElementById('assetMaintenanceDate').value = asset.maintenanceDate || '';
+    document.getElementById('assetMaintenanceNote').value = asset.maintenanceNote || '';
+    
+    // Set icon based on category
+    const icons = { 'Vyombo vya Muziki': '🎹', 'Mavazi': '👕', 'Vitabu na Nyimbo': '📚', 'Vifaa vya Sauti': '🎤', 'Nyingine': '📦' };
+    document.getElementById('modalIcon').innerHTML = icons[asset.category] || '🎵';
+    document.getElementById('modalTitle').innerHTML = `📦 ${asset.name}`;
+    
+    document.getElementById('assetModal').classList.add('active');
+}
+
+function saveAsset() {
+    const asset = assets.find(a => a.id === currentAssetId);
+    if (!asset) return;
+    
+    asset.name = document.getElementById('assetName').value;
+    asset.category = document.getElementById('assetCategory').value;
+    asset.value = parseFloat(document.getElementById('assetValue').value) || 0;
+    asset.purchaseDate = document.getElementById('assetPurchaseDate').value;
+    asset.supplier = document.getElementById('assetSupplier').value;
+    asset.description = document.getElementById('assetDescription').value;
+    asset.maintenance = document.getElementById('assetMaintenance').value;
+    asset.status = document.getElementById('assetStatus').value;
+    asset.maintenanceDate = document.getElementById('assetMaintenanceDate').value;
+    asset.maintenanceNote = document.getElementById('assetMaintenanceNote').value;
+    
+    saveAssets();
+    updateStats();
+    renderAssets();
+    closeAssetModal();
+    alert('✅ Asset imehifadhiwa kikamilifu!');
+}
+
+function deleteAsset() {
+    if (!confirm('Je, una uhakika unataka kufuta asset hii? Kitendo hiki hakiwezi kutenguliwa!')) return;
+    
+    const index = assets.findIndex(a => a.id === currentAssetId);
+    if (index !== -1) {
+        assets.splice(index, 1);
+        saveAssets();
+        updateStats();
+        renderAssets();
+        closeAssetModal();
+        alert('✅ Asset imefutwa!');
+    }
+}
+
+function closeAssetModal() {
+    document.getElementById('assetModal').classList.remove('active');
+}
+
+// Add New Asset
+function openAddAssetModal() {
+    console.log("Opening add asset modal");
+    document.getElementById('newAssetName').value = '';
+    document.getElementById('newAssetCategory').value = 'Vyombo vya Muziki';
+    document.getElementById('newAssetValue').value = '';
+    document.getElementById('newAssetPurchaseDate').value = '';
+    document.getElementById('newAssetSupplier').value = '';
+    document.getElementById('newAssetDescription').value = '';
+    document.getElementById('newAssetMaintenance').value = 'none';
+    document.getElementById('newAssetStatus').value = 'good';
+    document.getElementById('addAssetModal').classList.add('active');
+}
+
+function closeAddAssetModal() {
+    document.getElementById('addAssetModal').classList.remove('active');
+}
+
+function saveNewAsset() {
+    console.log("saveNewAsset called");
+    const name = document.getElementById('newAssetName').value.trim();
+    if (!name) {
+        alert('Tafadhali weka jina la asset');
+        return;
+    }
+    
+    // Get all values
+    const category = document.getElementById('newAssetCategory').value;
+    const value = parseFloat(document.getElementById('newAssetValue').value) || 0;
+    const purchaseDate = document.getElementById('newAssetPurchaseDate').value;
+    const supplier = document.getElementById('newAssetSupplier').value;
+    const description = document.getElementById('newAssetDescription').value;
+    const maintenance = document.getElementById('newAssetMaintenance').value;
+    const status = document.getElementById('newAssetStatus').value;
+    
+    // Generate new ID
+    const newId = assets.length > 0 ? Math.max(...assets.map(a => a.id)) + 1 : 1;
+    
+    const newAsset = {
+        id: newId,
+        name: name,
+        category: category,
+        value: value,
+        purchaseDate: purchaseDate,
+        supplier: supplier,
+        description: description,
+        maintenance: maintenance,
+        status: status,
+        maintenanceDate: '',
+        maintenanceNote: '',
+        icon: ''
+    };
+    
+    assets.push(newAsset);
+    saveAssets();
+    updateStats();
+    renderAssets();
+    closeAddAssetModal();
+    
+    alert(`✅ Asset "${name}" imeongezwa kikamilifu!`);
+    console.log("Asset added:", newAsset);
+}
+
+// Show/hide maintenance fields based on selection
+document.getElementById('assetMaintenance')?.addEventListener('change', function() {
+    const show = this.value !== 'none';
+    document.getElementById('maintenanceDateGroup').style.display = show ? 'block' : 'none';
+    document.getElementById('maintenanceNoteGroup').style.display = show ? 'block' : 'none';
+});
+
+// Search event listener
+document.getElementById('searchAssetInput')?.addEventListener('keyup', searchAssets);
+
+// Initialize
+loadAssets();
+
+// Close modal on outside click
+window.onclick = function(event) {
+    if (event.target.classList.contains('modal')) {
+        event.target.classList.remove('active');
+    }
+}
+function exportAssets() {
+    const format = confirm('Export kama Excel? (OK = Excel, Cancel = HTML/PDF)');
+    window.open(`/api/export/assets?format=${format ? 'excel' : 'pdf'}`, '_blank');
+}
+</script>
+{% endblock %}
+

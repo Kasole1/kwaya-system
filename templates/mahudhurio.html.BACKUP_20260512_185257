@@ -1,0 +1,2096 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Mahudhurio - Kwaya Mt. Bonifasi{% endblock %}
+
+{% block content %}
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    .attendance-container {
+        max-width: 1600px;
+        margin: 0 auto;
+    }
+    
+    /* Header */
+    .attendance-header {
+        background: linear-gradient(135deg, #1a2a6e 0%, #2a3a7e 100%);
+        padding: 20px 25px;
+        border-radius: 20px 20px 0 0;
+        color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+    
+    .attendance-header h1 {
+        color: #FFD700;
+        margin: 0;
+        font-size: 24px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .event-badge {
+        background: #FFD700;
+        color: #1a2a6e;
+        padding: 8px 20px;
+        border-radius: 40px;
+        font-weight: bold;
+    }
+    
+    /* Controls Bar */
+    .controls-bar {
+        background: #f8f9fa;
+        padding: 15px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        border-bottom: 1px solid #e0e0e0;
+    }
+    
+    .search-box {
+        display: flex;
+        gap: 10px;
+        flex: 2;
+        min-width: 250px;
+    }
+    
+    .search-box input {
+        flex: 1;
+        padding: 10px 15px;
+        border: 1px solid #ddd;
+        border-radius: 40px;
+        font-size: 14px;
+    }
+    
+    .voice-controls {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    
+    .voice-toggle {
+        background: #1a2a6e;
+        color: white;
+        border: none;
+        padding: 8px 18px;
+        border-radius: 40px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: all 0.2s;
+    }
+    
+    .voice-toggle.active {
+        background: #FFD700;
+        color: #1a2a6e;
+    }
+    
+    .settings-btn {
+        background: #6c757d;
+        color: white;
+        border: none;
+        padding: 8px 20px;
+        border-radius: 40px;
+        cursor: pointer;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    /* Voice Sections with Individual Soft Colors */
+    .voice-section {
+        margin-bottom: 30px;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+    
+    .voice-section.hidden {
+        display: none;
+    }
+    
+    /* Soft background colors for each section */
+    .voice-section-soprano { background: rgba(255, 182, 193, 0.3); }
+    .voice-section-alto { background: rgba(216, 191, 216, 0.3); }
+    .voice-section-tenor { background: rgba(173, 216, 230, 0.3); }
+    .voice-section-bass { background: rgba(188, 143, 143, 0.25); }
+    
+    .voice-header {
+        padding: 15px 20px;
+        font-size: 20px;
+        font-weight: bold;
+        color: white;
+    }
+    
+    .voice-soprano { background: linear-gradient(135deg, #FF69B4, #FF1493); }
+    .voice-alto { background: linear-gradient(135deg, #9370DB, #7B2FBE); }
+    .voice-tenor { background: linear-gradient(135deg, #4169E1, #1E3A8A); }
+    .voice-bass { background: linear-gradient(135deg, #2F4F4F, #1E3A3A); }
+    
+    .voice-header span {
+        background: rgba(255,255,255,0.3);
+        padding: 4px 12px;
+        border-radius: 30px;
+        font-size: 14px;
+        margin-left: 10px;
+    }
+    
+    /* Member Table - Cards Style */
+    .member-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: transparent;
+    }
+    
+    .member-table th {
+        background: rgba(255,255,255,0.7);
+        padding: 12px 10px;
+        text-align: left;
+        font-weight: bold;
+        color: #1a2a6e;
+        border-bottom: 2px solid #FFD700;
+        font-size: 13px;
+    }
+    
+    .member-table td {
+        padding: 10px;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        vertical-align: middle;
+        background: rgba(255,255,255,0.5);
+    }
+    
+    .member-table tr:hover td {
+        background: rgba(255,255,255,0.8);
+    }
+    
+    /* Status Colors */
+    .status-present { color: #28a745; font-weight: bold; }
+    .status-absent { color: #dc3545; font-weight: bold; }
+    .status-late { color: #fd7e14; font-weight: bold; }
+    .status-permission { color: #9b59b6; font-weight: bold; }
+    
+    /* Toggle Switch */
+    .toggle-switch {
+        width: 60px;
+        height: 28px;
+        background: #ccc;
+        border-radius: 30px;
+        cursor: pointer;
+        position: relative;
+        transition: all 0.3s;
+        display: inline-block;
+    }
+    
+    .toggle-switch.active-green { background: #28a745; }
+    .toggle-switch.active-red { background: #dc3545; }
+    .toggle-switch.active-yellow { background: #fd7e14; }
+    .toggle-switch.active-purple { background: #9b59b6; }
+    
+    .toggle-switch::after {
+        content: '';
+        width: 24px;
+        height: 24px;
+        background: white;
+        border-radius: 50%;
+        position: absolute;
+        top: 2px;
+        left: 3px;
+        transition: all 0.3s;
+    }
+    
+    .toggle-switch.active-green::after,
+    .toggle-switch.active-red::after,
+    .toggle-switch.active-yellow::after,
+    .toggle-switch.active-purple::after {
+        left: 33px;
+    }
+    
+    /* Minutes Control */
+    .minutes-control {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        background: #f0f0f0;
+        padding: 3px 8px;
+        border-radius: 30px;
+    }
+    
+    .minutes-btn {
+        background: #1a2a6e;
+        color: white;
+        border: none;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        cursor: pointer;
+        font-weight: bold;
+    }
+    
+    .minutes-value {
+        font-weight: bold;
+        min-width: 40px;
+        text-align: center;
+    }
+    
+    .penalty-amount {
+        font-weight: bold;
+        color: #dc3545;
+    }
+    
+    /* Action Buttons */
+    .view-details-btn {
+        background: #17a2b8;
+        color: white;
+        border: none;
+        padding: 5px 12px;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 11px;
+    }
+    
+    /* Modal Styles */
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.7);
+        z-index: 2000;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .modal.active {
+        display: flex;
+    }
+    
+    .modal-content {
+        background: white;
+        border-radius: 25px;
+        width: 90%;
+        max-width: 850px;
+        max-height: 85vh;
+        overflow-y: auto;
+        animation: modalFadeIn 0.3s;
+    }
+    
+    @keyframes modalFadeIn {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .modal-header {
+        background: linear-gradient(135deg, #1a2a6e 0%, #2a3a7e 100%);
+        color: #FFD700;
+        padding: 18px 25px;
+        border-radius: 25px 25px 0 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .modal-header h2 {
+        margin: 0;
+        font-size: 18px;
+    }
+    
+    .close-modal {
+        background: none;
+        border: none;
+        color: #FFD700;
+        font-size: 28px;
+        cursor: pointer;
+    }
+    
+    .modal-body {
+        padding: 25px;
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+    
+    /* Settings Form - Compact Modern with Rotating Colors */
+    @keyframes softPulse {
+        0% { background: rgba(26, 42, 110, 0.95); }
+        25% { background: rgba(26, 42, 110, 0.85); }
+        50% { background: rgba(42, 58, 126, 0.9); }
+        75% { background: rgba(26, 42, 110, 0.85); }
+        100% { background: rgba(26, 42, 110, 0.95); }
+    }
+    
+    @keyframes subtleShift {
+        0% { box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        50% { box-shadow: 0 4px 20px rgba(255,215,0,0.15); }
+        100% { box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    }
+    
+    .settings-modern {
+        background: linear-gradient(135deg, #1a2a6e 0%, #2a3a7e 100%);
+        border-radius: 24px;
+        padding: 20px;
+        animation: softPulse 8s ease-in-out infinite;
+    }
+    
+    .settings-modern h3 {
+        color: #FFD700;
+        font-size: 18px;
+        margin-bottom: 5px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .settings-modern .subtitle {
+        color: rgba(255,255,255,0.7);
+        font-size: 11px;
+        margin-bottom: 20px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid rgba(255,215,0,0.3);
+    }
+    
+    .settings-compact-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+    
+    .compact-setting-card {
+        background: rgba(255,255,255,0.12);
+        border-radius: 16px;
+        padding: 12px;
+        border: 1px solid rgba(255,215,0,0.25);
+        transition: all 0.3s;
+        backdrop-filter: blur(5px);
+    }
+    
+    .compact-setting-card:hover {
+        background: rgba(255,255,255,0.2);
+        border-color: #FFD700;
+        transform: translateY(-2px);
+    }
+    
+    .compact-event-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 12px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid rgba(255,215,0,0.3);
+    }
+    
+    .compact-event-icon {
+        font-size: 20px;
+    }
+    
+    .compact-event-name {
+        font-weight: bold;
+        color: #FFD700;
+        font-size: 13px;
+        flex: 1;
+    }
+    
+    .compact-input-group {
+        margin-bottom: 10px;
+    }
+    
+    .compact-input-group label {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 9px;
+        color: rgba(255,255,255,0.8);
+        margin-bottom: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .compact-input-group input {
+        width: 100%;
+        padding: 6px 8px;
+        background: rgba(0,0,0,0.5);
+        border: 1px solid rgba(255,215,0,0.3);
+        border-radius: 10px;
+        color: white;
+        font-size: 12px;
+        font-weight: bold;
+        text-align: center;
+    }
+    
+    .compact-input-group input:focus {
+        outline: none;
+        border-color: #FFD700;
+        background: rgba(0,0,0,0.7);
+    }
+    
+    .compact-save-btn {
+        width: 100%;
+        background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+        border: none;
+        padding: 6px;
+        border-radius: 12px;
+        color: #1a2a6e;
+        font-weight: bold;
+        font-size: 11px;
+        cursor: pointer;
+        margin-top: 8px;
+        transition: all 0.2s;
+    }
+    
+    .compact-save-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(255,215,0,0.4);
+    }
+    
+    .settings-summary {
+        background: rgba(0,0,0,0.4);
+        border-radius: 16px;
+        padding: 12px 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 15px;
+    }
+    
+    .summary-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 11px;
+        color: rgba(255,255,255,0.85);
+    }
+    
+    .summary-item strong {
+        color: #FFD700;
+        font-size: 13px;
+    }
+    
+    .settings-close {
+        background: rgba(255,255,255,0.15);
+        border: 1px solid rgba(255,215,0,0.4);
+        color: #FFD700;
+        padding: 8px 20px;
+        border-radius: 30px;
+        cursor: pointer;
+        font-size: 12px;
+        transition: all 0.2s;
+    }
+    
+    .settings-close:hover {
+        background: rgba(255,215,0,0.2);
+    }
+    
+    /* Notification Toast */
+    .penalty-toast {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background: linear-gradient(135deg, #1a2a6e, #2a3a7e);
+        color: #FFD700;
+        padding: 12px 20px;
+        border-radius: 12px;
+        border-left: 4px solid #FFD700;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        z-index: 3000;
+        animation: slideInRight 0.3s ease;
+        font-size: 13px;
+        max-width: 350px;
+    }
+    
+    @keyframes slideInRight {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+    
+    .btn-save {
+        background: #28a745;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 25px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+    
+    /* Penalty Info Box when selecting event */
+    .penalty-info-box {
+        background: linear-gradient(135deg, #FFD70020, #FFA50010);
+        border-left: 4px solid #FFD700;
+        padding: 8px 15px;
+        border-radius: 12px;
+        margin-top: 10px;
+        font-size: 12px;
+        animation: fadeIn 0.5s;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-5px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @media (max-width: 1000px) {
+        .member-table { font-size: 12px; }
+        .settings-compact-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    
+    @media (max-width: 600px) {
+        .settings-compact-grid { grid-template-columns: 1fr; }
+    }
+    
+    /* Penalty List Section */
+    .penalty-section {
+        margin-top: 40px;
+        background: white;
+        border-radius: 24px;
+        padding: 25px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        border-top: 5px solid #dc3545;
+    }
+    
+    .penalty-header {
+        display: flex;
+    justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #dc3545;
+    }
+    
+    .penalty-header h2 {
+        color: #dc3545;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 22px;
+    }
+    
+    .frequent-btn {
+        background: linear-gradient(135deg, #FFD700, #FFA500);
+        color: #1a2a6e;
+        border: none;
+        padding: 10px 25px;
+        border-radius: 40px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .frequent-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255,215,0,0.4);
+    }
+    
+    .penalty-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+        overflow-x: auto;
+        display: block;
+    }
+    
+    .penalty-table th {
+        background: #dc3545;
+        color: white;
+        padding: 12px 10px;
+        text-align: left;
+        font-weight: bold;
+        position: sticky;
+        top: 0;
+    }
+    
+    .penalty-table td {
+        padding: 10px;
+        border-bottom: 1px solid #eee;
+        vertical-align: middle;
+    }
+    
+    .penalty-table tr:hover {
+        background: #fff5f5;
+    }
+    
+    .pay-fine-btn {
+        background: linear-gradient(135deg, #28a745, #1e7e34);
+        color: white;
+        border: none;
+        padding: 6px 15px;
+        border-radius: 25px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: all 0.2s;
+    }
+    
+    .pay-fine-btn:hover {
+        transform: scale(1.02);
+        box-shadow: 0 2px 8px rgba(40,167,69,0.3);
+    }
+    
+    .penalty-badge-utoro {
+        background: #dc3545;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: bold;
+        display: inline-block;
+    }
+    
+    .penalty-badge-chelewa {
+        background: #fd7e14;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: bold;
+        display: inline-block;
+    }
+    
+    .days-warning {
+        color: #dc3545;
+        font-weight: bold;
+    }
+    
+    .days-urgent {
+        color: #fd7e14;
+        font-weight: bold;
+    }
+    
+    .days-safe {
+        color: #28a745;
+    }
+    
+    .empty-penalty {
+        text-align: center;
+        padding: 40px;
+        color: #999;
+    }
+    
+    /* Frequent Offenders Modal */
+    .frequent-modal-content {
+        max-width: 800px;
+    }
+    
+    .frequent-voice-section {
+        margin-bottom: 25px;
+        border-radius: 16px;
+        overflow: hidden;
+        border: 1px solid #e0e0e0;
+    }
+    
+    .frequent-voice-header {
+        padding: 12px 20px;
+        font-weight: bold;
+        color: white;
+    }
+    
+    .frequent-voice-header.soprano { background: linear-gradient(135deg, #FF69B4, #FF1493); }
+    .frequent-voice-header.alto { background: linear-gradient(135deg, #9370DB, #7B2FBE); }
+    .frequent-voice-header.tenor { background: linear-gradient(135deg, #4169E1, #1E3A8A); }
+    .frequent-voice-header.bass { background: linear-gradient(135deg, #2F4F4F, #1E3A3A); }
+    
+    .frequent-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .frequent-table th {
+        background: #f8f9fa;
+        padding: 10px;
+        text-align: left;
+        font-size: 12px;
+    }
+    
+    .frequent-table td {
+        padding: 8px 10px;
+        border-bottom: 1px solid #eee;
+        font-size: 13px;
+    }
+    
+    /* Fine Payment Modal */
+    .fine-modal-content {
+        max-width: 550px;
+    }
+    
+    .fine-details {
+        background: linear-gradient(135deg, #f8f9fa, #fff);
+        border-radius: 20px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+    
+    .fine-detail-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px solid #e0e0e0;
+    }
+    
+    .fine-remaining {
+        background: linear-gradient(135deg, #1a2a6e, #2a3a7e);
+        border-radius: 16px;
+        padding: 15px;
+        margin-top: 15px;
+        text-align: center;
+    }
+    
+    .fine-remaining .label {
+        color: #FFD700;
+        font-size: 12px;
+    }
+    
+    .fine-remaining .amount {
+        color: white;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    /* Penalty Cards Animation */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .penalty-section {
+        animation: fadeInUp 0.5s ease;
+    }
+    
+    /* Scrollbar styling */
+    .penalty-section::-webkit-scrollbar {
+        width: 8px;
+    }
+    
+    .penalty-section::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+    
+    .penalty-section::-webkit-scrollbar-thumb {
+        background: #FFD700;
+        border-radius: 10px;
+    }
+    /* ========== PENALTY CARDS BY VOICE ========== */
+.penalty-cards-container {
+    margin-top: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.penalty-cards-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.penalty-cards-header h2 {
+    color: #dc3545;
+    margin: 0;
+    font-size: 22px;
+}
+
+.voice-penalty-card {
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+/* Voice card background colors */
+.soprano-card { background: linear-gradient(135deg, #fff0f3, #ffe4ed); border-left: 5px solid #FF69B4; }
+.alto-card { background: linear-gradient(135deg, #f3e8ff, #edd9ff); border-left: 5px solid #9370DB; }
+.tenor-card { background: linear-gradient(135deg, #e8f0ff, #d4e4ff); border-left: 5px solid #4169E1; }
+.bass-card { background: linear-gradient(135deg, #e8f4f4, #d4ecec); border-left: 5px solid #2F4F4F; }
+
+.voice-card-header {
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: bold;
+    background: rgba(255,255,255,0.5);
+}
+
+.voice-icon { font-size: 24px; }
+.voice-name { font-size: 18px; color: #1a2a6e; }
+
+.penalty-badge {
+    background: #dc3545;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 30px;
+    font-size: 12px;
+    margin-left: auto;
+}
+
+.penalty-list {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.penalty-item {
+    background: white;
+    border-radius: 16px;
+    padding: 12px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    transition: transform 0.2s;
+}
+
+.penalty-item:hover {
+    transform: translateX(5px);
+}
+
+.penalty-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.penalty-member {
+    font-weight: bold;
+    color: #1a2a6e;
+    min-width: 120px;
+}
+
+.penalty-member-number {
+    font-family: monospace;
+    background: #f0f0f0;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+}
+
+.penalty-type {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.penalty-type.utoro { background: #dc3545; color: white; }
+.penalty-type.chelewa { background: #fd7e14; color: white; }
+
+.penalty-amount {
+    font-weight: bold;
+    color: #dc3545;
+}
+
+.penalty-days {
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    background: #f8f9fa;
+}
+
+.penalty-days.urgent { background: #dc3545; color: white; }
+.penalty-days.warning { background: #fd7e14; color: white; }
+.penalty-days.safe { background: #28a745; color: white; }
+
+.pay-btn {
+    background: linear-gradient(135deg, #1a2a6e, #2a3a7e);
+    color: #FFD700;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s;
+}
+
+.pay-btn:hover {
+    transform: scale(1.02);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+
+.no-penalty {
+    text-align: center;
+    padding: 20px;
+    color: #999;
+    font-style: italic;
+}
+</style>
+
+<div class="attendance-container">
+    <div class="attendance-header">
+        <h1>📋 Mahudhurio ya Kwaya</h1>
+        <div class="event-badge" id="currentEventDisplay">
+            🎯 Tukio la Sasa: {{ current_event.tukio }} | 📅 {{ current_event.tarehe }}
+        </div>
+    </div>
+    
+    <div class="controls-bar">
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="🔍 Tafuta mwanakwaya...">
+            <button class="voice-toggle" onclick="searchMembers()" style="background: #28a745;">🔍 Tafuta</button>
+            <button class="voice-toggle" onclick="resetSearch()" style="background: #6c757d;">🔄 Reset</button>
+        </div>
+        <div class="voice-controls">
+            <button class="voice-toggle active" data-voice="Soprano" onclick="toggleVoiceSection('Soprano')">🎵 Soprano</button>
+            <button class="voice-toggle active" data-voice="Alto" onclick="toggleVoiceSection('Alto')">🎵 Alto</button>
+            <button class="voice-toggle active" data-voice="Tenor" onclick="toggleVoiceSection('Tenor')">🎵 Tenor</button>
+            <button class="voice-toggle active" data-voice="Bass" onclick="toggleVoiceSection('Bass')">🎵 Bass</button>
+            <button class="voice-toggle" onclick="showAllVoices()">👁️ Show All</button>
+            <button class="voice-toggle" onclick="hideAllVoices()">🙈 Hide All</button>
+        </div>
+        <button class="settings-btn" onclick="openSettingsModal()">⚙️ Penalty Settings</button>
+    </div>
+    
+    <div class="controls-bar" style="background: #e8f4f8;">
+        <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+            <span style="font-weight: bold;">📅 Badilisha Tukio:</span>
+            <select id="eventSelect" style="padding: 8px 15px; border-radius: 25px;" onchange="showPenaltyInfo()">
+                <option value="Misa" {% if current_event.tukio == 'Misa' %}selected{% endif %}>⛪ Misa</option>
+                <option value="Mazishi" {% if current_event.tukio == 'Mazishi' %}selected{% endif %}>🕯️ Mazishi</option>
+                <option value="Harusi" {% if current_event.tukio == 'Harusi' %}selected{% endif %}>💍 Harusi</option>
+                <option value="Sherehe" {% if current_event.tukio == 'Sherehe' %}selected{% endif %}>🎉 Sherehe</option>
+                <option value="Mashindano" {% if current_event.tukio == 'Mashindano' %}selected{% endif %}>🏆 Mashindano</option>
+                <option value="Mazoezi" {% if current_event.tukio == 'Mazoezi' %}selected{% endif %}>🎵 Mazoezi</option>
+                <option value="Dominica" {% if current_event.tukio == 'Dominica' %}selected{% endif %}>📖 Dominica</option>
+            </select>
+            <input type="date" id="eventDate" value="{{ current_event.tarehe }}" style="padding: 8px 15px; border-radius: 25px;">
+            <button class="voice-toggle" onclick="updateCurrentEvent()" style="background: #1a2a6e;">✅ Weka Tukio</button>
+        </div>
+        <div id="penaltyInfoDisplay" class="penalty-info-box" style="display: none;"></div>
+    </div>
+    
+    <!-- SOPRANO SECTION -->
+<div id="SopranoSection" class="voice-section voice-section-soprano">
+    <div class="voice-header voice-soprano">🎵 SOPRANO <span id="sopranoCount">{{ soprano|length }}</span></div>
+    <table class="member-table" id="sopranoTable">
+        <thead>
+            <tr>
+                <th>SN</th>
+                <th>MEMBER #</th>
+                <th>JINA</th>
+                <th>MAHUDHURIO</th>
+                <th>STATUS</th>
+                <th>DAKIKA</th>
+                <th>PENALTY (TSh)</th>
+                <th>VIEW</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for member in soprano %}
+            {% set prefix = {'Soprano': 'S', 'Alto': 'A', 'Tenor': 'T', 'Bass': 'B'} %}
+            {% set member_number = prefix[member.sauti] ~ '%03d'|format(loop.index) %}
+            <tr data-name="{{ member.jina|lower }}" data-id="{{ member.id }}">
+                <td>{{ loop.index }}</td>
+                <td><strong style="color: #1a2a6e; font-family: monospace;">{{ member_number }}</strong></td>
+                <td>{{ member.jina }}</td>
+                <td><div class="toggle-switch" data-id="{{ member.id }}" data-status="present" onclick="toggleStatus({{ member.id }}, '{{ member.jina }}', 'Soprano')"></div></td>
+                <td class="status-cell-{{ member.id }}">-</td>
+                <td class="minutes-cell-{{ member.id }}"><div class="minutes-control" style="display: none;"><button class="minutes-btn" onclick="changeMinutes({{ member.id }}, -1)">-</button><span class="minutes-value" id="minutes-{{ member.id }}">0</span><button class="minutes-btn" onclick="changeMinutes({{ member.id }}, 1)">+</button></div></td>
+                <td class="penalty-cell-{{ member.id }}">0</td>
+                <td><button class="view-details-btn" onclick="viewMemberDetails({{ member.id }})">👁️ Taarifa</button></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+    
+    <!-- ALTO SECTION -->
+<div id="AltoSection" class="voice-section voice-section-alto">
+    <div class="voice-header voice-alto">🎵 ALTO <span id="altoCount">{{ alto|length }}</span></div>
+    <table class="member-table">
+        <thead>
+            <tr>
+                <th>SN</th>
+                <th>MEMBER #</th>
+                <th>JINA</th>
+                <th>MAHUDHURIO</th>
+                <th>STATUS</th>
+                <th>DAKIKA</th>
+                <th>PENALTY (TSh)</th>
+                <th>VIEW</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for member in alto %}
+            {% set prefix = {'Soprano': 'S', 'Alto': 'A', 'Tenor': 'T', 'Bass': 'B'} %}
+            {% set member_number = prefix[member.sauti] ~ '%03d'|format(loop.index) %}
+            <tr data-name="{{ member.jina|lower }}" data-id="{{ member.id }}">
+                <td>{{ loop.index }}</td>
+                <td><strong style="color: #1a2a6e; font-family: monospace;">{{ member_number }}</strong></td>
+                <td>{{ member.jina }}</td>
+                <td><div class="toggle-switch" data-id="{{ member.id }}" data-status="present" onclick="toggleStatus({{ member.id }}, '{{ member.jina }}', 'Alto')"></div></td>
+                <td class="status-cell-{{ member.id }}">-</td>
+                <td class="minutes-cell-{{ member.id }}"><div class="minutes-control" style="display: none;"><button class="minutes-btn" onclick="changeMinutes({{ member.id }}, -1)">-</button><span class="minutes-value" id="minutes-{{ member.id }}">0</span><button class="minutes-btn" onclick="changeMinutes({{ member.id }}, 1)">+</button></div></td>
+                <td class="penalty-cell-{{ member.id }}">0</td>
+                <td><button class="view-details-btn" onclick="viewMemberDetails({{ member.id }})">👁️ Taarifa</button></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+    
+    <!-- TENOR SECTION -->
+<div id="TenorSection" class="voice-section voice-section-tenor">
+    <div class="voice-header voice-tenor">🎵 TENOR <span id="tenorCount">{{ tenor|length }}</span></div>
+    <table class="member-table">
+        <thead>
+            <tr>
+                <th>SN</th>
+                <th>MEMBER #</th>
+                <th>JINA</th>
+                <th>MAHUDHURIO</th>
+                <th>STATUS</th>
+                <th>DAKIKA</th>
+                <th>PENALTY (TSh)</th>
+                <th>VIEW</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for member in tenor %}
+            {% set prefix = {'Soprano': 'S', 'Alto': 'A', 'Tenor': 'T', 'Bass': 'B'} %}
+            {% set member_number = prefix[member.sauti] ~ '%03d'|format(loop.index) %}
+            <tr data-name="{{ member.jina|lower }}" data-id="{{ member.id }}">
+                <td>{{ loop.index }}</td>
+                <td><strong style="color: #1a2a6e; font-family: monospace;">{{ member_number }}</strong></td>
+                <td>{{ member.jina }}</td>
+                <td><div class="toggle-switch" data-id="{{ member.id }}" data-status="present" onclick="toggleStatus({{ member.id }}, '{{ member.jina }}', 'Tenor')"></div></td>
+                <td class="status-cell-{{ member.id }}">-</td>
+                <td class="minutes-cell-{{ member.id }}"><div class="minutes-control" style="display: none;"><button class="minutes-btn" onclick="changeMinutes({{ member.id }}, -1)">-</button><span class="minutes-value" id="minutes-{{ member.id }}">0</span><button class="minutes-btn" onclick="changeMinutes({{ member.id }}, 1)">+</button></div></td>
+                <td class="penalty-cell-{{ member.id }}">0</td>
+                <td><button class="view-details-btn" onclick="viewMemberDetails({{ member.id }})">👁️ Taarifa</button></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+    
+    <!-- BASS SECTION -->
+<div id="BassSection" class="voice-section voice-section-bass">
+    <div class="voice-header voice-bass">🎵 BASS <span id="bassCount">{{ bass|length }}</span></div>
+    <table class="member-table">
+        <thead>
+            <tr>
+                <th>SN</th>
+                <th>MEMBER #</th>
+                <th>JINA</th>
+                <th>MAHUDHURIO</th>
+                <th>STATUS</th>
+                <th>DAKIKA</th>
+                <th>PENALTY (TSh)</th>
+                <th>VIEW</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for member in bass %}
+            {% set prefix = {'Soprano': 'S', 'Alto': 'A', 'Tenor': 'T', 'Bass': 'B'} %}
+            {% set member_number = prefix[member.sauti] ~ '%03d'|format(loop.index) %}
+            <tr data-name="{{ member.jina|lower }}" data-id="{{ member.id }}">
+                <td>{{ loop.index }}</td>
+                <td><strong style="color: #1a2a6e; font-family: monospace;">{{ member_number }}</strong></td>
+                <td>{{ member.jina }}</td>
+                <td><div class="toggle-switch" data-id="{{ member.id }}" data-status="present" onclick="toggleStatus({{ member.id }}, '{{ member.jina }}', 'Bass')"></div></td>
+                <td class="status-cell-{{ member.id }}">-</td>
+                <td class="minutes-cell-{{ member.id }}"><div class="minutes-control" style="display: none;"><button class="minutes-btn" onclick="changeMinutes({{ member.id }}, -1)">-</button><span class="minutes-value" id="minutes-{{ member.id }}">0</span><button class="minutes-btn" onclick="changeMinutes({{ member.id }}, 1)">+</button></div></td>
+                <td class="penalty-cell-{{ member.id }}">0</td>
+                <td><button class="view-details-btn" onclick="viewMemberDetails({{ member.id }})">👁️ Taarifa</button></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Member Details Modal -->
+<div id="memberModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="modalTitle">👤 Taarifa za Mwanakwaya</h2>
+            <button class="close-modal" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body" id="modalBody">
+            <div style="text-align: center; padding: 30px;">Loading...</div>
+        </div>
+    </div>
+</div>
+
+<!-- Settings Modal -->
+<div id="settingsModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>⚙️ Penalty Settings</h2>
+            <button class="close-modal" onclick="closeSettingsModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="settings-grid" id="settingsGrid"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentTukio = '{{ current_event.tukio }}';
+    let penaltySettingsCache = {};
+    
+    // Load penalty settings on page load
+    async function loadPenaltySettings() {
+        const response = await fetch('/api/mahudhurio/penalty_settings');
+        const settings = await response.json();
+        for (const s of settings) {
+            penaltySettingsCache[s.tukio] = s;
+        }
+        showPenaltyInfo();
+    }
+    
+    function showPenaltyInfo() {
+        const selectedTukio = document.getElementById('eventSelect').value;
+        const setting = penaltySettingsCache[selectedTukio] || { penalty_utoro: 20000, penalty_kwa_dakika: 1000, siku_za_kudouble: 10 };
+        
+        const doubleAmount = setting.penalty_utoro * 2;
+        const lateAmountPerMin = setting.penalty_kwa_dakika;
+        
+        const infoHtml = `
+            <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: center;">
+                <span>💰 <strong>${selectedTukio}</strong></span>
+                <span>❌ Mtoro: <strong>TSh ${parseInt(setting.penalty_utoro).toLocaleString()}</strong></span>
+                <span>⏱️ Dakika: <strong>TSh ${parseInt(setting.penalty_kwa_dakika).toLocaleString()}</strong>/dakika</span>
+                <span>⚠️ Baada ya siku ${setting.siku_za_kudouble}: <strong>TSh ${doubleAmount.toLocaleString()}</strong></span>
+                <span>🚫 Baada ya siku 30: <strong style="color: #dc3545;">Kusimamishwa kwa miezi 3</strong></span>
+            </div>
+        `;
+        
+        const infoDiv = document.getElementById('penaltyInfoDisplay');
+        infoDiv.innerHTML = infoHtml;
+        infoDiv.style.display = 'block';
+    }
+    
+    function showNotification(message, type = 'info') {
+        const toast = document.createElement('div');
+        toast.className = 'penalty-toast';
+        toast.innerHTML = message;
+        document.body.appendChild(toast);
+        setTimeout(() => {
+            toast.style.animation = 'slideInRight 0.3s reverse';
+            setTimeout(() => toast.remove(), 300);
+        }, 4000);
+    }
+    
+    function toggleStatus(id, name, sauti) {
+        const toggle = document.querySelector(`.toggle-switch[data-id="${id}"]`);
+        const currentStatus = toggle.dataset.status;
+        let newStatus, statusText, colorClass;
+        
+        if (currentStatus === 'present') { newStatus = 'absent'; statusText = 'Mtoro'; colorClass = 'active-red'; }
+        else if (currentStatus === 'absent') { newStatus = 'late'; statusText = 'Amechelewa'; colorClass = 'active-yellow'; }
+        else if (currentStatus === 'late') { newStatus = 'permission'; statusText = 'Ruhusa'; colorClass = 'active-purple'; }
+        else { newStatus = 'present'; statusText = 'Amehudhuria'; colorClass = 'active-green'; }
+        
+        toggle.dataset.status = newStatus;
+        toggle.className = `toggle-switch ${colorClass}`;
+        document.querySelector(`.status-cell-${id}`).innerHTML = `<span class="status-${newStatus}">${statusText}</span>`;
+        
+        const minutesControl = document.querySelector(`.minutes-cell-${id} .minutes-control`);
+        if (newStatus === 'late') {
+            minutesControl.style.display = 'flex';
+        } else {
+            minutesControl.style.display = 'none';
+            if (newStatus !== 'late') {
+                document.getElementById(`minutes-${id}`).innerText = '0';
+                updatePenalty(id, newStatus, 0, name, sauti);
+            }
+        }
+        
+        if (newStatus === 'late') {
+            const minutes = parseInt(document.getElementById(`minutes-${id}`).innerText);
+            updatePenalty(id, newStatus, minutes, name, sauti);
+        } else if (newStatus !== 'late') {
+            updatePenalty(id, newStatus, 0, name, sauti);
+        }
+    }
+    
+    function changeMinutes(id, delta) {
+        const minutesSpan = document.getElementById(`minutes-${id}`);
+        let minutes = parseInt(minutesSpan.innerText) + delta;
+        if (minutes < 0) minutes = 0;
+        if (minutes > 120) minutes = 120;
+        minutesSpan.innerText = minutes;
+        const toggle = document.querySelector(`.toggle-switch[data-id="${id}"]`);
+        if (toggle.dataset.status === 'late') {
+            updatePenalty(id, 'late', minutes, null, null);
+        }
+    }
+    
+    async function updatePenalty(id, status, minutes, name, sauti) {
+        const tukio = document.getElementById('eventSelect').value;
+        const response = await fetch('/api/mahudhurio/update', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ member_id: id, status: status, dakika_chelewa: minutes, tukio: tukio, member_name: name, sauti: sauti })
+        });
+        const data = await response.json();
+        if (data.success) {
+            document.querySelector(`.penalty-cell-${id}`).innerHTML = `<span class="penalty-amount">${data.penalty.toLocaleString()}</span>`;
+        }
+    }
+    
+    async function updateCurrentEvent() {
+        const tukio = document.getElementById('eventSelect').value;
+        const tarehe = document.getElementById('eventDate').value;
+        const response = await fetch('/api/mahudhurio/event/update', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ tukio: tukio, tarehe: tarehe })
+        });
+        if (response.ok) {
+            document.getElementById('currentEventDisplay').innerHTML = `🎯 Tukio la Sasa: ${tukio} | 📅 ${tarehe}`;
+            currentTukio = tukio;
+            showNotification(`✅ Tukio limebadilishwa kuwa ${tukio}! Penalty: Mtoro TSh ${penaltySettingsCache[tukio]?.penalty_utoro?.toLocaleString() || '20,000'}`, 'success');
+            setTimeout(() => location.reload(), 1500);
+        }
+    }
+    
+    async function viewMemberDetails(id) {
+        console.log("Fetching details for ID:", id);
+        try {
+            const response = await fetch(`/api/mahudhurio/member/${id}`);
+            const data = await response.json();
+            console.log("Data received:", data);
+            
+            if (data.success) {
+                let recordsHtml = '';
+                for (const rec of data.records) {
+                    let statusClass = rec.status === 'present' ? 'status-present' : (rec.status === 'absent' ? 'status-absent' : (rec.status === 'late' ? 'status-late' : 'status-permission'));
+                    let statusText = rec.status === 'present' ? '✅ Amehudhuria' : (rec.status === 'absent' ? '❌ Mtoro' : (rec.status === 'late' ? '⚠️ Amechelewa' : '📝 Ruhusa'));
+                    let statusIcon = rec.status === 'present' ? '✅' : (rec.status === 'absent' ? '❌' : (rec.status === 'late' ? '⚠️' : '📝'));
+                    let badgeColor = rec.status === 'present' ? '#28a745' : (rec.status === 'absent' ? '#dc3545' : (rec.status === 'late' ? '#fd7e14' : '#9b59b6'));
+                    
+                    recordsHtml += `
+                        <div style="background: white; border-radius: 14px; padding: 14px; margin-bottom: 12px; border-left: 4px solid ${badgeColor}; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 8px;">
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <strong style="color: #1a2a6e;">📅 ${rec.tarehe}</strong>
+                                    <span class="${statusClass}" style="background: ${badgeColor}20; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold;">${statusIcon} ${statusText}</span>
+                                </div>
+                                <span style="background: #f0f0f0; padding: 4px 10px; border-radius: 20px; font-size: 11px;">${rec.tukio}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 8px;">
+                                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                                    ${rec.dakika_chelewa > 0 ? `<span style="font-size: 12px; color: #fd7e14;">⏱️ Chelewa: ${rec.dakika_chelewa} dakika</span>` : ''}
+                                    <span style="font-size: 13px; font-weight: bold; color: #dc3545;">💰 Penalty: TSh ${(rec.penalty || 0).toLocaleString()}</span>
+                                </div>
+                                ${!rec.imelipwa ? 
+                                    `<button onclick="payPenalty(${rec.id})" style="background: linear-gradient(135deg, #28a745, #1e7e34); color: white; border: none; padding: 6px 16px; border-radius: 25px; cursor: pointer; font-size: 11px; font-weight: bold;">💰 Lipa Sasa</button>` : 
+                                    `<span style="background: #28a74520; color: #28a745; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: bold;">✓ IMELIPWA</span>`
+                                }
+                            </div>
+                            ${rec.tarehe_penalty_double ? `<div style="margin-top: 8px; font-size: 10px; color: #888;">📅 Double penalty date: ${rec.tarehe_penalty_double}</div>` : ''}
+                        </div>
+                    `;
+                }
+                
+                const totalPenalty = data.total_penalty || 0;
+                const daysSince = data.days_since_last_penalty || 0;
+                const recordsCount = data.records?.length || 0;
+                
+                const suspendWarning = data.should_be_suspended ? 
+                    `<div style="background: linear-gradient(135deg, #dc3545, #c82333); color: white; padding: 16px; border-radius: 16px; margin-bottom: 20px; text-align: center; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                        <span style="font-size: 24px;">⚠️</span>
+                        <span style="font-weight: bold;">MWANAKWAYA AMESIMAMISHWA KWA MIEZI 3! Penalty isiyolipwa kwa siku 30+</span>
+                    </div>` : '';
+                
+                const modalContent = `
+                    <div style="background: linear-gradient(135deg, #1a2a6e, #2a3a7e); margin: -25px -25px 20px -25px; padding: 25px; border-radius: 25px 25px 0 0;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+                            <div style="display: flex; align-items: center; gap: 15px;">
+                                <div style="background: #FFD700; width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px;">🎵</div>
+                                <div>
+                                    <h3 style="color: #FFD700; margin: 0; font-size: 20px;">${escapeHtml(data.member.jina)}</h3>
+                                    <p style="color: white; margin: 5px 0 0; font-size: 13px;">${data.member.sauti} • Member #${data.member.id}</p>
+                                </div>
+                            </div>
+                            <div style="background: ${data.member.status === 'suspended' ? '#dc3545' : '#28a745'}; padding: 6px 18px; border-radius: 30px; font-size: 12px; font-weight: bold; color: white;">
+                                ${data.member.status === 'suspended' ? '⏸️ SIMAMISHWA MIEZI 3' : '✅ ACTIVE'}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px;">
+                        <div style="background: linear-gradient(135deg, #dc3545, #c82333); padding: 15px; border-radius: 16px; text-align: center;">
+                            <div style="font-size: 11px; color: white; opacity: 0.8;">JUMLA YA PENALTY</div>
+                            <div style="font-size: 22px; font-weight: bold; color: #FFD700;">TSh ${totalPenalty.toLocaleString()}</div>
+                        </div>
+                        <div style="background: linear-gradient(135deg, #fd7e14, #e67e22); padding: 15px; border-radius: 16px; text-align: center;">
+                            <div style="font-size: 11px; color: white; opacity: 0.8;">SIKU TANGU PENALTY</div>
+                            <div style="font-size: 28px; font-weight: bold; color: white;">${daysSince}</div>
+                            <div style="font-size: 10px; color: white;">siku zilizopita</div>
+                            ${daysSince >= 30 ? `<div style="font-size: 10px; color: #FFD700; margin-top: 5px;">⚠️ Inastahili kusimamishwa</div>` : ''}
+                        </div>
+                        <div style="background: linear-gradient(135deg, #17a2b8, #138496); padding: 15px; border-radius: 16px; text-align: center;">
+                            <div style="font-size: 11px; color: white; opacity: 0.8;">JUMLA YA MAHUDHURIO</div>
+                            <div style="font-size: 28px; font-weight: bold; color: white;">${recordsCount}</div>
+                            <div style="font-size: 10px; color: white;">rekodi zilizorekodiwa</div>
+                        </div>
+                    </div>
+                    
+                    ${suspendWarning}
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin: 20px 0 15px 0;">
+                        <h4 style="color: #1a2a6e; margin: 0; border-left: 4px solid #FFD700; padding-left: 12px;">📋 HISTORIA YA MAHUDHURIO</h4>
+                        <span style="font-size: 11px; color: #888;">${recordsCount} rekodi</span>
+                    </div>
+                    <div style="max-height: 350px; overflow-y: auto; padding-right: 5px;">
+                        ${recordsHtml || '<div style="text-align: center; padding: 40px; color: #999; background: #f8f9fa; border-radius: 16px;">📭 Hakuna rekodi za mahudhurio</div>'}
+                    </div>
+                `;
+                
+                document.getElementById('modalTitle').innerHTML = `👤 ${escapeHtml(data.member.jina)} - ${escapeHtml(data.member.sauti)}`;
+                document.getElementById('modalBody').innerHTML = modalContent;
+                document.getElementById('memberModal').classList.add('active');
+            } else {
+                alert('Hakuna taarifa za mwanakwaya huyu');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Kuna tatizo la kupata taarifa. Tafadhali jaribu tena.');
+        }
+    }
+    
+    function escapeHtml(text) {
+        if (!text) return '';
+        return text.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+    
+    async function payPenalty(id) {
+        const response = await fetch(`/api/mahudhurio/pay/${id}`, { method: 'POST' });
+        if (response.ok) { 
+            showNotification('✅ Penalty imelipwa kikamilifu!', 'success');
+            setTimeout(() => location.reload(), 1500);
+        } else {
+            showNotification('❌ Kuna tatizo, jaribu tena!', 'error');
+        }
+    }
+    
+    function closeModal() { 
+        document.getElementById('memberModal').classList.remove('active'); 
+    }
+    
+    async function openSettingsModal() {
+        const response = await fetch('/api/mahudhurio/penalty_settings');
+        const settings = await response.json();
+        const settingsMap = {};
+        for (const s of settings) { settingsMap[s.tukio] = s; }
+        const tukioList = ['Misa', 'Mazishi', 'Harusi', 'Sherehe', 'Mashindano', 'Mazoezi', 'Dominica'];
+        const icons = { 'Misa':'⛪', 'Mazishi':'🕯️', 'Harusi':'💍', 'Sherehe':'🎉', 'Mashindano':'🏆', 'Mazoezi':'🎵', 'Dominica':'📖' };
+        let html = `<div class="settings-modern"><h3>⚙️ <span style="color:white;">MPANGILIO WA PENALTI</span></h3><div class="subtitle">Weka viwango vya penalty kwa kila aina ya tukio</div><div class="settings-compact-grid">`;
+        for (const tukio of tukioList) {
+            const setting = settingsMap[tukio] || { penalty_utoro: 20000, penalty_kwa_dakika: 1000, siku_za_kudouble: 10 };
+            html += `<div class="compact-setting-card"><div class="compact-event-header"><span class="compact-event-icon">${icons[tukio]}</span><span class="compact-event-name">${tukio}</span></div>
+            <div class="compact-input-group"><label>💰 MTORO</label><input type="number" id="utoro_${tukio}" value="${setting.penalty_utoro}"></div>
+            <div class="compact-input-group"><label>⏱️ KWA DAKIKA</label><input type="number" id="dakika_${tukio}" value="${setting.penalty_kwa_dakika}"></div>
+            <div class="compact-input-group"><label>📅 SIKU ZA DOUBLE</label><input type="number" id="siku_${tukio}" value="${setting.siku_za_kudouble}"></div>
+            <button class="compact-save-btn" onclick="saveSinglePenalty('${tukio}')">💾 HIFADHI</button></div>`;
+        }
+        html += `</div><div class="settings-summary"><div class="summary-item">📊 <strong>${tukioList.length}</strong> Aina za Matukio</div><div class="summary-item">💰 Penalty huongezeka mara mbili baada ya siku ${settingsMap[Object.keys(settingsMap)[0]]?.siku_za_kudouble || 10}</div><div class="summary-item">🚫 Kusimamishwa baada ya siku 30</div><button class="settings-close" onclick="closeSettingsModal()">✖️ FUNGA</button></div></div>`;
+        document.getElementById('settingsGrid').innerHTML = html;
+        document.getElementById('settingsModal').classList.add('active');
+    }
+    
+    async function saveSinglePenalty(tukio) {
+        const penalty_utoro = document.getElementById(`utoro_${tukio}`).value;
+        const penalty_kwa_dakika = document.getElementById(`dakika_${tukio}`).value;
+        const siku_za_kudouble = document.getElementById(`siku_${tukio}`).value;
+        const response = await fetch('/api/mahudhurio/settings/update', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ tukio, penalty_utoro, penalty_kwa_dakika, siku_za_kudouble })
+        });
+        if (response.ok) {
+            const btn = event.target;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '✅ IMEFANIKIWA';
+            btn.style.background = '#28a745';
+            setTimeout(() => { btn.innerHTML = originalText; btn.style.background = 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)'; }, 1500);
+            showNotification(`✅ Settings za ${tukio} zimehifadhiwa!`, 'success');
+            loadPenaltySettings();
+        } else { 
+            showNotification('❌ Kuna tatizo, tafadhali jaribu tena!', 'error');
+        }
+    }
+    
+    function closeSettingsModal() { 
+        document.getElementById('settingsModal').classList.remove('active'); 
+    }
+    
+    let voiceStates = { Soprano: true, Alto: true, Tenor: true, Bass: true };
+    
+    function toggleVoiceSection(voice) {
+        voiceStates[voice] = !voiceStates[voice];
+        const section = document.getElementById(`${voice}Section`);
+        const btn = document.querySelector(`.voice-toggle[data-voice="${voice}"]`);
+        if (section) {
+            if (voiceStates[voice]) { 
+                section.classList.remove('hidden'); 
+                if (btn) btn.classList.add('active'); 
+            } else { 
+                section.classList.add('hidden'); 
+                if (btn) btn.classList.remove('active'); 
+            }
+        }
+    }
+    
+    function showAllVoices() { 
+        for (const voice of ['Soprano','Alto','Tenor','Bass']) { 
+            voiceStates[voice]=true; 
+            const s=document.getElementById(`${voice}Section`); 
+            const b=document.querySelector(`.voice-toggle[data-voice="${voice}"]`); 
+            if(s) s.classList.remove('hidden'); 
+            if(b) b.classList.add('active'); 
+        } 
+    }
+    
+    function hideAllVoices() { 
+        for (const voice of ['Soprano','Alto','Tenor','Bass']) { 
+            voiceStates[voice]=false; 
+            const s=document.getElementById(`${voice}Section`); 
+            const b=document.querySelector(`.voice-toggle[data-voice="${voice}"]`); 
+            if(s) s.classList.add('hidden'); 
+            if(b) b.classList.remove('active'); 
+        } 
+    }
+    
+    function searchMembers() { 
+        const term = document.getElementById('searchInput').value.toLowerCase(); 
+        document.querySelectorAll('.member-table tbody tr').forEach(row => { 
+            const name = row.getAttribute('data-name') || ''; 
+            row.style.display = name.includes(term) ? '' : 'none'; 
+        }); 
+    }
+    
+    function resetSearch() { 
+        document.getElementById('searchInput').value = ''; 
+        document.querySelectorAll('.member-table tbody tr').forEach(row => { 
+            row.style.display = ''; 
+        }); 
+    }
+    
+    // Initialize
+    loadPenaltySettings();
+        // ============ PENALTY LIST FUNCTIONS ============
+    
+    let penaltyData = [];
+    
+        async function loadPenaltyList() {
+        try {
+            const response = await fetch('/api/mahudhurio/penalty_list');
+            const data = await response.json();
+            console.log("Penalty data received:", data);
+            if (data.success) {
+                penaltyData = data.penalties || [];
+                console.log("Penalties count:", penaltyData.length);
+                renderPenaltyTable();
+            } else {
+                penaltyData = [];
+                renderPenaltyTable();
+            }
+        } catch(e) {
+            console.error('Error loading penalty list:', e);
+            penaltyData = [];
+            renderPenaltyTable();
+        }
+    }
+    
+    function renderPenaltyTable() {
+    // Group penalties by voice
+    const voices = ['Soprano', 'Alto', 'Tenor', 'Bass'];
+    
+    voices.forEach(voice => {
+        const voicePenalties = penaltyData.filter(p => p.sauti === voice);
+        const container = document.getElementById(`${voice.toLowerCase()}PenaltyList`);
+        const countSpan = document.getElementById(`${voice.toLowerCase()}PenaltyCount`);
+        
+        if (countSpan) countSpan.innerText = voicePenalties.length;
+        
+        if (!container) return;
+        
+        if (voicePenalties.length === 0) {
+            container.innerHTML = '<div class="no-penalty">✨ Hakuna penalty kwa sauti hii</div>';
+            return;
+        }
+        
+        container.innerHTML = voicePenalties.map(p => {
+            let penaltyTypeClass = p.penalty_type === 'utoro' ? 'utoro' : 'chelewa';
+            let penaltyTypeText = p.penalty_type === 'utoro' ? '❌ Mtoro' : '⏱️ Amechelewa';
+            
+            let daysClass = '';
+            let daysText = p.days_until_double || 0;
+            if (daysText <= 3) daysClass = 'urgent';
+            else if (daysText <= 7) daysClass = 'warning';
+            else daysClass = 'safe';
+            
+            return `
+                <div class="penalty-item">
+                    <div class="penalty-info">
+                        <div class="penalty-member">
+                            <div>${escapeHtml(p.jina)}</div>
+                            <div class="penalty-member-number">${escapeHtml(p.member_number || 'N/A')}</div>
+                        </div>
+                        <div class="penalty-type ${penaltyTypeClass}">${penaltyTypeText}</div>
+                        <div>${escapeHtml(p.tukio)}</div>
+                        <div class="penalty-amount">TSh ${(p.remaining_amount || p.penalty_amount).toLocaleString()}</div>
+                        <div class="penalty-days ${daysClass}">⏰ ${daysText} siku</div>
+                    </div>
+                    <button class="pay-btn" onclick="openFineModal(${p.member_id}, ${p.penalty_id}, '${escapeHtml(p.jina)}', '${escapeHtml(p.sauti)}', ${p.remaining_amount || p.penalty_amount})">
+                        💰 Lipa
+                    </button>
+                </div>
+            `;
+        }).join('');
+    });
+}
+    
+    // Fine Payment Modal
+    let currentFine = { memberId: null, penaltyId: null, memberName: '', voice: '', amount: 0, remaining: 0 };
+    
+    async function openFineModal(memberId, penaltyId, name, voice, amount) {
+        currentFine.memberId = memberId;
+        currentFine.penaltyId = penaltyId;
+        currentFine.memberName = name;
+        currentFine.voice = voice;
+        currentFine.amount = amount;
+        currentFine.remaining = amount;
+        
+        const modalHtml = `
+            <div id="finePaymentModal" style="display:flex; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); backdrop-filter:blur(5px); z-index:10000; justify-content:center; align-items:center;">
+                <div style="background:white; border-radius:28px; width:90%; max-width:500px; max-height:85vh; overflow-y:auto; animation:fadeIn 0.3s;">
+                    <div style="background:linear-gradient(135deg,#1a2a6e,#2a3a7e); padding:20px; border-radius:28px 28px 0 0; color:#FFD700; display:flex; justify-content:space-between;">
+                        <h3 style="margin:0;">💰 Lipa Faini</h3>
+                        <button onclick="closeFineModal()" style="background:rgba(255,255,255,0.2); border:none; color:#FFD700; font-size:24px; cursor:pointer; width:35px; border-radius:50%;">✕</button>
+                    </div>
+                    <div style="padding:25px;">
+                        <div style="text-align:center; margin-bottom:20px;">
+                            <div style="font-size:50px;">💰</div>
+                            <div style="font-size:20px; font-weight:bold; color:#1a2a6e;">${escapeHtml(name)}</div>
+                            <div style="color:#666;">🎤 ${escapeHtml(voice)}</div>
+                        </div>
+                        
+                        <div style="background:#f8f9fa; border-radius:16px; padding:15px; margin-bottom:20px;">
+                            <div style="display:flex; justify-content:space-between; padding:10px 0;">
+                                <span>💰 Penalty Inayodaiwa:</span>
+                                <span style="color:#dc3545; font-weight:bold;">TSh ${formatNumber(amount)}</span>
+                            </div>
+                        </div>
+                        
+                        <div id="remainingDisplay" style="background:linear-gradient(135deg,#1a2a6e,#2a3a7e); border-radius:16px; padding:15px; margin-bottom:20px; text-align:center;">
+                            <div style="color:#FFD700; font-size:12px;">DENI LILILOBAKI</div>
+                            <div style="color:white; font-size:28px; font-weight:bold;">TSh ${formatNumber(amount)}</div>
+                        </div>
+                        
+                        <div style="display:flex; gap:12px; margin-bottom:20px;">
+                            <button onclick="selectFineOption('full')" id="fullOptionBtn" style="flex:1; background:linear-gradient(135deg,#28a745,#1e7e34); color:white; padding:12px; border:none; border-radius:40px; font-weight:bold; cursor:pointer;">💰 Lipa Kamili</button>
+                            <button onclick="selectFineOption('partial')" id="partialOptionBtn" style="flex:1; background:#fd7e14; color:white; padding:12px; border:none; border-radius:40px; font-weight:bold; cursor:pointer;">📊 Lipa Sehemu</button>
+                        </div>
+                        
+                        <div id="partialAmountDiv" style="display:none; margin-bottom:20px;">
+                            <label style="display:block; font-weight:bold; margin-bottom:8px;">💰 Kiasi cha Kulipa (TSh)</label>
+                            <input type="number" id="fineAmount" value="5000" style="width:100%; padding:12px; border:2px solid #ddd; border-radius:16px; font-size:16px;">
+                        </div>
+                        
+                        <div style="margin-bottom:20px;">
+                            <label style="display:block; font-weight:bold; margin-bottom:8px;">📝 Maelezo</label>
+                            <input type="text" id="fineNote" placeholder="Malipo ya penalty" style="width:100%; padding:12px; border:2px solid #ddd; border-radius:16px;">
+                        </div>
+                        
+                        <button onclick="submitFinePayment()" style="background:linear-gradient(135deg,#1a2a6e,#2a3a7e); color:#FFD700; width:100%; padding:14px; border:none; border-radius:40px; font-weight:bold; font-size:16px; cursor:pointer;">💾 Thibitisha Malipo</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Remove existing modal if any
+        const existingModal = document.getElementById('finePaymentModal');
+        if (existingModal) existingModal.remove();
+        
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function selectFineOption(option) {
+        const fullBtn = document.getElementById('fullOptionBtn');
+        const partialBtn = document.getElementById('partialOptionBtn');
+        const partialDiv = document.getElementById('partialAmountDiv');
+        
+        if (option === 'full') {
+            fullBtn.style.background = 'linear-gradient(135deg,#28a745,#1e7e34)';
+            partialBtn.style.background = '#fd7e14';
+            partialDiv.style.display = 'none';
+        } else {
+            fullBtn.style.background = '#6c757d';
+            partialBtn.style.background = 'linear-gradient(135deg,#fd7e14,#e67e22)';
+            partialDiv.style.display = 'block';
+        }
+    }
+    
+    async function submitFinePayment() {
+        const isPartial = document.getElementById('partialAmountDiv').style.display === 'block';
+        let amount = isPartial ? parseFloat(document.getElementById('fineAmount').value) : currentFine.amount;
+        const note = document.getElementById('fineNote').value || 'Malipo ya penalty';
+        
+        if (isNaN(amount) || amount <= 0) {
+            alert('Tafadhali weka kiasi sahihi');
+            return;
+        }
+        
+        const submitBtn = event?.target;
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '⏳ Inachakata...';
+        }
+        
+        try {
+            const response = await fetch('/api/mahudhurio/pay_penalty', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    penalty_id: currentFine.penaltyId,
+                    member_id: currentFine.memberId,
+                    amount: amount,
+                    note: note
+                })
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                alert(`✅ ${result.message}`);
+                closeFineModal();
+                loadPenaltyList(); // Refresh penalty list
+                location.reload(); // Reload page to update everything
+            } else {
+                alert('❌ ' + (result.message || 'Kuna tatizo, jaribu tena'));
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '💾 Thibitisha Malipo';
+                }
+            }
+        } catch(e) {
+            alert('❌ Kuna tatizo la mtandao');
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '💾 Thibitisha Malipo';
+            }
+        }
+    }
+    
+    function closeFineModal() {
+        const modal = document.getElementById('finePaymentModal');
+        if (modal) modal.remove();
+        document.body.style.overflow = '';
+    }
+    
+    async function openFrequentOffenders() {
+        const response = await fetch('/api/mahudhurio/frequent_offenders');
+        const data = await response.json();
+        
+        if (data.success) {
+            let html = `
+                <div id="frequentModal" style="display:flex; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); backdrop-filter:blur(5px); z-index:10000; justify-content:center; align-items:center;">
+                    <div style="background:white; border-radius:28px; width:90%; max-width:800px; max-height:85vh; overflow-y:auto;">
+                        <div style="background:linear-gradient(135deg,#1a2a6e,#2a3a7e); padding:20px; border-radius:28px 28px 0 0; color:#FFD700; display:flex; justify-content:space-between;">
+                            <h3 style="margin:0;">🏆 Wadaiwa wa Mara kwa Mara (Top 5 kwa kila Sauti)</h3>
+                            <button onclick="closeFrequentModal()" style="background:rgba(255,255,255,0.2); border:none; color:#FFD700; font-size:24px; cursor:pointer; width:35px; border-radius:50%;">✕</button>
+                        </div>
+                        <div style="padding:20px;">
+            `;
+            
+            for (const [voice, offenders] of Object.entries(data.offenders)) {
+                if (offenders.length === 0) continue;
+                
+                let voiceColor = '';
+                if (voice === 'Soprano') voiceColor = 'linear-gradient(135deg,#FF69B4,#FF1493)';
+                else if (voice === 'Alto') voiceColor = 'linear-gradient(135deg,#9370DB,#7B2FBE)';
+                else if (voice === 'Tenor') voiceColor = 'linear-gradient(135deg,#4169E1,#1E3A8A)';
+                else voiceColor = 'linear-gradient(135deg,#2F4F4F,#1E3A3A)';
+                
+                html += `
+                    <div style="margin-bottom:25px; border-radius:16px; overflow:hidden; border:1px solid #e0e0e0;">
+                        <div style="background:${voiceColor}; padding:12px 20px; color:white; font-weight:bold;">
+                            🎵 ${voice} - Wadaiwa Bora ${offenders.length}
+                        </div>
+                        <table style="width:100%; border-collapse:collapse;">
+                            <thead>
+                                <tr style="background:#f8f9fa;">
+                                    <th style="padding:10px; text-align:left;">#</th>
+                                    <th style="padding:10px; text-align:left;">Jina</th>
+                                    <th style="padding:10px; text-align:left;">Mara</th>
+                                    <th style="padding:10px; text-align:left;">Jumla ya Penalty</th>
+                                    <th style="padding:10px; text-align:left;">Deni</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+                
+                offenders.forEach((off, idx) => {
+                    html += `
+                        <tr style="border-bottom:1px solid #eee;">
+                            <td style="padding:10px;">${idx + 1}</td>
+                            <td style="padding:10px;"><strong>${escapeHtml(off.jina)}</strong></td>
+                            <td style="padding:10px;"><span style="background:#fd7e14; color:white; padding:2px 10px; border-radius:20px;">${off.offence_count} mara</span></td>
+                            <td style="padding:10px; color:#dc3545;">TSh ${formatNumber(off.total_penalty)}</td>
+                            <td style="padding:10px;">${off.remaining_debt > 0 ? '<span style="color:#dc3545;">TSh ' + formatNumber(off.remaining_debt) + '</span>' : '<span style="color:#28a745;">✓ Imelipwa</span>'}</td>
+                        </tr>
+                    `;
+                });
+                
+                html += `</tbody></table></div>`;
+            }
+            
+            html += `</div></div></div>`;
+            
+            const existingModal = document.getElementById('frequentModal');
+            if (existingModal) existingModal.remove();
+            document.body.insertAdjacentHTML('beforeend', html);
+            document.body.style.overflow = 'hidden';
+        }
+    }
+    
+    function closeFrequentModal() {
+        const modal = document.getElementById('frequentModal');
+        if (modal) modal.remove();
+        document.body.style.overflow = '';
+    }
+    
+    function formatNumber(num) {
+        if (!num && num !== 0) return '0';
+        return Math.round(num).toLocaleString();
+    }
+    
+    function escapeHtml(text) {
+        if (!text) return '';
+        return text.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+    
+    // Load penalty list when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        loadPenaltyList();
+    });
+</script>
+
+<!-- ========== PENALTY CARDS BY VOICE ========== -->
+<div class="penalty-cards-container">
+    <div class="penalty-cards-header">
+        <h2>💰 WANAODAIWA PENALTY</h2>
+        <button class="frequent-btn" onclick="openFrequentOffenders()">🏆 Top 5 Wadaiwa</button>
+    </div>
+    
+    <!-- Soprano Penalties -->
+    <div class="voice-penalty-card soprano-card">
+        <div class="voice-card-header">
+            <span class="voice-icon">🎵</span>
+            <span class="voice-name">SOPRANO</span>
+            <span class="penalty-badge" id="sopranoPenaltyCount">0</span>
+        </div>
+        <div class="penalty-list" id="sopranoPenaltyList">
+            <div class="no-penalty">✨ Hakuna penalty kwa sauti hii</div>
+        </div>
+    </div>
+    
+    <!-- Alto Penalties -->
+    <div class="voice-penalty-card alto-card">
+        <div class="voice-card-header">
+            <span class="voice-icon">🎵</span>
+            <span class="voice-name">ALTO</span>
+            <span class="penalty-badge" id="altoPenaltyCount">0</span>
+        </div>
+        <div class="penalty-list" id="altoPenaltyList">
+            <div class="no-penalty">✨ Hakuna penalty kwa sauti hii</div>
+        </div>
+    </div>
+    
+    <!-- Tenor Penalties -->
+    <div class="voice-penalty-card tenor-card">
+        <div class="voice-card-header">
+            <span class="voice-icon">🎵</span>
+            <span class="voice-name">TENOR</span>
+            <span class="penalty-badge" id="tenorPenaltyCount">0</span>
+        </div>
+        <div class="penalty-list" id="tenorPenaltyList">
+            <div class="no-penalty">✨ Hakuna penalty kwa sauti hii</div>
+        </div>
+    </div>
+    
+    <!-- Bass Penalties -->
+    <div class="voice-penalty-card bass-card">
+        <div class="voice-card-header">
+            <span class="voice-icon">🎵</span>
+            <span class="voice-name">BASS</span>
+            <span class="penalty-badge" id="bassPenaltyCount">0</span>
+        </div>
+        <div class="penalty-list" id="bassPenaltyList">
+            <div class="no-penalty">✨ Hakuna penalty kwa sauti hii</div>
+        </div>
+    </div>
+</div>
+
+<!-- Frequent Offenders Modal -->
+<div id="frequentModal" class="modal">
+    <div class="modal-content" style="max-width: 800px;">
+        <div class="modal-header">
+            <h2>🏆 Wadaiwa wa Mara kwa Mara (Top 5 kwa kila Sauti)</h2>
+            <button class="close-modal" onclick="closeFrequentModal()">&times;</button>
+        </div>
+        <div class="modal-body" id="frequentModalBody">
+            <div style="text-align: center; padding: 30px;">Loading...</div>
+        </div>
+    </div>
+</div>
+
+<!-- Fine Payment Modal -->
+<div id="finePaymentModal" class="modal">
+    <div class="modal-content" style="max-width: 500px;">
+        <div class="modal-header">
+            <h2>💰 Lipa Penalty</h2>
+            <button class="close-modal" onclick="closeFineModal()">&times;</button>
+        </div>
+        <div class="modal-body" id="fineModalBody">
+            <div style="text-align: center; padding: 30px;">Loading...</div>
+        </div>
+    </div>
+</div>
+
+<script>
+// ========== PENALTY LIST FUNCTIONS ==========
+let penaltyData = [];
+
+async function loadPenaltyList() {
+    try {
+        const response = await fetch('/api/mahudhurio/penalty_list');
+        const data = await response.json();
+        if (data.success) {
+            penaltyData = data.penalties || [];
+            renderPenaltyTable();
+        }
+    } catch(e) {
+        console.error('Error:', e);
+        document.getElementById('penaltyTableBody').innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;">❌ Error loading data</td></tr>';
+    }
+}
+
+function renderPenaltyTable() {
+    const tbody = document.getElementById('penaltyTableBody');
+    const countSpan = document.getElementById('penaltyCount');
+    
+    if (!tbody) return;
+    
+    if (!penaltyData || penaltyData.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;">📭 Hakuna wanakwaya wenye penalty</td></tr>';
+        if (countSpan) countSpan.innerText = '0';
+        return;
+    }
+    
+    if (countSpan) countSpan.innerText = penaltyData.length;
+    
+    tbody.innerHTML = penaltyData.map((p, idx) => {
+        let penaltyTypeHtml = p.penalty_type === 'utoro' 
+            ? '<span style="background:#dc3545; color:white; padding:3px 10px; border-radius:20px; font-size:11px;">❌ Mtoro</span>'
+            : '<span style="background:#fd7e14; color:white; padding:3px 10px; border-radius:20px; font-size:11px;">⏱️ Amechelewa</span>';
+        
+        let daysClass = '';
+        let daysText = p.days_until_double || 0;
+        if (daysText <= 3) daysClass = 'style="color:#dc3545; font-weight:bold;"';
+        else if (daysText <= 7) daysClass = 'style="color:#fd7e14; font-weight:bold;"';
+        else daysClass = 'style="color:#28a745;"';
+        
+        return `
+            <tr>
+                <td>${idx + 1}</td>
+                <td><strong>${escapeHtml(p.member_number || 'N/A')}</strong></td>
+                <td><strong>${escapeHtml(p.jina)}</strong> <span style="color:#666;">(${escapeHtml(p.sauti)})</span></td>
+                <td>${penaltyTypeHtml}</td>
+                <td>${escapeHtml(p.tukio)}</td>
+                <td><strong style="color:#dc3545;">TSh ${(p.remaining_amount || p.penalty_amount).toLocaleString()}</strong></td>
+                <td ${daysClass}>${daysText} siku</td>
+                <td><button class="pay-fine-btn" onclick="openFineModal(${p.member_id}, ${p.penalty_id}, '${escapeHtml(p.jina)}', '${escapeHtml(p.sauti)}', ${p.remaining_amount || p.penalty_amount})">💰 Lipa</button></td>
+            </tr>
+        `;
+    }).join('');
+}
+
+let currentFine = {};
+
+function openFineModal(memberId, penaltyId, name, voice, amount) {
+    currentFine = { memberId, penaltyId, name, voice, amount };
+    
+    const modalHtml = `
+        <div style="padding:20px;">
+            <div style="text-align:center; margin-bottom:20px;">
+                <div style="font-size:50px;">💰</div>
+                <div style="font-size:20px; font-weight:bold;">${escapeHtml(name)}</div>
+                <div style="color:#666;">🎤 ${escapeHtml(voice)}</div>
+            </div>
+            <div style="background:#f8f9fa; border-radius:16px; padding:15px; margin-bottom:20px;">
+                <div style="display:flex; justify-content:space-between;">
+                    <span>Penalty Inayodaiwa:</span>
+                    <span style="color:#dc3545; font-weight:bold;">TSh ${amount.toLocaleString()}</span>
+                </div>
+            </div>
+            <div class="fine-remaining" style="background:linear-gradient(135deg,#1a2a6e,#2a3a7e); border-radius:16px; padding:15px; margin-bottom:20px; text-align:center;">
+                <div style="color:#FFD700;">DENI LILILOBAKI</div>
+                <div style="color:white; font-size:28px; font-weight:bold;" id="remainingAmount">TSh ${amount.toLocaleString()}</div>
+            </div>
+            <div style="display:flex; gap:12px; margin-bottom:20px;">
+                <button onclick="selectFineOption('full')" id="fullOptionBtn" style="flex:1; background:linear-gradient(135deg,#28a745,#1e7e34); color:white; padding:12px; border:none; border-radius:40px; cursor:pointer;">💰 Lipa Kamili</button>
+                <button onclick="selectFineOption('partial')" id="partialOptionBtn" style="flex:1; background:#fd7e14; color:white; padding:12px; border:none; border-radius:40px; cursor:pointer;">📊 Lipa Sehemu</button>
+            </div>
+            <div id="partialAmountDiv" style="display:none; margin-bottom:20px;">
+                <label>Kiasi cha Kulipa (TSh)</label>
+                <input type="number" id="fineAmount" value="5000" style="width:100%; padding:12px; border:2px solid #ddd; border-radius:16px;">
+            </div>
+            <div style="margin-bottom:20px;">
+                <label>Maelezo</label>
+                <input type="text" id="fineNote" placeholder="Malipo ya penalty" style="width:100%; padding:12px; border:2px solid #ddd; border-radius:16px;">
+            </div>
+            <button onclick="submitFinePayment()" style="background:linear-gradient(135deg,#1a2a6e,#2a3a7e); color:#FFD700; width:100%; padding:14px; border:none; border-radius:40px; cursor:pointer;">💾 Thibitisha Malipo</button>
+        </div>
+    `;
+    
+    document.getElementById('fineModalBody').innerHTML = modalHtml;
+    document.getElementById('finePaymentModal').classList.add('active');
+}
+
+function selectFineOption(option) {
+    const fullBtn = document.getElementById('fullOptionBtn');
+    const partialBtn = document.getElementById('partialOptionBtn');
+    const partialDiv = document.getElementById('partialAmountDiv');
+    
+    if (option === 'full') {
+        fullBtn.style.background = 'linear-gradient(135deg,#28a745,#1e7e34)';
+        partialBtn.style.background = '#fd7e14';
+        partialDiv.style.display = 'none';
+    } else {
+        fullBtn.style.background = '#6c757d';
+        partialBtn.style.background = 'linear-gradient(135deg,#fd7e14,#e67e22)';
+        partialDiv.style.display = 'block';
+    }
+}
+
+async function submitFinePayment() {
+    const isPartial = document.getElementById('partialAmountDiv').style.display === 'block';
+    let amount = isPartial ? parseFloat(document.getElementById('fineAmount').value) : currentFine.amount;
+    const note = document.getElementById('fineNote').value || 'Malipo ya penalty';
+    
+    if (isNaN(amount) || amount <= 0) {
+        alert('Tafadhali weka kiasi sahihi');
+        return;
+    }
+    
+    const response = await fetch('/api/mahudhurio/pay_penalty', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            penalty_id: currentFine.penaltyId,
+            member_id: currentFine.memberId,
+            amount: amount,
+            note: note
+        })
+    });
+    
+    const result = await response.json();
+    if (result.success) {
+        alert(result.message);
+        closeFineModal();
+        loadPenaltyList();
+        location.reload();
+    } else {
+        alert('Error: ' + result.message);
+    }
+}
+
+function closeFineModal() {
+    document.getElementById('finePaymentModal').classList.remove('active');
+}
+
+async function openFrequentOffenders() {
+    const response = await fetch('/api/mahudhurio/frequent_offenders');
+    const data = await response.json();
+    
+    if (data.success) {
+        let html = '';
+        for (const [voice, offenders] of Object.entries(data.offenders)) {
+            if (offenders.length === 0) continue;
+            
+            let voiceColor = voice === 'Soprano' ? 'linear-gradient(135deg,#FF69B4,#FF1493)' :
+                           voice === 'Alto' ? 'linear-gradient(135deg,#9370DB,#7B2FBE)' :
+                           voice === 'Tenor' ? 'linear-gradient(135deg,#4169E1,#1E3A8A)' :
+                           'linear-gradient(135deg,#2F4F4F,#1E3A3A)';
+            
+            html += `
+                <div style="margin-bottom:25px; border-radius:16px; overflow:hidden; border:1px solid #e0e0e0;">
+                    <div style="background:${voiceColor}; padding:12px 20px; color:white; font-weight:bold;">🎵 ${voice}</div>
+                    <table style="width:100%;">
+                        <thead><tr style="background:#f8f9fa;"><th>#</th><th>Jina</th><th>Mara</th><th>Jumla ya Penalty</th><th>Deni</th></tr></thead>
+                        <tbody>
+                            ${offenders.map((off, idx) => `
+                                <tr>
+                                    <td style="padding:10px;">${idx + 1}</td>
+                                    <td><strong>${escapeHtml(off.jina)}</strong></td>
+                                    <td><span style="background:#fd7e14;color:white;padding:2px 10px;border-radius:20px;">${off.offence_count} mara</span></td>
+                                    <td style="color:#dc3545;">TSh ${off.total_penalty.toLocaleString()}</td>
+                                    <td>${off.remaining_debt > 0 ? '<span style="color:#dc3545;">TSh ' + off.remaining_debt.toLocaleString() + '</span>' : '<span style="color:#28a745;">✓ Imelipwa</span>'}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+        document.getElementById('frequentModalBody').innerHTML = html;
+        document.getElementById('frequentModal').classList.add('active');
+    }
+}
+
+function closeFrequentModal() {
+    document.getElementById('frequentModal').classList.remove('active');
+}
+
+function escapeHtml(text) {
+    if (!text) return '';
+    return text.replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+    });
+}
+
+// Load penalty list when page loads
+document.addEventListener('DOMContentLoaded', loadPenaltyList);
+</script>
+{% endblock %}

@@ -1,0 +1,823 @@
+{% extends "base.html" %}
+
+{% block title %}Mahudhurio - Kwaya Mt. Bonifasi{% endblock %}
+
+{% block content %}
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    .attendance-container {
+        max-width: 1600px;
+        margin: 0 auto;
+    }
+    
+    /* Header */
+    .attendance-header {
+        background: linear-gradient(135deg, #1a2a6e 0%, #2a3a7e 100%);
+        padding: 20px 25px;
+        border-radius: 20px 20px 0 0;
+        color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+    
+    .attendance-header h1 {
+        color: #FFD700;
+        margin: 0;
+        font-size: 24px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .event-badge {
+        background: #FFD700;
+        color: #1a2a6e;
+        padding: 8px 20px;
+        border-radius: 40px;
+        font-weight: bold;
+    }
+    
+    /* Controls Bar */
+    .controls-bar {
+        background: #f8f9fa;
+        padding: 15px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        border-bottom: 1px solid #e0e0e0;
+    }
+    
+    .search-box {
+        display: flex;
+        gap: 10px;
+        flex: 2;
+        min-width: 250px;
+    }
+    
+    .search-box input {
+        flex: 1;
+        padding: 10px 15px;
+        border: 1px solid #ddd;
+        border-radius: 40px;
+        font-size: 14px;
+    }
+    
+    .voice-controls {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    
+    .voice-toggle {
+        background: #1a2a6e;
+        color: white;
+        border: none;
+        padding: 8px 18px;
+        border-radius: 40px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: all 0.2s;
+    }
+    
+    .voice-toggle.active {
+        background: #FFD700;
+        color: #1a2a6e;
+    }
+    
+    .settings-btn {
+        background: #6c757d;
+        color: white;
+        border: none;
+        padding: 8px 20px;
+        border-radius: 40px;
+        cursor: pointer;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .settings-btn:hover {
+        background: #5a6268;
+    }
+    
+    /* Voice Sections */
+    .voice-section {
+        margin-bottom: 30px;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+    
+    .voice-section.hidden {
+        display: none;
+    }
+    
+    .voice-header {
+        padding: 15px 20px;
+        font-size: 20px;
+        font-weight: bold;
+        color: white;
+    }
+    
+    .voice-soprano { background: linear-gradient(135deg, #FF69B4, #FF1493); }
+    .voice-alto { background: linear-gradient(135deg, #9370DB, #7B2FBE); }
+    .voice-tenor { background: linear-gradient(135deg, #4169E1, #1E3A8A); }
+    .voice-bass { background: linear-gradient(135deg, #2F4F4F, #1E3A3A); }
+    
+    .voice-header span {
+        background: rgba(255,255,255,0.3);
+        padding: 4px 12px;
+        border-radius: 30px;
+        font-size: 14px;
+        margin-left: 10px;
+    }
+    
+    /* Member Table */
+    .member-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+    }
+    
+    .member-table th {
+        background: #f5f5f5;
+        padding: 12px 10px;
+        text-align: left;
+        font-weight: bold;
+        color: #1a2a6e;
+        border-bottom: 2px solid #FFD700;
+        font-size: 13px;
+    }
+    
+    .member-table td {
+        padding: 10px;
+        border-bottom: 1px solid #eee;
+        vertical-align: middle;
+    }
+    
+    .member-table tr:hover {
+        background: #fffbf0;
+    }
+    
+    /* Status Colors */
+    .status-present { color: #28a745; font-weight: bold; }
+    .status-absent { color: #dc3545; font-weight: bold; }
+    .status-late { color: #fd7e14; font-weight: bold; }
+    .status-permission { color: #9b59b6; font-weight: bold; }
+    
+    /* Toggle Switch */
+    .toggle-switch {
+        width: 60px;
+        height: 28px;
+        background: #ccc;
+        border-radius: 30px;
+        cursor: pointer;
+        position: relative;
+        transition: all 0.3s;
+        display: inline-block;
+    }
+    
+    .toggle-switch.active-green { background: #28a745; }
+    .toggle-switch.active-red { background: #dc3545; }
+    .toggle-switch.active-yellow { background: #fd7e14; }
+    .toggle-switch.active-purple { background: #9b59b6; }
+    
+    .toggle-switch::after {
+        content: '';
+        width: 24px;
+        height: 24px;
+        background: white;
+        border-radius: 50%;
+        position: absolute;
+        top: 2px;
+        left: 3px;
+        transition: all 0.3s;
+    }
+    
+    .toggle-switch.active-green::after,
+    .toggle-switch.active-red::after,
+    .toggle-switch.active-yellow::after,
+    .toggle-switch.active-purple::after {
+        left: 33px;
+    }
+    
+    /* Minutes Control */
+    .minutes-control {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        background: #f0f0f0;
+        padding: 3px 8px;
+        border-radius: 30px;
+    }
+    
+    .minutes-btn {
+        background: #1a2a6e;
+        color: white;
+        border: none;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        cursor: pointer;
+        font-weight: bold;
+    }
+    
+    .minutes-value {
+        font-weight: bold;
+        min-width: 40px;
+        text-align: center;
+    }
+    
+    .penalty-amount {
+        font-weight: bold;
+        color: #dc3545;
+    }
+    
+    /* Action Buttons */
+    .view-details-btn {
+        background: #17a2b8;
+        color: white;
+        border: none;
+        padding: 5px 12px;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 11px;
+    }
+    
+    /* Modal Styles */
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.7);
+        z-index: 2000;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .modal.active {
+        display: flex;
+    }
+    
+    .modal-content {
+        background: white;
+        border-radius: 25px;
+        width: 90%;
+        max-width: 800px;
+        max-height: 85vh;
+        overflow-y: auto;
+        animation: modalFadeIn 0.3s;
+    }
+    
+    @keyframes modalFadeIn {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .modal-header {
+        background: linear-gradient(135deg, #1a2a6e 0%, #2a3a7e 100%);
+        color: #FFD700;
+        padding: 20px 25px;
+        border-radius: 25px 25px 0 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .close-modal {
+        background: none;
+        border: none;
+        color: #FFD700;
+        font-size: 28px;
+        cursor: pointer;
+    }
+    
+    .modal-body {
+        padding: 25px;
+    }
+    
+    /* Settings Form */
+    .settings-grid {
+        display: grid;
+        gap: 20px;
+    }
+    
+    .settings-card {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 16px;
+        border-left: 4px solid #FFD700;
+    }
+    
+    .form-group {
+        margin-bottom: 15px;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: #1a2a6e;
+    }
+    
+    .form-group input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+    }
+    
+    .btn-save {
+        background: #28a745;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 25px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+    
+    @media (max-width: 1000px) {
+        .member-table {
+            font-size: 12px;
+        }
+        .member-table th, .member-table td {
+            padding: 6px 4px;
+        }
+    }
+</style>
+
+<div class="attendance-container">
+    <!-- Header -->
+    <div class="attendance-header">
+        <h1>📋 Mahudhurio ya Kwaya</h1>
+        <div class="event-badge" id="currentEventDisplay">
+            🎯 Tukio la Sasa: {{ current_event.tukio }} | 📅 {{ current_event.tarehe }}
+        </div>
+    </div>
+    
+    <!-- Controls Bar -->
+    <div class="controls-bar">
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="🔍 Tafuta mwanakwaya...">
+            <button class="voice-toggle" onclick="searchMembers()" style="background: #28a745;">🔍 Tafuta</button>
+            <button class="voice-toggle" onclick="resetSearch()" style="background: #6c757d;">🔄 Reset</button>
+        </div>
+        <div class="voice-controls">
+            <button class="voice-toggle active" data-voice="Soprano" onclick="toggleVoiceSection('Soprano')">🎵 Soprano</button>
+            <button class="voice-toggle active" data-voice="Alto" onclick="toggleVoiceSection('Alto')">🎵 Alto</button>
+            <button class="voice-toggle active" data-voice="Tenor" onclick="toggleVoiceSection('Tenor')">🎵 Tenor</button>
+            <button class="voice-toggle active" data-voice="Bass" onclick="toggleVoiceSection('Bass')">🎵 Bass</button>
+            <button class="voice-toggle" onclick="showAllVoices()">👁️ Show All</button>
+            <button class="voice-toggle" onclick="hideAllVoices()">🙈 Hide All</button>
+        </div>
+        <button class="settings-btn" onclick="openSettingsModal()">⚙️ Penalty Settings</button>
+    </div>
+    
+    <!-- Event Selection Bar -->
+    <div class="controls-bar" style="background: #e8f4f8;">
+        <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+            <span style="font-weight: bold;">📅 Badilisha Tukio:</span>
+            <select id="eventSelect" style="padding: 8px 15px; border-radius: 25px;">
+                <option value="Misa" {% if current_event.tukio == 'Misa' %}selected{% endif %}>⛪ Misa</option>
+                <option value="Mazishi" {% if current_event.tukio == 'Mazishi' %}selected{% endif %}>🕯️ Mazishi</option>
+                <option value="Harusi" {% if current_event.tukio == 'Harusi' %}selected{% endif %}>💍 Harusi</option>
+                <option value="Sherehe" {% if current_event.tukio == 'Sherehe' %}selected{% endif %}>🎉 Sherehe</option>
+                <option value="Mashindano" {% if current_event.tukio == 'Mashindano' %}selected{% endif %}>🏆 Mashindano</option>
+                <option value="Mazoezi" {% if current_event.tukio == 'Mazoezi' %}selected{% endif %}>🎵 Mazoezi</option>
+                <option value="Dominica" {% if current_event.tukio == 'Dominica' %}selected{% endif %}>📖 Dominica</option>
+            </select>
+            <input type="date" id="eventDate" value="{{ current_event.tarehe }}" style="padding: 8px 15px; border-radius: 25px;">
+            <button class="voice-toggle" onclick="updateCurrentEvent()" style="background: #1a2a6e;">✅ Weka Tukio</button>
+        </div>
+    </div>
+    
+    <!-- SOPRANO SECTION -->
+    <div id="SopranoSection" class="voice-section">
+        <div class="voice-header voice-soprano">
+            🎵 SOPRANO <span id="sopranoCount">{{ soprano|length }}</span>
+        </div>
+        <table class="member-table" id="sopranoTable">
+            <thead>
+                <tr>
+                    <th>SN</th><th>#</th><th>JINA</th><th>MAHUDHURIO</th><th>STATUS</th><th>DAKIKA</th><th>PENALTY (TSh)</th><th>VIEW</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for member in soprano %}
+                <tr data-name="{{ member.jina|lower }}" data-id="{{ member.id }}">
+                    <td>{{ loop.index }}</td>
+                    <td>{{ member.id }}</td>
+                    <td>{{ member.jina }}</td>
+                    <td>
+                        <div class="toggle-switch" data-id="{{ member.id }}" data-status="present" onclick="toggleStatus({{ member.id }}, '{{ member.jina }}', 'Soprano')"></div>
+                    </td>
+                    <td class="status-cell-{{ member.id }}">-</td>
+                    <td class="minutes-cell-{{ member.id }}">
+                        <div class="minutes-control" style="display: none;">
+                            <button class="minutes-btn" onclick="changeMinutes({{ member.id }}, -1)">-</button>
+                            <span class="minutes-value" id="minutes-{{ member.id }}">0</span>
+                            <button class="minutes-btn" onclick="changeMinutes({{ member.id }}, 1)">+</button>
+                        </div>
+                    </td>
+                    <td class="penalty-cell-{{ member.id }}">0</td>
+                    <td><button class="view-details-btn" onclick="viewMemberDetails({{ member.id }})">👁️ Taarifa</button></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- ALTO SECTION -->
+    <div id="AltoSection" class="voice-section">
+        <div class="voice-header voice-alto">
+            🎵 ALTO <span id="altoCount">{{ alto|length }}</span>
+        </div>
+        <table class="member-table" id="altoTable">
+            <thead><tr><th>SN</th><th>#</th><th>JINA</th><th>MAHUDHURIO</th><th>STATUS</th><th>DAKIKA</th><th>PENALTY (TSh)</th><th>VIEW</th></tr></thead>
+            <tbody>
+                {% for member in alto %}
+                <tr data-name="{{ member.jina|lower }}" data-id="{{ member.id }}">
+                    <td>{{ loop.index }}</td><td>{{ member.id }}</td><td>{{ member.jina }}</td>
+                    <td><div class="toggle-switch" data-id="{{ member.id }}" data-status="present" onclick="toggleStatus({{ member.id }}, '{{ member.jina }}', 'Alto')"></div></td>
+                    <td class="status-cell-{{ member.id }}">-</td>
+                    <td class="minutes-cell-{{ member.id }}"><div class="minutes-control" style="display: none;"><button class="minutes-btn" onclick="changeMinutes({{ member.id }}, -1)">-</button><span class="minutes-value" id="minutes-{{ member.id }}">0</span><button class="minutes-btn" onclick="changeMinutes({{ member.id }}, 1)">+</button></div></td>
+                    <td class="penalty-cell-{{ member.id }}">0</td>
+                    <td><button class="view-details-btn" onclick="viewMemberDetails({{ member.id }})">👁️ Taarifa</button></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- TENOR SECTION -->
+    <div id="TenorSection" class="voice-section">
+        <div class="voice-header voice-tenor">
+            🎵 TENOR <span id="tenorCount">{{ tenor|length }}</span>
+        </div>
+        <table class="member-table" id="tenorTable">
+            <thead><tr><th>SN</th><th>#</th><th>JINA</th><th>MAHUDHURIO</th><th>STATUS</th><th>DAKIKA</th><th>PENALTY (TSh)</th><th>VIEW</th></tr></thead>
+            <tbody>
+                {% for member in tenor %}
+                <tr data-name="{{ member.jina|lower }}" data-id="{{ member.id }}">
+                    <td>{{ loop.index }}</td><td>{{ member.id }}</td><td>{{ member.jina }}</td>
+                    <td><div class="toggle-switch" data-id="{{ member.id }}" data-status="present" onclick="toggleStatus({{ member.id }}, '{{ member.jina }}', 'Tenor')"></div></td>
+                    <td class="status-cell-{{ member.id }}">-</td>
+                    <td class="minutes-cell-{{ member.id }}"><div class="minutes-control" style="display: none;"><button class="minutes-btn" onclick="changeMinutes({{ member.id }}, -1)">-</button><span class="minutes-value" id="minutes-{{ member.id }}">0</span><button class="minutes-btn" onclick="changeMinutes({{ member.id }}, 1)">+</button></div></td>
+                    <td class="penalty-cell-{{ member.id }}">0</td>
+                    <td><button class="view-details-btn" onclick="viewMemberDetails({{ member.id }})">👁️ Taarifa</button></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- BASS SECTION -->
+    <div id="BassSection" class="voice-section">
+        <div class="voice-header voice-bass">
+            🎵 BASS <span id="bassCount">{{ bass|length }}</span>
+        </div>
+        <table class="member-table" id="bassTable">
+            <thead><tr><th>SN</th><th>#</th><th>JINA</th><th>MAHUDHURIO</th><th>STATUS</th><th>DAKIKA</th><th>PENALTY (TSh)</th><th>VIEW</th></tr></thead>
+            <tbody>
+                {% for member in bass %}
+                <tr data-name="{{ member.jina|lower }}" data-id="{{ member.id }}">
+                    <td>{{ loop.index }}</td><td>{{ member.id }}</td><td>{{ member.jina }}</td>
+                    <td><div class="toggle-switch" data-id="{{ member.id }}" data-status="present" onclick="toggleStatus({{ member.id }}, '{{ member.jina }}', 'Bass')"></div></td>
+                    <td class="status-cell-{{ member.id }}">-</td>
+                    <td class="minutes-cell-{{ member.id }}"><div class="minutes-control" style="display: none;"><button class="minutes-btn" onclick="changeMinutes({{ member.id }}, -1)">-</button><span class="minutes-value" id="minutes-{{ member.id }}">0</span><button class="minutes-btn" onclick="changeMinutes({{ member.id }}, 1)">+</button></div></td>
+                    <td class="penalty-cell-{{ member.id }}">0</td>
+                    <td><button class="view-details-btn" onclick="viewMemberDetails({{ member.id }})">👁️ Taarifa</button></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Member Details Modal -->
+<div id="memberModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="modalTitle">👤 Taarifa za Mwanakwaya</h2>
+            <button class="close-modal" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body" id="modalBody">
+            <div style="text-align: center; padding: 30px;">Loading...</div>
+        </div>
+    </div>
+</div>
+
+<!-- Settings Modal -->
+<div id="settingsModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>⚙️ Penalty Settings</h2>
+            <button class="close-modal" onclick="closeSettingsModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="settings-grid" id="settingsGrid"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentTukio = '{{ current_event.tukio }}';
+    let penaltySettings = {{ penalty_settings | map(attribute='tukio') | list | tojson }};
+    
+    function toggleStatus(id, name, sauti) {
+        const toggle = document.querySelector(`.toggle-switch[data-id="${id}"]`);
+        const currentStatus = toggle.dataset.status;
+        
+        let newStatus, statusText, colorClass;
+        
+        if (currentStatus === 'present') {
+            newStatus = 'absent';
+            statusText = 'Mtoro';
+            colorClass = 'active-red';
+        } else if (currentStatus === 'absent') {
+            newStatus = 'late';
+            statusText = 'Amechelewa';
+            colorClass = 'active-yellow';
+        } else if (currentStatus === 'late') {
+            newStatus = 'permission';
+            statusText = 'Ruhusa';
+            colorClass = 'active-purple';
+        } else {
+            newStatus = 'present';
+            statusText = 'Amehudhuria';
+            colorClass = 'active-green';
+        }
+        
+        toggle.dataset.status = newStatus;
+        toggle.className = `toggle-switch ${colorClass}`;
+        document.querySelector(`.status-cell-${id}`).innerHTML = `<span class="status-${newStatus}">${statusText}</span>`;
+        
+        // Show/hide minutes control for late
+        const minutesControl = document.querySelector(`.minutes-cell-${id} .minutes-control`);
+        if (newStatus === 'late') {
+            minutesControl.style.display = 'flex';
+        } else {
+            minutesControl.style.display = 'none';
+            if (newStatus !== 'late') {
+                document.getElementById(`minutes-${id}`).innerText = '0';
+                updatePenalty(id, newStatus, 0, name, sauti);
+            } else {
+                updatePenalty(id, newStatus, parseInt(document.getElementById(`minutes-${id}`).innerText), name, sauti);
+            }
+        }
+        
+        if (newStatus === 'late') {
+            const minutes = parseInt(document.getElementById(`minutes-${id}`).innerText);
+            updatePenalty(id, newStatus, minutes, name, sauti);
+        } else if (newStatus !== 'late') {
+            updatePenalty(id, newStatus, 0, name, sauti);
+        }
+    }
+    
+    function changeMinutes(id, delta) {
+        const minutesSpan = document.getElementById(`minutes-${id}`);
+        let minutes = parseInt(minutesSpan.innerText) + delta;
+        if (minutes < 0) minutes = 0;
+        if (minutes > 120) minutes = 120;
+        minutesSpan.innerText = minutes;
+        
+        const toggle = document.querySelector(`.toggle-switch[data-id="${id}"]`);
+        if (toggle.dataset.status === 'late') {
+            updatePenalty(id, 'late', minutes, null, null);
+        }
+    }
+    
+    async function updatePenalty(id, status, minutes, name, sauti) {
+        const tukio = document.getElementById('eventSelect').value;
+        
+        const response = await fetch('/api/mahudhurio/update', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                member_id: id,
+                status: status,
+                dakika_chelewa: minutes,
+                tukio: tukio,
+                member_name: name,
+                sauti: sauti
+            })
+        });
+        
+        const data = await response.json();
+        if (data.success) {
+            document.querySelector(`.penalty-cell-${id}`).innerHTML = `<span class="penalty-amount">${data.penalty.toLocaleString()}</span>`;
+        }
+    }
+    
+    async function updateCurrentEvent() {
+        const tukio = document.getElementById('eventSelect').value;
+        const tarehe = document.getElementById('eventDate').value;
+        
+        const response = await fetch('/api/mahudhurio/event/update', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ tukio: tukio, tarehe: tarehe })
+        });
+        
+        if (response.ok) {
+            document.getElementById('currentEventDisplay').innerHTML = `🎯 Tukio la Sasa: ${tukio} | 📅 ${tarehe}`;
+            currentTukio = tukio;
+            alert('Tukio limebadilishwa! Ongeza upya ukurasa.');
+            location.reload();
+        }
+    }
+    
+    async function viewMemberDetails(id) {
+        const response = await fetch(`/api/mahudhurio/member/${id}`);
+        const data = await response.json();
+        
+        if (data.success) {
+            let recordsHtml = '';
+            for (const rec of data.records) {
+                let statusClass = '';
+                if (rec.status === 'present') statusClass = 'status-present';
+                else if (rec.status === 'absent') statusClass = 'status-absent';
+                else if (rec.status === 'late') statusClass = 'status-late';
+                else statusClass = 'status-permission';
+                
+                let statusText = '';
+                if (rec.status === 'present') statusText = '✅ Amehudhuria';
+                else if (rec.status === 'absent') statusText = '❌ Mtoro';
+                else if (rec.status === 'late') statusText = '⚠️ Amechelewa';
+                else statusText = '📝 Ruhusa';
+                
+                recordsHtml += `
+                    <div style="background: #f8f9fa; padding: 12px; border-radius: 12px; margin-bottom: 10px;">
+                        <div style="display: flex; justify-content: space-between; flex-wrap: wrap;">
+                            <span><strong>📅 ${rec.tarehe}</strong> - ${rec.tukio}</span>
+                            <span class="${statusClass}">${statusText}</span>
+                        </div>
+                        <div style="font-size: 12px; color: #666; margin-top: 5px;">
+                            ${rec.dakika_chelewa > 0 ? `Dakika: ${rec.dakika_chelewa} | ` : ''}
+                            Penalty: TSh ${rec.penalty.toLocaleString()} |
+                            Double date: ${rec.double_date || '-'}
+                            ${!rec.imelipwa ? `<button onclick="payPenalty(${rec.id})" style="background: #28a745; color: white; border: none; padding: 3px 10px; border-radius: 15px; margin-left: 10px;">💰 Lipa</button>` : '<span style="color: green;">✓ Imelipwa</span>'}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            const suspendWarning = data.should_be_suspended ? 
+                `<div style="background: #dc3545; color: white; padding: 15px; border-radius: 12px; margin-top: 15px; text-align: center;">
+                    ⚠️ MUHIMU: Mwanakwaya huyu amesimamishwa kwa muda kutokana na kukosa kulipa penalty kwa siku 30!
+                 </div>` : '';
+            
+            document.getElementById('modalTitle').innerHTML = `👤 ${data.member.jina} - ${data.member.sauti}`;
+            document.getElementById('modalBody').innerHTML = `
+                <div><strong>📞 Simu:</strong> ${data.member.jina}</div>
+                <div><strong>🎵 Sauti:</strong> ${data.member.sauti}</div>
+                <div><strong>💰 Jumla ya Penalty:</strong> TSh ${data.total_penalty.toLocaleString()}</div>
+                <div><strong>📅 Siku tangu penalty ya mwisho:</strong> ${data.days_since_last_penalty} siku</div>
+                ${suspendWarning}
+                <hr style="margin: 15px 0;">
+                <h4>📋 Historia ya Mahudhurio</h4>
+                ${recordsHtml || '<p>Hakuna rekodi za mahudhurio</p>'}
+            `;
+            document.getElementById('memberModal').classList.add('active');
+        }
+    }
+    
+    async function payPenalty(id) {
+        const response = await fetch(`/api/mahudhurio/pay/${id}`, { method: 'POST' });
+        if (response.ok) {
+            alert('Penalty imelipwa!');
+            viewMemberDetails(document.querySelector('#modalTitle').innerHTML.match(/\d+/)[0]);
+        }
+    }
+    
+    function closeModal() {
+        document.getElementById('memberModal').classList.remove('active');
+    }
+    
+    async function openSettingsModal() {
+        const response = await fetch('/api/mahudhurio/penalty_settings');
+        const settings = await response.json();
+        
+        let html = '';
+        const tukioList = ['Misa', 'Mazishi', 'Harusi', 'Sherehe', 'Mashindano', 'Mazoezi', 'Dominica'];
+        
+        for (const tukio of tukioList) {
+            html += `
+                <div class="settings-card">
+                    <h3>${tukio}</h3>
+                    <div class="form-group">
+                        <label>💰 Penalty ya Mtoro (TSh)</label>
+                        <input type="number" id="utoro_${tukio}" value="20000">
+                    </div>
+                    <div class="form-group">
+                        <label>⏱️ Penalty kwa Dakika (TSh)</label>
+                        <input type="number" id="dakika_${tukio}" value="1000">
+                    </div>
+                    <div class="form-group">
+                        <label>📅 Siku za kudouble penalty</label>
+                        <input type="number" id="siku_${tukio}" value="10">
+                    </div>
+                    <button class="btn-save" onclick="savePenaltySettings('${tukio}')">💾 Hifadhi</button>
+                </div>
+            `;
+        }
+        
+        document.getElementById('settingsGrid').innerHTML = html;
+        document.getElementById('settingsModal').classList.add('active');
+    }
+    
+    async function savePenaltySettings(tukio) {
+        const penalty_utoro = document.getElementById(`utoro_${tukio}`).value;
+        const penalty_kwa_dakika = document.getElementById(`dakika_${tukio}`).value;
+        const siku_za_kudouble = document.getElementById(`siku_${tukio}`).value;
+        
+        const response = await fetch('/api/mahudhurio/settings/update', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ tukio, penalty_utoro, penalty_kwa_dakika, siku_za_kudouble })
+        });
+        
+        if (response.ok) {
+            alert(`Settings za ${tukio} zimehifadhiwa!`);
+        }
+    }
+    
+    function closeSettingsModal() {
+        document.getElementById('settingsModal').classList.remove('active');
+    }
+    
+    let voiceStates = { Soprano: true, Alto: true, Tenor: true, Bass: true };
+    
+    function toggleVoiceSection(voice) {
+        voiceStates[voice] = !voiceStates[voice];
+        const section = document.getElementById(`${voice}Section`);
+        const btn = document.querySelector(`.voice-toggle[data-voice="${voice}"]`);
+        if (section) {
+            if (voiceStates[voice]) {
+                section.classList.remove('hidden');
+                if (btn) btn.classList.add('active');
+            } else {
+                section.classList.add('hidden');
+                if (btn) btn.classList.remove('active');
+            }
+        }
+    }
+    
+    function showAllVoices() {
+        for (const voice of ['Soprano', 'Alto', 'Tenor', 'Bass']) {
+            voiceStates[voice] = true;
+            const section = document.getElementById(`${voice}Section`);
+            const btn = document.querySelector(`.voice-toggle[data-voice="${voice}"]`);
+            if (section) section.classList.remove('hidden');
+            if (btn) btn.classList.add('active');
+        }
+    }
+    
+    function hideAllVoices() {
+        for (const voice of ['Soprano', 'Alto', 'Tenor', 'Bass']) {
+            voiceStates[voice] = false;
+            const section = document.getElementById(`${voice}Section`);
+            const btn = document.querySelector(`.voice-toggle[data-voice="${voice}"]`);
+            if (section) section.classList.add('hidden');
+            if (btn) btn.classList.remove('active');
+        }
+    }
+    
+    function searchMembers() {
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        const allRows = document.querySelectorAll('.member-table tbody tr');
+        
+        allRows.forEach(row => {
+            const name = row.getAttribute('data-name');
+            if (name && name.includes(searchTerm)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+    
+    function resetSearch() {
+        document.getElementById('searchInput').value = '';
+        const allRows = document.querySelectorAll('.member-table tbody tr');
+        allRows.forEach(row => {
+            row.style.display = '';
+        });
+    }
+</script>
+{% endblock %}

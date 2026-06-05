@@ -1,0 +1,94 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Historia ya Kwaya{% endblock %}
+
+{% block content %}
+<style>
+    .kwaya-content {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    
+    .kwaya-content h1 {
+        color: #1a2a6e;
+        border-left: 4px solid #FFD700;
+        padding-left: 15px;
+        margin-bottom: 25px;
+    }
+    
+    .kwaya-content h2 {
+        color: #1a2a6e;
+        margin: 20px 0 15px;
+    }
+    
+    .kwaya-content p {
+        line-height: 1.8;
+        margin-bottom: 15px;
+    }
+    
+    .kwaya-content ul, .kwaya-content ol {
+        margin: 15px 0 15px 30px;
+    }
+    
+    .kwaya-content li {
+        margin: 8px 0;
+    }
+    
+    .edit-badge {
+        display: inline-block;
+        background: #fd7e14;
+        color: white;
+        font-size: 12px;
+        padding: 4px 12px;
+        border-radius: 20px;
+        margin-left: 15px;
+        vertical-align: middle;
+    }
+    
+    .last-updated {
+        font-size: 12px;
+        color: #888;
+        margin-top: 30px;
+        padding-top: 15px;
+        border-top: 1px solid #eee;
+        text-align: center;
+    }
+</style>
+
+<div class="kwaya-content">
+    <h1>📜 Historia ya Kwaya 
+        {% if session.role_id == 1 %}
+        <span class="edit-badge" onclick="location.href='/admin/kwaya-content'" style="cursor: pointer;">✏️ Hariri (Admin)</span>
+        {% endif %}
+    </h1>
+    <div id="kwayaContent" style="line-height: 1.8; font-size: 16px;">
+        <div style="text-align: center; padding: 40px;">⏳ Inapakia maudhui...</div>
+    </div>
+    <div id="lastUpdated" class="last-updated"></div>
+</div>
+
+<script>
+// Load content from API
+async function loadContent() {
+    try {
+        const response = await fetch('/api/kwaya/content/historia');
+        const data = await response.json();
+        
+        if (data.success) {
+            document.getElementById('kwayaContent').innerHTML = data.content;
+            if (data.last_updated) {
+                document.getElementById('lastUpdated').innerHTML = `📅 Iliyohaririwa mwisho: ${data.last_updated} | Imehaririwa na: ${data.updated_by || 'Admin'}`;
+            }
+        } else {
+            document.getElementById('kwayaContent').innerHTML = '<p>📭 Maudhui yanajiandaa. Admin anaweza kuongeza maudhui kwa kubonyeza "Hariri".</p>';
+        }
+    } catch(e) {
+        console.error('Error loading content:', e);
+        document.getElementById('kwayaContent').innerHTML = '<p>❌ Hitilafu wakati wa kupakia maudhui. Tafadhali jaribu tena.</p>';
+    }
+}
+
+loadContent();
+</script>
+{% endblock %}

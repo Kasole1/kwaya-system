@@ -1,0 +1,630 @@
+{% extends "base.html" %}
+
+{% block title %}Profile - Kwaya Mt. Bonifasi{% endblock %}
+
+{% block content %}
+<style>
+    @keyframes gradientShift {
+        0% { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        10% { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        20% { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        30% { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+        40% { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+        50% { background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%); }
+        60% { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); }
+        70% { background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); }
+        80% { background: linear-gradient(135deg, #ff6e7f 0%, #bfe9ff 100%); }
+        90% { background: linear-gradient(135deg, #8EC5FC 0%, #E0C3FC 100%); }
+        100% { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    }
+    
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-8px); }
+    }
+    
+    @keyframes glow {
+        0%, 100% { box-shadow: 0 0 5px rgba(255,215,0,0.3); }
+        50% { box-shadow: 0 0 20px rgba(255,215,0,0.6); }
+    }
+    
+    .animated-profile {
+        animation: gradientShift 24s ease infinite;
+        background-size: 200% 200%;
+        border-radius: 30px;
+        padding: 2px;
+    }
+    
+    .profile-container { 
+        max-width: 1000px; 
+        margin: 0 auto; 
+        padding: 20px; 
+    }
+    
+    .profile-header { 
+        background: rgba(255,255,255,0.95);
+        backdrop-filter: blur(10px);
+        padding: 35px;
+        border-radius: 30px;
+        text-align: center;
+        margin-bottom: 25px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        animation: float 4s ease-in-out infinite;
+        border: 1px solid rgba(255,215,0,0.3);
+    }
+    
+    .profile-avatar { 
+        width: 120px;
+        height: 120px;
+        margin: 0 auto 15px;
+        cursor: pointer;
+        transition: all 0.3s;
+        position: relative;
+    }
+    
+    .avatar-circle {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #FFD700, #FFA500);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 60px;
+        border: 3px solid white;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        transition: all 0.3s;
+        overflow: hidden;
+    }
+    
+    .avatar-circle img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .profile-avatar:hover .avatar-circle {
+        transform: scale(1.05);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        animation: glow 1s ease-in-out infinite;
+    }
+    
+    .upload-hint {
+        font-size: 11px;
+        color: #888;
+        margin-top: 8px;
+    }
+    
+    .profile-name { 
+        font-size: 28px; 
+        font-weight: bold; 
+        color: #1a2a6e; 
+        margin-bottom: 5px; 
+    }
+    
+    .profile-role { 
+        background: linear-gradient(135deg, #FFD700, #FFA500);
+        color: #1a2a6e; 
+        display: inline-block; 
+        padding: 6px 25px; 
+        border-radius: 40px; 
+        font-size: 14px; 
+        font-weight: bold; 
+        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    }
+    
+    .stats-grid { 
+        display: grid; 
+        grid-template-columns: repeat(3, 1fr); 
+        gap: 20px; 
+        margin-bottom: 25px; 
+    }
+    
+    .stat-card { 
+        background: rgba(255,255,255,0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px; 
+        padding: 25px 20px; 
+        text-align: center; 
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        transition: all 0.3s;
+        border-left: 4px solid #FFD700;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .stat-value { 
+        font-size: 32px; 
+        font-weight: bold; 
+        color: #1a2a6e; 
+    }
+    
+    .stat-label { 
+        font-size: 13px; 
+        color: #666; 
+        margin-top: 8px; 
+    }
+    
+    .profile-card { 
+        background: rgba(255,255,255,0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 25px; 
+        padding: 30px; 
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
+        margin-bottom: 25px; 
+    }
+    
+    .profile-card h3 { 
+        color: #1a2a6e; 
+        margin-bottom: 20px; 
+        border-left: 4px solid #FFD700; 
+        padding-left: 15px; 
+        font-size: 20px;
+    }
+    
+    .info-row { 
+        display: flex; 
+        justify-content: space-between; 
+        padding: 14px 0; 
+        border-bottom: 1px solid rgba(0,0,0,0.08); 
+    }
+    
+    .info-label { 
+        font-weight: bold; 
+        color: #555; 
+        font-size: 14px;
+    }
+    
+    .info-value { 
+        color: #333; 
+        font-size: 14px;
+        font-weight: 500;
+    }
+    
+    .btn-change { 
+        background: linear-gradient(135deg, #1a2a6e, #2a3a7e); 
+        color: #FFD700; 
+        border: none; 
+        padding: 12px 30px; 
+        border-radius: 50px; 
+        cursor: pointer; 
+        font-weight: bold; 
+        font-size: 16px;
+        transition: all 0.3s;
+    }
+    
+    .btn-change:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+    
+    .modal { 
+        display: none; 
+        position: fixed; 
+        top: 0; 
+        left: 0; 
+        width: 100%; 
+        height: 100%; 
+        background: rgba(0,0,0,0.8); 
+        z-index: 2000; 
+        justify-content: center; 
+        align-items: center; 
+    }
+    .modal.active { display: flex; }
+    .modal-content { 
+        background: white; 
+        border-radius: 25px; 
+        width: 90%; 
+        max-width: 450px; 
+        animation: modalFadeIn 0.3s;
+    }
+    @keyframes modalFadeIn {
+        from { opacity: 0; transform: scale(0.95); }
+        to { opacity: 1; transform: scale(1); }
+    }
+    .modal-header { 
+        background: linear-gradient(135deg, #1a2a6e, #2a3a7e); 
+        color: #FFD700; 
+        padding: 18px 25px; 
+        border-radius: 25px 25px 0 0; 
+        display: flex; 
+        justify-content: space-between; 
+    }
+    .modal-body { padding: 25px; }
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; font-weight: bold; margin-bottom: 8px; color: #1a2a6e; }
+    .form-group input { width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 12px; font-size: 14px; }
+    .btn-save { background: linear-gradient(135deg, #28a745, #1e7e34); color: white; width: 100%; padding: 12px; border: none; border-radius: 40px; font-weight: bold; cursor: pointer; }
+    
+    @media (max-width: 700px) { 
+        .stats-grid { grid-template-columns: 1fr; }
+        .profile-name { font-size: 22px; }
+    }
+</style>
+
+<div class="animated-profile">
+    <div class="profile-container">
+        <div class="profile-header">
+            <div class="profile-avatar" onclick="document.getElementById('avatarUpload').click()">
+                <div class="avatar-circle" id="avatarCircle">
+                    <span id="avatarIcon">👤</span>
+                    <img id="avatarImage" src="" style="display:none;">
+                </div>
+            </div>
+            <input type="file" id="avatarUpload" accept="image/*" style="display:none" onchange="uploadAvatar()">
+            <div class="upload-hint">🖼️ Bonyeza picha kubadilisha</div>
+            <div class="profile-name" id="profileName">Loading...</div>
+            <div class="profile-role" id="profileRole">Loading...</div>
+        </div>
+        
+                <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="myAttendance">--</div>
+                <div class="stat-label">📋 Mahudhurio Yako</div>
+                <div class="upload-hint" style="font-size: 10px; margin-top: 5px;">Mwezi huu</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="myDebt">TSh --</div>
+                <div class="stat-label">💰 Deni Lako</div>
+                <div class="upload-hint" style="font-size: 10px; margin-top: 5px;">Ada zisizolipwa</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="myPenalty">TSh --</div>
+                <div class="stat-label">⚠️ Penalty Yako</div>
+                <div class="upload-hint" style="font-size: 10px; margin-top: 5px;">Faini zisizolipwa</div>
+            </div>
+        </div>
+        
+        <div class="profile-card">
+            <h3>📋 Taarifa Zangu</h3>
+            <div class="info-row"><span class="info-label">👤 Jina Kamili:</span><span class="info-value" id="fullName">-</span></div>
+            <div class="info-row"><span class="info-label">🔑 Username:</span><span class="info-value" id="username">-</span></div>
+            <div class="info-row"><span class="info-label">🎤 Sauti / Voice:</span><span class="info-value" id="voice">-</span></div>
+            <div class="info-row"><span class="info-label">📞 Simu:</span><span class="info-value" id="phone">-</span></div>
+            <div class="info-row"><span class="info-label">🏠 Anwani:</span><span class="info-value" id="address">-</span></div>
+            <div class="info-row"><span class="info-label">📅 Tarehe ya Kujiunga:</span><span class="info-value" id="joinDate">-</span></div>
+            <div class="info-row"><span class="info-label">🕐 Last Login:</span><span class="info-value" id="lastLogin">-</span></div>
+        </div>
+        
+        <div style="text-align: center;">
+            <button class="btn-change" onclick="openChangePasswordModal()">🔑 Badilisha Password</button>
+        </div>
+    </div>
+</div>
+
+<!-- Change Password Modal -->
+<div id="passwordModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>🔑 Badilisha Password</h3>
+            <button onclick="closePasswordModal()" style="background:none; border:none; color:#FFD700; font-size:28px; cursor:pointer;">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>📝 Password ya Sasa</label>
+                <input type="password" id="currentPassword" placeholder="Weka password yako ya sasa" autocomplete="off">
+            </div>
+            <div class="form-group">
+                <label>🔒 Password Mpya</label>
+                <input type="password" id="newPassword" placeholder="Weka password mpya (herufi 4+)" autocomplete="off">
+                <div style="font-size: 11px; color: #888; margin-top: 5px;">Password lazima iwe na herufi 4 au zaidi</div>
+            </div>
+            <div class="form-group">
+                <label>🔄 Rudia Password Mpya</label>
+                <input type="password" id="confirmPassword" placeholder="Rudia password mpya" autocomplete="off">
+            </div>
+            <button class="btn-save" onclick="changePassword()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #28a745, #1e7e34); color: white; border: none; border-radius: 40px; font-weight: bold; cursor: pointer;">💾 Hifadhi Password</button>
+        </div>
+    </div>
+</div>
+
+<!-- Success/Error Message Modal (Ionyeshe ujumbe) -->
+<div id="messageModal" class="modal">
+    <div class="modal-content" style="max-width: 350px; text-align: center;">
+        <div class="modal-header" style="background: linear-gradient(135deg, #1a2a6e, #2a3a7e);">
+            <h3 id="messageTitle">ℹ️ Taarifa</h3>
+            <button onclick="closeMessageModal()" style="background:none; border:none; color:#FFD700; font-size:28px; cursor:pointer;">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p id="messageText" style="font-size: 16px; margin: 20px 0;"></p>
+            <button onclick="closeMessageModal()" class="btn-save" style="background: linear-gradient(135deg, #1a2a6e, #2a3a7e); color: #FFD700;">Sawa</button>
+        </div>
+    </div>
+</div>
+<script>
+// ============ LOAD PROFILE DATA ============
+async function loadProfile() {
+    console.log("Loading profile...");
+    try {
+        const response = await fetch('/api/profile');
+        const data = await response.json();
+        console.log("Profile data:", data);
+        
+        if (data.success) {
+            // Update profile info
+            document.getElementById('profileName').innerText = data.user.full_name || data.user.username;
+            document.getElementById('profileRole').innerText = data.user.role_name || 'User';
+            document.getElementById('fullName').innerText = data.user.full_name || '-';
+            document.getElementById('username').innerText = data.user.username;
+            document.getElementById('voice').innerText = data.user.sauti || '-';
+            document.getElementById('phone').innerText = data.user.simu || '-';
+            document.getElementById('address').innerText = data.user.anwani || '-';
+            document.getElementById('joinDate').innerText = data.user.tarehe_jiunga || '-';
+            document.getElementById('lastLogin').innerText = data.user.last_login || '-';
+            
+            // Update statistics cards
+            const deni = data.user.deni || 0;
+            const penalty = data.user.penalty || 0;
+            const attendance = data.user.attendance || 0;
+            
+            document.getElementById('myDebt').innerHTML = 'TSh ' + deni.toLocaleString();
+            document.getElementById('myPenalty').innerHTML = 'TSh ' + penalty.toLocaleString();
+            document.getElementById('myAttendance').innerHTML = attendance + '%';
+            
+            console.log(`Statistics - Deni: ${deni}, Penalty: ${penalty}, Attendance: ${attendance}%`);
+            
+            // Display member number if exists
+            if (data.user.member_number) {
+                const memberNumElem = document.getElementById('memberNumber');
+                if (memberNumElem) memberNumElem.innerText = data.user.member_number;
+            }
+            
+            // Display avatar if exists
+            if (data.user.profile_picture && data.user.profile_picture !== 'null' && data.user.profile_picture !== '') {
+                document.getElementById('avatarIcon').style.display = 'none';
+                const img = document.getElementById('avatarImage');
+                img.style.display = 'block';
+                img.src = data.user.profile_picture;
+                console.log("Avatar loaded successfully");
+            } else {
+                console.log("No avatar found");
+            }
+            
+            // Initialize chart if data exists
+            if (data.user.chart_months && data.user.chart_months.length > 0) {
+                setTimeout(() => {
+                    if (typeof initChart === 'function') {
+                        initChart(data.user.chart_months, data.user.chart_attendance);
+                    }
+                }, 500);
+            }
+        } else {
+            console.error("Failed to load profile:", data.message);
+            document.getElementById('profileName').innerText = "Error loading profile";
+        }
+    } catch(e) {
+        console.error('Error loading profile:', e);
+        document.getElementById('profileName').innerText = "Error: " + e.message;
+    }
+}
+
+// ============ CHART FUNCTION ============
+let attendanceChart = null;
+
+function initChart(months, attendanceData) {
+    const ctx = document.getElementById('attendanceChart');
+    if (!ctx) return;
+    
+    if (attendanceChart) {
+        attendanceChart.destroy();
+    }
+    
+    attendanceChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: months,
+            datasets: [{
+                label: 'Mahudhurio (%)',
+                data: attendanceData,
+                borderColor: '#FFD700',
+                backgroundColor: 'rgba(255, 215, 0, 0.1)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4,
+                pointBackgroundColor: '#1a2a6e',
+                pointBorderColor: '#FFD700',
+                pointRadius: 5,
+                pointHoverRadius: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: { position: 'top' },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `Mahudhurio: ${context.raw}%`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    ticks: { callback: function(value) { return value + '%'; } },
+                    title: { display: true, text: 'Asilimia (%)' }
+                },
+                x: {
+                    title: { display: true, text: 'Mwezi' }
+                }
+            }
+        }
+    });
+}
+
+// ============ AVATAR UPLOAD ============
+async function uploadAvatar() {
+    const file = document.getElementById('avatarUpload').files[0];
+    if (!file) return;
+    
+    if (file.size > 2 * 1024 * 1024) {
+        showMessage('⚠️ Hitilafu', 'Picha ni kubwa sana! Chagua picha chini ya 2MB.');
+        return;
+    }
+    
+    if (!file.type.match('image.*')) {
+        showMessage('⚠️ Hitilafu', 'Tafadhali chagua faili ya picha (JPG, PNG, GIF)');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('avatar', file);
+    
+    document.getElementById('avatarIcon').innerHTML = '⏳';
+    
+    try {
+        const response = await fetch('/api/upload-avatar', {
+            method: 'POST',
+            body: formData
+        });
+        const result = await response.json();
+        
+        if (result.success) {
+            document.getElementById('avatarIcon').style.display = 'none';
+            const img = document.getElementById('avatarImage');
+            img.style.display = 'block';
+            img.src = result.avatar;
+            showMessage('✅ Mafanikio', 'Picha yako imebadilishwa kikamilifu!');
+        } else {
+            document.getElementById('avatarIcon').innerHTML = '👤';
+            showMessage('❌ Hitilafu', result.message);
+        }
+    } catch(e) {
+        document.getElementById('avatarIcon').innerHTML = '👤';
+        showMessage('❌ Hitilafu', 'Tatizo la mtandao. Tafadhali jaribu tena.');
+    }
+}
+
+// ============ PASSWORD CHANGE ============
+function openChangePasswordModal() {
+    document.getElementById('currentPassword').value = '';
+    document.getElementById('newPassword').value = '';
+    document.getElementById('confirmPassword').value = '';
+    document.getElementById('passwordModal').classList.add('active');
+}
+
+function closePasswordModal() {
+    document.getElementById('passwordModal').classList.remove('active');
+}
+
+async function changePassword() {
+    const current = document.getElementById('currentPassword').value;
+    const newPass = document.getElementById('newPassword').value;
+    const confirm = document.getElementById('confirmPassword').value;
+    
+    if (!current) {
+        showMessage('⚠️ Hitilafu', 'Tafadhali weka password yako ya sasa!');
+        return;
+    }
+    
+    if (newPass !== confirm) {
+        showMessage('⚠️ Hitilafu', 'Password mpya hazifanani!');
+        return;
+    }
+    
+    if (newPass.length < 4) {
+        showMessage('⚠️ Hitilafu', 'Password mpya lazima iwe na herufi 4 au zaidi!');
+        return;
+    }
+    
+    if (newPass === current) {
+        showMessage('⚠️ Hitilafu', 'Password mpya haiwezi kuwa sawa na password ya sasa!');
+        return;
+    }
+    
+    const btn = event.target;
+    const originalText = btn.innerText;
+    btn.innerText = '⏳ Inasubiri...';
+    btn.disabled = true;
+    
+    try {
+        const response = await fetch('/api/change-password', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ current_password: current, new_password: newPass })
+        });
+        const result = await response.json();
+        
+        if (result.success) {
+            showMessage('✅ Mafanikio', 'Password yako imebadilishwa! Utatakiwa kuingia tena.', function() {
+                closePasswordModal();
+                setTimeout(() => {
+                    window.location.href = '/logout';
+                }, 1500);
+            });
+        } else {
+            showMessage('❌ Hitilafu', result.message || 'Password ya sasa si sahihi!');
+        }
+    } catch(e) {
+        showMessage('❌ Hitilafu', 'Tatizo la mtandao. Tafadhali jaribu tena.');
+    } finally {
+        btn.innerText = originalText;
+        btn.disabled = false;
+    }
+}
+
+// ============ MESSAGE MODAL ============
+function showMessage(title, message, onClose) {
+    let msgModal = document.getElementById('messageModal');
+    if (!msgModal) {
+        const modalHtml = `
+            <div id="messageModal" class="modal">
+                <div class="modal-content" style="max-width: 350px; text-align: center;">
+                    <div class="modal-header" style="background: linear-gradient(135deg, #1a2a6e, #2a3a7e);">
+                        <h3 id="messageTitle">ℹ️ Taarifa</h3>
+                        <button onclick="closeMessageModal()" style="background:none; border:none; color:#FFD700; font-size:28px; cursor:pointer;">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p id="messageText" style="font-size:16px; margin:20px 0;"></p>
+                        <button onclick="closeMessageModal()" class="btn-save" style="background:linear-gradient(135deg,#1a2a6e,#2a3a7e); color:#FFD700; width:100%; padding:12px; border:none; border-radius:40px; font-weight:bold; cursor:pointer;">Sawa</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        msgModal = document.getElementById('messageModal');
+    }
+    
+    document.getElementById('messageTitle').innerHTML = title;
+    document.getElementById('messageText').innerHTML = message;
+    msgModal.classList.add('active');
+    window.messageOnClose = onClose;
+}
+
+function closeMessageModal() {
+    const modal = document.getElementById('messageModal');
+    if (modal) modal.classList.remove('active');
+    if (window.messageOnClose) {
+        window.messageOnClose();
+        window.messageOnClose = null;
+    }
+}
+
+// Close modals when clicking outside
+document.addEventListener('click', function(event) {
+    const passModal = document.getElementById('passwordModal');
+    const msgModal = document.getElementById('messageModal');
+    if (passModal && event.target === passModal) closePasswordModal();
+    if (msgModal && event.target === msgModal) closeMessageModal();
+});
+
+// Load Chart.js library
+const chartScript = document.createElement('script');
+chartScript.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js';
+chartScript.onload = function() {
+    console.log('Chart.js loaded');
+    loadProfile();
+};
+document.head.appendChild(chartScript);
+
+// If Chart.js already loaded, load profile directly
+if (typeof Chart !== 'undefined') {
+    loadProfile();
+}
+</script>
+{% endblock %}

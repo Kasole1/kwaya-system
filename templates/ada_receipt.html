@@ -1,0 +1,429 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Receipt - Kwaya Mt. Bonifasi{% endblock %}
+
+{% block content %}
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    /* Main Receipt Card */
+    .receipt-card {
+        max-width: 600px;
+        width: 100%;
+        background: white;
+        border-radius: 32px;
+        overflow: hidden;
+        box-shadow: 0 30px 50px rgba(0,0,0,0.3);
+        animation: slideUp 0.5s ease;
+    }
+    
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Gold Ribbon Header */
+    .gold-ribbon {
+        background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+        padding: 8px;
+        text-align: center;
+        font-weight: bold;
+        color: #1a2a6e;
+        font-size: 12px;
+        letter-spacing: 2px;
+    }
+    
+    /* Church Header */
+    .church-header {
+        background: linear-gradient(135deg, #1a2a6e 0%, #2a3a7e 100%);
+        padding: 30px 20px;
+        text-align: center;
+        position: relative;
+    }
+    
+    .church-icon {
+        font-size: 60px;
+        background: rgba(255,215,0,0.15);
+        display: inline-block;
+        width: 100px;
+        height: 100px;
+        line-height: 100px;
+        border-radius: 50%;
+        margin-bottom: 15px;
+        border: 2px solid #FFD700;
+    }
+    
+    .church-header h2 {
+        color: #FFD700;
+        font-size: 22px;
+        margin-bottom: 5px;
+    }
+    
+    .church-header p {
+        color: rgba(255,255,255,0.8);
+        font-size: 12px;
+    }
+    
+    /* Receipt Stamp */
+    .receipt-stamp {
+        position: absolute;
+        bottom: -20px;
+        right: 20px;
+        background: #FFD700;
+        color: #1a2a6e;
+        padding: 8px 20px;
+        border-radius: 40px;
+        font-weight: bold;
+        font-size: 14px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        transform: rotate(-5deg);
+    }
+    
+    /* Receipt Body */
+    .receipt-body {
+        padding: 30px;
+        background: white;
+    }
+    
+    /* Receipt Number */
+    .receipt-no {
+        text-align: center;
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 2px dashed #e0e0e0;
+    }
+    
+    .receipt-no .label {
+        font-size: 11px;
+        color: #999;
+        letter-spacing: 2px;
+    }
+    
+    .receipt-no .number {
+        font-size: 20px;
+        font-weight: bold;
+        color: #1a2a6e;
+        font-family: monospace;
+        background: #f0f0f0;
+        display: inline-block;
+        padding: 5px 20px;
+        border-radius: 30px;
+        margin-top: 5px;
+    }
+    
+    /* Info Rows */
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .info-label {
+        font-size: 12px;
+        color: #666;
+        font-weight: 500;
+    }
+    
+    .info-value {
+        font-size: 14px;
+        font-weight: 600;
+        color: #1a2a6e;
+    }
+    
+    .info-value.voice {
+        background: #1a2a6e;
+        color: #FFD700;
+        padding: 4px 12px;
+        border-radius: 30px;
+        font-size: 12px;
+    }
+    
+    /* Amount Card */
+    .amount-card {
+        background: linear-gradient(135deg, #1a2a6e 0%, #2a3a7e 100%);
+        margin: 20px 0;
+        padding: 25px;
+        border-radius: 24px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .amount-card:before {
+        content: "🎵";
+        position: absolute;
+        left: -20px;
+        top: -20px;
+        font-size: 100px;
+        opacity: 0.08;
+    }
+    
+    .amount-card:after {
+        content: "🎶";
+        position: absolute;
+        right: -20px;
+        bottom: -20px;
+        font-size: 100px;
+        opacity: 0.08;
+    }
+    
+    .amount-label {
+        color: #FFD700;
+        font-size: 12px;
+        letter-spacing: 2px;
+        margin-bottom: 10px;
+    }
+    
+    .amount {
+        font-size: 42px;
+        font-weight: bold;
+        color: white;
+        font-family: monospace;
+    }
+    
+    .amount small {
+        font-size: 16px;
+    }
+    
+    .amount-date {
+        color: rgba(255,255,255,0.6);
+        font-size: 11px;
+        margin-top: 10px;
+    }
+    
+    /* Signature Section */
+    .signature-section {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px dashed #ddd;
+    }
+    
+    .signature {
+        text-align: center;
+        width: 45%;
+    }
+    
+    .signature-line {
+        width: 100%;
+        border-top: 1px solid #333;
+        margin: 10px 0 5px;
+    }
+    
+    .signature-label {
+        font-size: 10px;
+        color: #999;
+    }
+    
+    /* Footer Blessing */
+    .footer-blessing {
+        background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+        text-align: center;
+        padding: 20px;
+        border-radius: 20px;
+        margin-top: 20px;
+    }
+    
+    .footer-blessing p {
+        margin: 5px 0;
+        font-size: 12px;
+        color: #555;
+    }
+    
+    .bible-verse {
+        font-style: italic;
+        color: #1a2a6e;
+        font-weight: bold;
+        font-size: 13px;
+    }
+    
+    .gold-dots {
+        letter-spacing: 4px;
+        color: #FFD700;
+        font-size: 12px;
+    }
+    
+    /* Buttons */
+    .btn-group {
+        display: flex;
+        gap: 12px;
+        padding: 20px;
+        background: #f8f9fa;
+        flex-wrap: wrap;
+    }
+    
+    .btn {
+        flex: 1;
+        padding: 12px;
+        border: none;
+        border-radius: 40px;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 13px;
+        transition: all 0.3s;
+        text-decoration: none;
+        text-align: center;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+    
+    .btn-print {
+        background: linear-gradient(135deg, #1a2a6e, #2a3a7e);
+        color: #FFD700;
+    }
+    
+    .btn-close {
+        background: #6c757d;
+        color: white;
+    }
+    
+    .btn-calendar {
+        background: linear-gradient(135deg, #28a745, #1e7e34);
+        color: white;
+    }
+    
+    .btn:hover {
+        transform: translateY(-2px);
+        filter: brightness(1.05);
+    }
+    
+    @media print {
+        body {
+            background: white;
+            padding: 0;
+        }
+        .btn-group {
+            display: none;
+        }
+        .receipt-card {
+            box-shadow: none;
+            border-radius: 0;
+        }
+    }
+    
+    @media (max-width: 500px) {
+        .receipt-body {
+            padding: 20px;
+        }
+        .amount {
+            font-size: 32px;
+        }
+        .signature-section {
+            flex-direction: column;
+            gap: 15px;
+        }
+        .signature {
+            width: 100%;
+        }
+        .btn-group {
+            flex-direction: column;
+        }
+    }
+</style>
+
+<div class="receipt-card">
+    <div class="gold-ribbon">
+        📄 OFFICIAL PAYMENT RECEIPT 📄
+    </div>
+    
+    <div class="church-header">
+        <div class="church-icon">⛪🎵</div>
+        <h2>KWAYA YA MTAKATIFU BONIFASI</h2>
+        <p>Parokia ya Moyo Mtakatifu Wa Yesu, Sombetini</p>
+        <p>Jimbo Kuu Katoliki La Arusha</p>
+        <div class="receipt-stamp">
+            ✓ PAID
+        </div>
+    </div>
+    
+    <div class="receipt-body">
+        <div class="receipt-no">
+            <div class="label">🔖 RECEIPT NUMBER</div>
+            <div class="number">{{ payment.receipt_no }}</div>
+        </div>
+        
+        <div class="info-row">
+            <span class="info-label">📅 Tarehe ya Malipo</span>
+            <span class="info-value">{{ payment.tarehe }}</span>
+        </div>
+        
+        <div class="info-row">
+            <span class="info-label">👤 Jina la Mwanakwaya</span>
+            <span class="info-value">{{ payment.jina }}</span>
+        </div>
+        
+        <div class="info-row">
+            <span class="info-label">🎵 Sauti / Voice</span>
+            <span class="info-value voice">{{ payment.sauti }}</span>
+        </div>
+        
+        <div class="info-row">
+            <span class="info-label">📞 Namba ya Simu</span>
+            <span class="info-value">{{ payment.simu }}</span>
+        </div>
+        
+        <div class="info-row">
+            <span class="info-label">📆 Kipindi cha Malipo</span>
+            <span class="info-value">{{ payment.mwezi }} - {{ payment.mwaka }}</span>
+        </div>
+        
+        <div class="amount-card">
+            <div class="amount-label">💰 JUMLA ILIYOLIPWA 💰</div>
+            <div class="amount">TSh {{ "%.0f"|format(payment.kiasi) }}</div>
+            <div class="amount-date">Malipo yamethibitishwa kwa mafanikio</div>
+        </div>
+        
+        <div class="signature-section">
+            <div class="signature">
+                <div class="signature-line"></div>
+                <div class="signature-label">Mwanakwaya / Mlipaji</div>
+            </div>
+            <div class="signature">
+                <div class="signature-line"></div>
+                <div class="signature-label">Mwenyekiti / Mweka Hazina</div>
+            </div>
+        </div>
+        
+        <div class="footer-blessing">
+            <div class="gold-dots">✦ ✦ ✦</div>
+            <p class="bible-verse">"Utukufu wa Mungu kwa sauti za malaika"</p>
+            <p class="bible-verse">— Zaburi 96:1 —</p>
+            <div class="gold-dots">✦ ✦ ✦</div>
+            <p>Asante kwa malipo yako! Mungu akubariki.</p>
+            <p style="font-size: 10px; margin-top: 8px;">Receipt inayotokana na mfumo wa kwaya • Kwaya Mt. Bonifasi</p>
+        </div>
+    </div>
+    
+    <div class="btn-group">
+        <button onclick="window.print()" class="btn btn-print">🖨️ Chapisha</button>
+        <button onclick="window.close()" class="btn btn-close">✖ Funga</button>
+        <a href="/ada/calendar" class="btn btn-calendar">📅 Rudi Calendar</a>
+    </div>
+</div>
+
+<script>
+    if (window.opener) {
+        setTimeout(function() { window.close(); }, 10000);
+    }
+</script>
+{% endblock %}

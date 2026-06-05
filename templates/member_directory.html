@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+
+{% block title %}Member Directory - Kwaya Mt. Bonifasi{% endblock %}
+
+{% block content %}
+<style>
+    .directory-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    .directory-header {
+        background: linear-gradient(135deg, #1a2a6e, #2a3a7e);
+        padding: 25px;
+        border-radius: 20px;
+        color: #FFD700;
+        text-align: center;
+        margin-bottom: 25px;
+    }
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+    .stat-card {
+        background: white;
+        border-radius: 16px;
+        padding: 15px;
+        text-align: center;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        border-left: 4px solid #FFD700;
+    }
+    .stat-number {
+        font-size: 28px;
+        font-weight: bold;
+        color: #1a2a6e;
+    }
+    .voice-section {
+        background: white;
+        border-radius: 16px;
+        margin-bottom: 20px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .voice-header {
+        background: linear-gradient(135deg, #1a2a6e, #2a3a7e);
+        color: #FFD700;
+        padding: 12px 20px;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .voice-header:hover {
+        opacity: 0.9;
+    }
+    .voice-title {
+        font-size: 18px;
+        font-weight: bold;
+    }
+    .voice-count {
+        background: rgba(255,215,0,0.2);
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 14px;
+    }
+    .member-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .member-table th {
+        background: #f8f9fa;
+        padding: 12px;
+        text-align: left;
+        color: #1a2a6e;
+        border-bottom: 2px solid #FFD700;
+    }
+    .member-table td {
+        padding: 10px 12px;
+        border-bottom: 1px solid #eee;
+    }
+    .member-table tr:hover {
+        background: #f5f5f5;
+    }
+    .export-buttons {
+        display: flex;
+        gap: 15px;
+        justify-content: flex-end;
+        margin-bottom: 20px;
+    }
+    .btn-export-pdf {
+        background: #dc3545;
+        color: white;
+        border: none;
+        padding: 10px 25px;
+        border-radius: 30px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+    .btn-export-excel {
+        background: #28a745;
+        color: white;
+        border: none;
+        padding: 10px 25px;
+        border-radius: 30px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+    .voice-content {
+        display: none;
+    }
+    .voice-content.open {
+        display: block;
+    }
+    @media (max-width: 700px) {
+        .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        .member-table { font-size: 12px; }
+        .member-table th, .member-table td { padding: 6px; }
+    }
+</style>
+
+<div class="directory-container">
+    <div class="directory-header">
+        <h1>📋 MEMBER DIRECTORY</h1>
+        <p>Orodha kamili ya wanakwaya wa Kwaya Mt. Bonifasi</p>
+    </div>
+
+    <div class="export-buttons">
+        <button class="btn-export-pdf" onclick="exportDirectory('pdf')">📄 Export as PDF</button>
+        <button class="btn-export-excel" onclick="exportDirectory('excel')">📊 Export as Excel</button>
+    </div>
+
+    <div class="stats-grid" id="statsGrid">
+        <div class="stat-card"><div class="stat-number" id="totalMembers">0</div><div>Jumla ya Wanakwaya</div></div>
+        <div class="stat-card"><div class="stat-number" id="sopranoCount">0</div><div>Soprano</div></div>
+        <div class="stat-card"><div class="stat-number" id="altoCount">0</div><div>Alto</div></div>
+        <div class="stat-card"><div class="stat-number" id="tenorCount">0</div><div>Tenor</div></div>
+        <div class="stat-card"><div class="stat-number" id="bassCount">0</div><div>Bass</div></div>
+    </div>
+
+    <div id="membersContainer">
+        <div style="text-align: center; padding: 50px;">Loading members...</div>
+    </div>
+</div>
+
+<script>
+async function loadDirectory() {
+    const response = await fetch('/api/member-directory');
+    const data = await response.json();
+    
+    if (data.success) {
+        // Update stats
+        document.getElementById('totalMembers').innerText = data.total_members;
+        document.getElementById('sopranoCount').innerText = data.members_by_voice['Soprano'].length;
+        document.getElementById('altoCount').innerText = data.members_by_voice['Alto'].length;
+        document.getElementById('tenorCount').innerText = data.members_by_voice['Tenor'].length;
+        document.getElementById('bassCount').innerText = data.members_by_voice['Bass'].length;
+        
+        // Build members display
+        let html = '';
+        const voices = ['Soprano', 'Alto', 'Tenor', 'Bass'];
+        
+        for (let voice of voices) {
+            const members = data.members_by_voice[voice];
+            if (members.length > 0) {
+                html += `
+                    <div class="voice-section">
+                        <div class="voice-header" onclick="toggleVoice('${voice}')">
+                            <span class="voice-title">🎤 ${voice}</span>
+                            <span class="voice-count">${members.length} wanakwaya</span>
+                        </div>
+                        <div class="voice-content" id="voice-${voice}">
+                            <table class="member-table">
+                                <thead>
+                                    <tr><th>#</th><th>Jina Kamili</th><th>Simu</th><th>Anwani</th><th>Tarehe ya Kujiunga</th></tr>
+                                </thead>
+                                <tbody>
+                `;
+                members.forEach((m, idx) => {
+                    html += `
+                        <tr>
+                            <td>${idx + 1}</td>
+                            <td>${escapeHtml(m.jina)}</td>
+                            <td>${m.simu}</td>
+                            <td>${m.anwani || '-'}</td>
+                            <td>${m.tarehe_jiunga || '-'}</td>
+                        </tr>
+                    `;
+                });
+                html += `
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+        
+        document.getElementById('membersContainer').innerHTML = html;
+        
+        // Open first voice by default
+        if (voices.length > 0) {
+            toggleVoice(voices[0]);
+        }
+    }
+}
+
+function toggleVoice(voice) {
+    const element = document.getElementById(`voice-${voice}`);
+    if (element) {
+        element.classList.toggle('open');
+    }
+}
+
+function exportDirectory(format) {
+    window.open(`/api/export/member-directory?format=${format}`, '_blank');
+}
+
+function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+loadDirectory();
+</script>
+{% endblock %}

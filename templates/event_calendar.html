@@ -1,0 +1,413 @@
+{% extends "base.html" %}
+
+{% block title %}Event Calendar - Kwaya Mt. Bonifasi{% endblock %}
+
+{% block content %}
+<style>
+    .calendar-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    .calendar-header {
+        background: linear-gradient(135deg, #1a2a6e, #2a3a7e);
+        padding: 25px;
+        border-radius: 20px;
+        color: #FFD700;
+        text-align: center;
+        margin-bottom: 25px;
+    }
+    .add-event-btn {
+        background: #28a745;
+        color: white;
+        border: none;
+        padding: 10px 25px;
+        border-radius: 30px;
+        cursor: pointer;
+        font-weight: bold;
+        margin-bottom: 20px;
+        float: right;
+    }
+    .calendar-grid {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    .calendar-weekdays {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        background: #1a2a6e;
+        color: #FFD700;
+        text-align: center;
+        padding: 15px 0;
+        font-weight: bold;
+    }
+    .calendar-days {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+    }
+    .calendar-day {
+        min-height: 120px;
+        border: 1px solid #eee;
+        padding: 10px;
+        position: relative;
+        transition: background 0.2s;
+        vertical-align: top;
+    }
+    .calendar-day:hover {
+        background: #f8f9fa;
+    }
+    .day-number {
+        font-weight: bold;
+        color: #1a2a6e;
+        margin-bottom: 8px;
+    }
+    .day-event {
+        background: #e8f4f8;
+        border-radius: 8px;
+        padding: 4px 8px;
+        margin-bottom: 4px;
+        font-size: 11px;
+        cursor: pointer;
+        transition: all 0.2s;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .day-event.event {
+        background: #ffebee;
+        border-left: 3px solid #dc3545;
+    }
+    .day-event.rehearsal {
+        background: #e8f5e9;
+        border-left: 3px solid #28a745;
+    }
+    .day-event:hover {
+        transform: scale(1.02);
+    }
+    .day-event .event-title {
+        font-weight: bold;
+    }
+    .day-event .event-time {
+        font-size: 9px;
+        color: #666;
+    }
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.7);
+        z-index: 10000;
+        justify-content: center;
+        align-items: center;
+    }
+    .modal.active {
+        display: flex;
+    }
+    .modal-content {
+        background: white;
+        border-radius: 20px;
+        width: 90%;
+        max-width: 500px;
+        max-height: 85vh;
+        overflow-y: auto;
+    }
+    .modal-header {
+        background: linear-gradient(135deg, #1a2a6e, #2a3a7e);
+        color: #FFD700;
+        padding: 15px 20px;
+        border-radius: 20px 20px 0 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .modal-body {
+        padding: 25px;
+    }
+    .form-group {
+        margin-bottom: 18px;
+    }
+    .form-group label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 6px;
+        color: #1a2a6e;
+    }
+    .form-group input, .form-group textarea, .form-group select {
+        width: 100%;
+        padding: 10px;
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        font-size: 14px;
+    }
+    .btn-save {
+        background: #28a745;
+        color: white;
+        width: 100%;
+        padding: 12px;
+        border: none;
+        border-radius: 30px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+    .btn-delete {
+        background: #dc3545;
+        color: white;
+        width: 100%;
+        padding: 12px;
+        border: none;
+        border-radius: 30px;
+        font-weight: bold;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+    .month-nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding: 0 20px;
+    }
+    .month-nav button {
+        background: #1a2a6e;
+        color: #FFD700;
+        border: none;
+        padding: 8px 20px;
+        border-radius: 30px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+    .current-month {
+        font-size: 24px;
+        font-weight: bold;
+        color: #1a2a6e;
+    }
+    .close-modal {
+        background: none;
+        border: none;
+        color: #FFD700;
+        font-size: 28px;
+        cursor: pointer;
+    }
+    @media (max-width: 700px) {
+        .calendar-day { min-height: 100px; font-size: 10px; padding: 5px; }
+        .day-event { font-size: 8px; padding: 2px 4px; }
+        .day-number { font-size: 12px; }
+        .current-month { font-size: 18px; }
+    }
+    .clearfix::after {
+        content: "";
+        clear: both;
+        display: table;
+    }
+</style>
+
+<div class="calendar-container">
+    <div class="calendar-header">
+        <h1>📅 EVENT CALENDAR</h1>
+        <p>Kalenda ya matukio ya Kwaya Mt. Bonifasi</p>
+    </div>
+    
+    <div class="clearfix">
+        <button class="add-event-btn" onclick="openAddEventModal()">➕ Ongeza Tukio</button>
+    </div>
+    
+    <div class="month-nav">
+        <button onclick="changeMonth(-1)">◀ PREV</button>
+        <span class="current-month" id="currentMonth">Loading...</span>
+        <button onclick="changeMonth(1)">NEXT ▶</button>
+    </div>
+    
+    <div class="calendar-grid">
+        <div class="calendar-weekdays">
+            <div>Jumapili</div><div>Jumatatu</div><div>Jumanne</div><div>Jumatano</div>
+            <div>Alhamisi</div><div>Ijumaa</div><div>Jumamosi</div>
+        </div>
+        <div class="calendar-days" id="calendarDays">
+            <div style="text-align:center; padding:50px;">Loading calendar...</div>
+        </div>
+    </div>
+</div>
+
+<!-- Add/Edit Event Modal -->
+<div id="eventModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="modalTitle">➕ Ongeza Tukio</h3>
+            <button class="close-modal" onclick="closeEventModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="eventId">
+            <div class="form-group">
+                <label>📅 Jina la Tukio</label>
+                <input type="text" id="eventTitle" placeholder="Mfano: Misa ya Jumapili" required>
+            </div>
+            <div class="form-group">
+                <label>📆 Tarehe</label>
+                <input type="date" id="eventDate" required>
+            </div>
+            <div class="form-group">
+                <label>📍 Mahali</label>
+                <input type="text" id="eventLocation" placeholder="Kanisa, Sombetini, nk">
+            </div>
+            <div class="form-group">
+                <label>📝 Maelezo</label>
+                <textarea id="eventDescription" rows="3" placeholder="Maelezo ya tukio..."></textarea>
+            </div>
+            <button class="btn-save" onclick="saveEvent()">💾 HIFADHI</button>
+            <button class="btn-delete" id="deleteEventBtn" style="display:none;" onclick="deleteEvent()">🗑️ Futa Tukio</button>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentDate = new Date();
+let events = [];
+
+async function loadEvents() {
+    const response = await fetch('/api/events');
+    const data = await response.json();
+    if (data.success) {
+        events = data.events;
+        renderCalendar();
+    }
+}
+
+function renderCalendar() {
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+    
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const daysInMonth = lastDay.getDate();
+    const startingDay = firstDay.getDay(); // 0 = Sunday
+    
+    const monthNames = ['Januari', 'Februari', 'Machi', 'Aprili', 'Mei', 'Juni', 
+                        'Julai', 'Agosti', 'Septemba', 'Oktoba', 'Novemba', 'Desemba'];
+    document.getElementById('currentMonth').innerText = `${monthNames[month]} ${year}`;
+    
+    let calendarHtml = '';
+    let dayCounter = 1;
+    
+    // Create empty cells for days before first day of month
+    for (let i = 0; i < startingDay; i++) {
+        calendarHtml += `<div class="calendar-day"></div>`;
+    }
+    
+    // Fill in days of month
+    for (let d = 1; d <= daysInMonth; d++) {
+        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+        const dayEvents = events.filter(e => e.start === dateStr);
+        
+        let eventsHtml = '';
+        for (let e of dayEvents) {
+            const typeClass = e.type === 'event' ? 'event' : 'rehearsal';
+            eventsHtml += `
+                <div class="day-event ${typeClass}" onclick="viewEvent('${e.id}', '${e.title}', '${e.start}', '${e.location || ''}', '${e.description || ''}')">
+                    <div class="event-title">${escapeHtml(e.title)}</div>
+                </div>
+            `;
+        }
+        
+        calendarHtml += `
+            <div class="calendar-day">
+                <div class="day-number">${d}</div>
+                ${eventsHtml}
+            </div>
+        `;
+    }
+    
+    document.getElementById('calendarDays').innerHTML = calendarHtml;
+}
+
+function changeMonth(delta) {
+    currentDate.setMonth(currentDate.getMonth() + delta);
+    renderCalendar();
+}
+
+function openAddEventModal() {
+    document.getElementById('modalTitle').innerHTML = '➕ Ongeza Tukio';
+    document.getElementById('eventId').value = '';
+    document.getElementById('eventTitle').value = '';
+    document.getElementById('eventDate').value = new Date().toISOString().split('T')[0];
+    document.getElementById('eventLocation').value = '';
+    document.getElementById('eventDescription').value = '';
+    document.getElementById('deleteEventBtn').style.display = 'none';
+    document.getElementById('eventModal').classList.add('active');
+}
+
+function viewEvent(id, title, date, location, description) {
+    document.getElementById('modalTitle').innerHTML = '📋 Taarifa za Tukio';
+    document.getElementById('eventId').value = id;
+    document.getElementById('eventTitle').value = title;
+    document.getElementById('eventDate').value = date;
+    document.getElementById('eventLocation').value = location;
+    document.getElementById('eventDescription').value = description;
+    document.getElementById('deleteEventBtn').style.display = 'block';
+    document.getElementById('eventModal').classList.add('active');
+}
+
+function closeEventModal() {
+    document.getElementById('eventModal').classList.remove('active');
+}
+
+async function saveEvent() {
+    const id = document.getElementById('eventId').value;
+    const title = document.getElementById('eventTitle').value;
+    const date = document.getElementById('eventDate').value;
+    const location = document.getElementById('eventLocation').value;
+    const description = document.getElementById('eventDescription').value;
+    
+    if (!title || !date) {
+        alert('Tafadhali weka jina na tarehe ya tukio!');
+        return;
+    }
+    
+    const response = await fetch('/api/events/add', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, start: date, location, description })
+    });
+    const result = await response.json();
+    
+    if (result.success) {
+        alert('✅ Tukio limeongezwa kikamilifu!');
+        closeEventModal();
+        loadEvents();
+    } else {
+        alert('❌ ' + result.message);
+    }
+}
+
+async function deleteEvent() {
+    const id = document.getElementById('eventId').value;
+    if (!id || !confirm('Je, una uhakika unataka kufuta tukio hili?')) return;
+    
+    const response = await fetch(`/api/events/${id}`, { method: 'DELETE' });
+    const result = await response.json();
+    
+    if (result.success) {
+        alert('✅ Tukio limefutwa!');
+        closeEventModal();
+        loadEvents();
+    } else {
+        alert('❌ ' + result.message);
+    }
+}
+
+function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    loadEvents();
+});
+</script>
+{% endblock %}

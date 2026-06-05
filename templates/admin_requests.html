@@ -1,0 +1,321 @@
+{% extends "base.html" %}
+
+{% block title %}Maombi na Malalamiko - Admin{% endblock %}
+
+{% block content %}
+<style>
+    .admin-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    
+    .admin-header {
+        background: linear-gradient(135deg, #1a2a6e, #2a3a7e);
+        padding: 25px;
+        border-radius: 20px;
+        color: white;
+        margin-bottom: 25px;
+    }
+    
+    .request-card-admin {
+        background: white;
+        border-radius: 20px;
+        margin-bottom: 20px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        transition: all 0.3s;
+    }
+    
+    .request-card-admin:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+    }
+    
+    .request-header {
+        padding: 15px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .request-badge {
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: bold;
+    }
+    
+    .badge-permission { background: #17a2b8; color: white; }
+    .badge-complaint { background: #dc3545; color: white; }
+    .badge-pending { background: #fd7e14; color: white; }
+    .badge-approved { background: #28a745; color: white; }
+    .badge-rejected { background: #dc3545; color: white; }
+    .badge-responded { background: #17a2b8; color: white; }
+    
+    .request-body {
+        padding: 20px;
+    }
+    
+    .request-info {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+        margin-bottom: 15px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .request-message {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 12px;
+        margin: 15px 0;
+        border-left: 4px solid #FFD700;
+    }
+    
+    .response-area {
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid #eee;
+    }
+    
+    .response-text {
+        background: #e8f5e9;
+        padding: 12px;
+        border-radius: 10px;
+        margin-top: 10px;
+        font-size: 13px;
+    }
+    
+    .btn-approve {
+        background: #28a745;
+        color: white;
+        border: none;
+        padding: 8px 20px;
+        border-radius: 25px;
+        cursor: pointer;
+        margin-right: 10px;
+    }
+    
+    .btn-reject {
+        background: #dc3545;
+        color: white;
+        border: none;
+        padding: 8px 20px;
+        border-radius: 25px;
+        cursor: pointer;
+        margin-right: 10px;
+    }
+    
+    .btn-respond {
+        background: #17a2b8;
+        color: white;
+        border: none;
+        padding: 8px 20px;
+        border-radius: 25px;
+        cursor: pointer;
+    }
+    
+    .response-input {
+        width: 100%;
+        padding: 10px;
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        margin-top: 10px;
+        display: none;
+    }
+    
+    .response-input.active {
+        display: block;
+    }
+    
+    body.dark-mode .request-card-admin {
+        background: #1e293b;
+    }
+    
+    body.dark-mode .request-message {
+        background: #2d3a4e;
+    }
+    
+    body.dark-mode .response-text {
+        background: #1e293b;
+        border: 1px solid #334155;
+    }
+    
+    @media (max-width: 700px) {
+        .request-info {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="admin-container">
+    <div class="admin-header">
+        <h1>📋 Maombi na Malalamiko</h1>
+        <p>Kagua, kubali au katalia maombi ya wanakwaya</p>
+    </div>
+    
+    <div id="requestsList"></div>
+</div>
+
+<script>
+let currentRequestId = null;
+
+async function loadRequests() {
+    try {
+        const response = await fetch('/api/admin/requests');
+        const data = await response.json();
+        
+        if (data.success && data.requests) {
+            renderRequests(data.requests);
+        }
+    } catch(e) {
+        console.error('Error loading requests:', e);
+    }
+}
+
+function renderRequests(requests) {
+    const container = document.getElementById('requestsList');
+    if (!requests || requests.length === 0) {
+        container.innerHTML = '<div style="text-align:center; padding:50px;">📭 Hakuna maombi au malalamiko</div>';
+        return;
+    }
+    
+    container.innerHTML = requests.map(req => {
+        const isPermission = req.request_type === 'permission';
+        const badgeClass = isPermission ? 'badge-permission' : 'badge-complaint';
+        const statusBadge = getStatusBadge(req.status);
+        
+        return `
+            <div class="request-card-admin" id="request-${req.id}">
+                <div class="request-header">
+                    <div>
+                        <strong>${escapeHtml(req.member_name)}</strong>
+                        <span style="font-size: 12px; color: #888;">(#${req.member_number} - ${req.member_voice})</span>
+                    </div>
+                    <div>
+                        <span class="request-badge ${badgeClass}">${isPermission ? '📝 Ombi la Ruhusa' : '💬 Malalamiko'}</span>
+                        <span class="request-badge ${statusBadge.class}">${statusBadge.text}</span>
+                    </div>
+                </div>
+                <div class="request-body">
+                    <div class="request-info">
+                        <div><strong>📅 Tarehe:</strong> ${new Date(req.created_at).toLocaleString()}</div>
+                        <div><strong>📞 Simu:</strong> ${escapeHtml(req.member_phone) || '-'}</div>
+                        <div><strong>📧 Member ID:</strong> #${req.member_id}</div>
+                    </div>
+                    <div class="request-message">
+                        <strong>${isPermission ? '📝 Sababu ya Kutokuhudhuria:' : '💬 Malalamiko / Maoni:'}</strong>
+                        <div style="margin-top: 8px;">${escapeHtml(req.request_data)}</div>
+                    </div>
+                    
+                    ${req.admin_response ? `
+                    <div class="response-text">
+                        <strong>📢 Jibu la Admin:</strong><br>
+                        ${escapeHtml(req.admin_response)}
+                        <div style="font-size: 11px; color: #888; margin-top: 5px;">${req.resolved_at ? new Date(req.resolved_at).toLocaleString() : ''}</div>
+                    </div>
+                    ` : ''}
+                    
+                    ${req.status === 'pending' ? `
+                    <div class="response-area">
+                        <button class="btn-approve" onclick="showResponseForm(${req.id}, 'approve')">✅ Kubali</button>
+                        <button class="btn-reject" onclick="showResponseForm(${req.id}, 'reject')">❌ Kataa</button>
+                        <button class="btn-respond" onclick="showResponseForm(${req.id}, 'respond')">💬 Jibu</button>
+                        
+                        <div id="responseForm-${req.id}" class="response-input">
+                            <textarea id="responseText-${req.id}" rows="3" placeholder="Weka maelezo yako hapa..." style="width:100%; padding:10px; border-radius:10px;"></textarea>
+                            <div style="margin-top: 10px;">
+                                <button onclick="submitResponse(${req.id})" class="btn-approve" style="background: #1a2a6e;">📤 Tuma Jibu</button>
+                                <button onclick="cancelResponseForm(${req.id})" class="btn-reject">✖ Ghairi</button>
+                            </div>
+                        </div>
+                    </div>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function getStatusBadge(status) {
+    switch(status) {
+        case 'pending': return { class: 'badge-pending', text: '⏳ Inasubiri' };
+        case 'approved': return { class: 'badge-approved', text: '✅ Imekubaliwa' };
+        case 'rejected': return { class: 'badge-rejected', text: '❌ Imekataliwa' };
+        case 'responded': return { class: 'badge-responded', text: '💬 Imejibiwa' };
+        default: return { class: 'badge-pending', text: '⏳ Inasubiri' };
+    }
+}
+
+let currentAction = {};
+
+function showResponseForm(requestId, action) {
+    // Hide all other forms
+    document.querySelectorAll('.response-input').forEach(el => {
+        el.classList.remove('active');
+    });
+    
+    const form = document.getElementById(`responseForm-${requestId}`);
+    if (form) {
+        form.classList.add('active');
+        currentAction[requestId] = action;
+    }
+}
+
+function cancelResponseForm(requestId) {
+    const form = document.getElementById(`responseForm-${requestId}`);
+    if (form) {
+        form.classList.remove('active');
+        document.getElementById(`responseText-${requestId}`).value = '';
+    }
+}
+
+async function submitResponse(requestId) {
+    const action = currentAction[requestId];
+    const responseText = document.getElementById(`responseText-${requestId}`).value;
+    
+    if (!responseText.trim() && (action === 'respond' || action === 'reject')) {
+        alert('❌ Tafadhali weka maelezo!');
+        return;
+    }
+    
+    try {
+        const res = await fetch(`/api/admin/request/${requestId}/respond`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                action: action,
+                response: responseText
+            })
+        });
+        
+        const result = await res.json();
+        
+        if (result.success) {
+            alert('✅ ' + result.message);
+            loadRequests();
+        } else {
+            alert('❌ ' + (result.message || 'Hitilafu imetokea'));
+        }
+    } catch(e) {
+        alert('❌ Tatizo la mtandao');
+    }
+}
+
+function escapeHtml(text) {
+    if (!text) return '';
+    return text.replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+    });
+}
+
+loadRequests();
+</script>
+{% endblock %}

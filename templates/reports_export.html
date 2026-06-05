@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+{% block title %}Export Reports - Kwaya Mt. Bonifasi{% endblock %}
+
+{% block content %}
+<style>
+    .export-container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+    .export-header { background: linear-gradient(135deg, #1a2a6e, #2a3a7e); padding: 25px 30px; border-radius: 20px; color: white; margin-bottom: 25px; }
+    .export-header h1 { color: #FFD700; margin: 0; font-size: 28px; display: flex; align-items: center; gap: 10px; }
+    .export-header p { margin: 5px 0 0; opacity: 0.9; }
+    
+    .filter-section { background: #f8f9fa; padding: 20px 25px; border-radius: 16px; margin-bottom: 30px; border: 1px solid #e0e0e0; }
+    .filter-section h3 { color: #1a2a6e; margin-bottom: 15px; font-size: 16px; border-left: 4px solid #FFD700; padding-left: 12px; }
+    .filter-row { display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-end; }
+    .filter-group { display: flex; flex-direction: column; gap: 5px; }
+    .filter-group label { font-size: 12px; font-weight: bold; color: #555; letter-spacing: 0.5px; }
+    .filter-group input { padding: 10px 15px; border: 1px solid #ddd; border-radius: 12px; min-width: 180px; font-size: 14px; }
+    .filter-group input:focus { outline: none; border-color: #FFD700; }
+    
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; margin-bottom: 30px; }
+    .export-card { background: white; border-radius: 24px; padding: 25px; box-shadow: 0 8px 25px rgba(0,0,0,0.08); transition: all 0.3s; border-top: 5px solid #FFD700; text-align: center; cursor: pointer; }
+    .export-card:hover { transform: translateY(-8px); box-shadow: 0 15px 35px rgba(0,0,0,0.12); }
+    .card-icon { font-size: 55px; margin-bottom: 15px; }
+    .card-title { font-size: 22px; font-weight: bold; color: #1a2a6e; margin-bottom: 8px; }
+    .card-desc { font-size: 13px; color: #888; margin-bottom: 20px; line-height: 1.4; }
+    .btn-group { display: flex; gap: 12px; justify-content: center; }
+    .btn-pdf { background: linear-gradient(135deg, #dc3545, #c82333); color: white; border: none; padding: 10px 22px; border-radius: 40px; cursor: pointer; font-weight: bold; font-size: 13px; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s; }
+    .btn-excel { background: linear-gradient(135deg, #28a745, #1e7e34); color: white; border: none; padding: 10px 22px; border-radius: 40px; cursor: pointer; font-weight: bold; font-size: 13px; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s; }
+    .btn-pdf:hover, .btn-excel:hover { transform: translateY(-2px); filter: brightness(1.05); }
+    
+    @media (max-width: 700px) {
+        .card-grid { grid-template-columns: 1fr; }
+        .filter-row { flex-direction: column; }
+        .filter-group input { width: 100%; }
+    }
+</style>
+
+<div class="export-container">
+    <div class="export-header">
+        <h1><span>📊</span> EXPORT REPORTS</h1>
+        <p>Toa ripoti za ada, mapato, mahudhurio, assets, inventory na wanakwaya kwa PDF au Excel</p>
+    </div>
+
+    <div class="filter-section">
+        <h3>📅 Chagua Kipindi cha Tarehe</h3>
+        <div class="filter-row">
+            <div class="filter-group">
+                <label>📆 Kuanzia Tarehe</label>
+                <input type="date" id="startDate" value="2026-01-01">
+            </div>
+            <div class="filter-group">
+                <label>📆 Mpaka Tarehe</label>
+                <input type="date" id="endDate" value="2026-12-31">
+            </div>
+        </div>
+    </div>
+
+    <div class="card-grid">
+        <!-- Ada Calendar Card -->
+        <div class="export-card">
+            <div class="card-icon">💰</div>
+            <div class="card-title">ADA CALENDAR</div>
+            <div class="card-desc">Ripoti ya ada za wanakwaya, deni na penalty</div>
+            <div class="btn-group">
+                <button class="btn-pdf" onclick="exportReport('ada', 'pdf')">📄 PDF</button>
+                <button class="btn-excel" onclick="exportReport('ada', 'excel')">📊 Excel</button>
+            </div>
+        </div>
+
+        <!-- Mapato Card -->
+        <div class="export-card">
+            <div class="card-icon">📈</div>
+            <div class="card-title">MAPATO</div>
+            <div class="card-desc">Ripoti ya mapato kwa vyanzo na vipindi</div>
+            <div class="btn-group">
+                <button class="btn-pdf" onclick="exportReport('mapato', 'pdf')">📄 PDF</button>
+                <button class="btn-excel" onclick="exportReport('mapato', 'excel')">📊 Excel</button>
+            </div>
+        </div>
+
+        <!-- Mahudhurio Card -->
+        <div class="export-card">
+            <div class="card-icon">📋</div>
+            <div class="card-title">MAHUDHURIO</div>
+            <div class="card-desc">Ripoti ya mahudhurio na penalty</div>
+            <div class="btn-group">
+                <button class="btn-pdf" onclick="exportReport('mahudhurio', 'pdf')">📄 PDF</button>
+                <button class="btn-excel" onclick="exportReport('mahudhurio', 'excel')">📊 Excel</button>
+            </div>
+        </div>
+
+        <!-- Wanakwaya Card -->
+        <div class="export-card">
+            <div class="card-icon">👥</div>
+            <div class="card-title">WANAKWAYA</div>
+            <div class="card-desc">Ripoti ya wanakwaya wote waliosajiliwa</div>
+            <div class="btn-group">
+                <button class="btn-pdf" onclick="exportReport('wanakwaya', 'pdf')">📄 PDF</button>
+                <button class="btn-excel" onclick="exportReport('wanakwaya', 'excel')">📊 Excel</button>
+            </div>
+        </div>
+
+        <!-- Assets Card -->
+        <div class="export-card">
+            <div class="card-icon">📦</div>
+            <div class="card-title">ASSETS</div>
+            <div class="card-desc">Ripoti ya vifaa, vyombo na mali za kwaya</div>
+            <div class="btn-group">
+                <button class="btn-pdf" onclick="exportReport('assets', 'pdf')">📄 PDF</button>
+                <button class="btn-excel" onclick="exportReport('assets', 'excel')">📊 Excel</button>
+            </div>
+        </div>
+
+        <!-- Inventory Card -->
+        <div class="export-card">
+            <div class="card-icon">📦</div>
+            <div class="card-title">INVENTORY</div>
+            <div class="card-desc">Ripoti ya bidhaa, mauzo na faida</div>
+            <div class="btn-group">
+                <button class="btn-pdf" onclick="exportReport('inventory', 'pdf')">📄 PDF</button>
+                <button class="btn-excel" onclick="exportReport('inventory', 'excel')">📊 Excel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function exportReport(type, format) {
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+    window.open(`/api/export/${type}?format=${format}&start=${startDate}&end=${endDate}`, '_blank');
+}
+</script>
+{% endblock %}

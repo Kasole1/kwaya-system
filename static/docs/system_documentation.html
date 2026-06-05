@@ -1,0 +1,127 @@
+﻿<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Documentation - Kwaya Mt. Bonifasi</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Times New Roman', Times, serif; background: white; color: #333; line-height: 1.6; }
+        .cover { text-align: center; padding: 100px 50px; background: linear-gradient(135deg, #1a2a6e, #2a3a7e); color: #FFD700; min-height: 100vh; }
+        .cover h1 { font-size: 48px; margin-bottom: 20px; }
+        .gold-line { width: 100px; height: 3px; background: #FFD700; margin: 30px auto; }
+        .section { padding: 50px; max-width: 1200px; margin: 0 auto; }
+        .section-title { color: #1a2a6e; border-left: 4px solid #FFD700; padding-left: 15px; margin-bottom: 25px; font-size: 28px; }
+        .info-card { background: #f8f9fa; border-radius: 12px; padding: 20px; margin: 20px 0; border-left: 4px solid #FFD700; }
+        .code-block { background: #1e293b; color: #e2e8f0; padding: 15px; border-radius: 12px; font-family: monospace; overflow-x: auto; margin: 15px 0; }
+        .data-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        .data-table th { background: linear-gradient(135deg, #1a2a6e, #2a3a7e); color: #FFD700; padding: 12px; text-align: left; }
+        .data-table td { padding: 10px; border-bottom: 1px solid #ddd; }
+        .footer { text-align: center; padding: 30px; background: linear-gradient(135deg, #1a2a6e, #2a3a7e); color: #FFD700; margin-top: 30px; }
+        @media print { @page { size: A4; margin: 1.5cm; } }
+    </style>
+</head>
+<body>
+
+<div class="cover">
+    <h1>🎵 KWAYA YA MTAKATIFU BONIFASI 🎵</h1>
+    <div class="gold-line"></div>
+    <h2>SYSTEM DOCUMENTATION</h2>
+    <h3>Technical Documentation</h3>
+    <div class="gold-line"></div>
+    <p>Version 1.0 | Juni 2026</p>
+    <p>Parokia ya Moyo Mtakatifu Wa Yesu, Sombetini | Arusha</p>
+</div>
+
+<div class="section">
+    <h1 class="section-title">📋 1. INTRODUCTION</h1>
+    <div class="info-card">
+        <h4>🎯 System Purpose</h4>
+        <p>Kwaya Mt. Bonifasi System is a web-based application built with Python Flask for managing choir activities including members, fees, attendance, income, expenses, and media.</p>
+    </div>
+    <div class="info-card">
+        <h4>🔧 Technologies Used</h4>
+        <ul><li><strong>Backend:</strong> Python 3.10+, Flask 2.3.3</li><li><strong>Database:</strong> SQLite3</li><li><strong>Frontend:</strong> HTML5, CSS3, JavaScript, Jinja2</li><li><strong>Charts:</strong> Chart.js</li><li><strong>Export:</strong> CSV, Excel (openpyxl)</li></ul>
+    </div>
+</div>
+
+<div class="section">
+    <h1 class="section-title">🖥️ 2. SYSTEM REQUIREMENTS</h1>
+    <table class="data-table">
+        <tr><th>Component</th><th>Minimum</th><th>Recommended</th></tr>
+        <tr><td>Processor</td><td>1.5 GHz dual-core</td><td>2.5 GHz quad-core</td></tr>
+        <tr><td>RAM</td><td>1 GB</td><td>2 GB</td></tr>
+        <tr><td>Storage</td><td>500 MB</td><td>1 GB</td></tr>
+        <tr><td>Python</td><td>3.10+</td><td>3.11+</td></tr>
+    </table>
+    <div class="info-card"><h4>📦 Dependencies (requirements.txt)</h4><div class="code-block">Flask==2.3.3<br>Werkzeug==2.3.7<br>openpyxl==3.1.2</div></div>
+</div>
+
+<div class="section">
+    <h1 class="section-title">🚀 3. INSTALLATION GUIDE</h1>
+    <div class="info-card"><h4>Windows Installation:</h4><div class="code-block">python -m venv venv<br>venv\Scripts\activate<br>pip install Flask==2.3.3 Werkzeug==2.3.7 openpyxl==3.1.2<br>python app.py</div></div>
+    <div class="info-card"><h4>Linux Installation:</h4><div class="code-block">python3 -m venv venv<br>source venv/bin/activate<br>pip install Flask==2.3.3 Werkzeug==2.3.7 openpyxl==3.1.2<br>python3 app.py</div></div>
+</div>
+
+<div class="section">
+    <h1 class="section-title">🔐 4. DEFAULT LOGIN</h1>
+    <table class="data-table"><tr><th>Username</th><td>admin</td></tr><tr><th>Password</th><td>admin123</td></tr></table>
+    <div class="info-card"><strong>⚠️ IMPORTANT:</strong> Change password on first login!</div>
+</div>
+
+<div class="section">
+    <h1 class="section-title">🗄️ 5. DATABASE SCHEMA</h1>
+    <div class="grid-2">
+        <div class="info-card"><h4>Main Tables:</h4><ul><li>wanakwaya - Members</li><li>ada_calendar - Fees calendar</li><li>ada_monthly - Monthly fees</li><li>watumiaji - Users</li><li>mahudhurio_detailed - Attendance</li><li>mapato_sources - Income sources</li><li>expenses - Expenses</li><li>nyimbo - Songs</li><li>albamu - Albums</li></ul></div>
+        <div class="info-card"><h4>ada_calendar imelipwa values:</h4><ul><li>0 = Hajalipa (Red)</li><li>1 = Imelipwa kamili (Green)</li><li>2 = Imelipwa sehemu (Yellow)</li><li>3 = Ziada/Overpayment (Blue)</li></ul></div>
+    </div>
+</div>
+
+<div class="section">
+    <h1 class="section-title">🔌 6. API ENDPOINTS</h1>
+    <table class="data-table">
+        <tr><th>Endpoint</th><th>Method</th><th>Description</th></tr>
+        <tr><td>/api/wanakwaya</td><td>GET</td><td>Get all members</td></tr>
+        <tr><td>/api/ada/make_payment</td><td>POST</td><td>Make fee payment (FIFO)</td></tr>
+        <tr><td>/api/mahudhurio/update</td><td>POST</td><td>Update attendance</td></tr>
+        <tr><td>/api/mapato/data</td><td>GET</td><td>Get income data</td></tr>
+        <tr><td>/api/export/&lt;type&gt;</td><td>GET</td><td>Export reports (PDF/Excel)</td></tr>
+        <tr><td>/api/notifications</td><td>GET</td><td>Get notifications</td></tr>
+    </table>
+</div>
+
+<div class="section">
+    <h1 class="section-title">🔧 7. TROUBLESHOOTING</h1>
+    <table class="data-table">
+        <tr><th>Error</th><th>Solution</th></tr>
+        <tr><td>no such table</td><td>Delete kwaya.db and restart app</td></tr>
+        <tr><td>Address already in use</td><td>Change port: python app.py --port=5001</td></tr>
+        <tr><td>ModuleNotFoundError</td><td>pip install -r requirements.txt</td></tr>
+        <tr><td>500 Internal Server Error</td><td>Check terminal for traceback</td></tr>
+    </table>
+</div>
+
+<div class="section">
+    <h1 class="section-title">💾 8. BACKUP & RECOVERY</h1>
+    <div class="code-block"># Backup database<br>copy kwaya.db backup/kwaya_$(date +%Y%m%d).db<br><br># Restore database<br>copy backup/kwaya_20260101.db kwaya.db</div>
+</div>
+
+<div class="section">
+    <h1 class="section-title">🔒 9. SECURITY GUIDELINES</h1>
+    <ul><li>Change default admin password immediately</li><li>Use strong passwords (8+ characters)</li><li>Regular backups (daily recommended)</li><li>Monitor activity log for suspicious activity</li><li>Limit user roles to minimum required permissions</li></ul>
+</div>
+
+<div class="section">
+    <h1 class="section-title">🛠️ 10. MAINTENANCE</h1>
+    <div class="code-block">-- Database optimization<br>VACUUM;<br>ANALYZE;<br>REINDEX;</div>
+</div>
+
+<div class="footer">
+    <p>© 2026 Kwaya Ya Mtakatifu Bonifasi Askofu na Shahidi</p>
+    <p>Sombetini, Arusha - Tanzania</p>
+    <p>"Utukufu wa Mungu kwa sauti za malaika"</p>
+    <p style="font-size: 11px;">Documentation Version 1.0 | Juni 2026</p>
+</div>
+
+</body>
+</html>

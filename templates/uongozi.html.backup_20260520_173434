@@ -1,0 +1,139 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Uongozi - Kwaya Mt. Bonifasi{% endblock %}
+
+{% block content %}
+<style>
+    .leadership-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    
+    .leadership-header {
+        background: linear-gradient(135deg, #1a2a6e, #2a3a7e);
+        padding: 25px 30px;
+        border-radius: 20px;
+        color: white;
+        margin-bottom: 25px;
+    }
+    
+    .leadership-header h1 {
+        color: #FFD700;
+        margin: 0;
+        font-size: 28px;
+    }
+    
+    .leadership-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 25px;
+    }
+    
+    .leader-card {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        text-align: center;
+        transition: transform 0.3s;
+    }
+    
+    .leader-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .leader-icon {
+        background: linear-gradient(135deg, #FFD700, #FFA500);
+        padding: 30px;
+        text-align: center;
+        font-size: 60px;
+    }
+    
+    .leader-info {
+        padding: 20px;
+    }
+    
+    .leader-name {
+        font-size: 20px;
+        font-weight: bold;
+        color: #1a2a6e;
+        margin-bottom: 5px;
+    }
+    
+    .leader-title {
+        color: #dc3545;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+    
+    .leader-desc {
+        color: #666;
+        font-size: 13px;
+        line-height: 1.5;
+    }
+</style>
+
+<div class="leadership-container">
+    <div class="leadership-header">
+        <h1>👥 UONGOZI WA KWAYA</h1>
+        <p>Wakuu na viongozi wa Kwaya Mt. Bonifasi</p>
+    </div>
+    
+    <div class="leadership-grid">
+        <div class="leader-card">
+            <div class="leader-icon">🎵</div>
+            <div class="leader-info">
+                <div class="leader-name">Mwenyekiti</div>
+                <div class="leader-title">Bwana John Mushi</div>
+                <div class="leader-desc">Mratibu mkuu wa shughuli zote za kwaya</div>
+            </div>
+        </div>
+        
+        <div class="leader-card">
+            <div class="leader-icon">🎤</div>
+            <div class="leader-info">
+                <div class="leader-name">Kondakta</div>
+                <div class="leader-title">Bw. Peter Massawe</div>
+                <div class="leader-desc">Anayeongoza mazoezi na kuendesha kwaya</div>
+            </div>
+        </div>
+        
+        <div class="leader-card">
+            <div class="leader-icon">💰</div>
+            <div class="leader-info">
+                <div class="leader-name">Mweka Hazina</div>
+                <div class="leader-title">Bi. Maria John</div>
+                <div class="leader-desc">Anayesimamia fedha na mapato ya kwaya</div>
+            </div>
+        </div>
+        
+        <div class="leader-card">
+            <div class="leader-icon">📝</div>
+            <div class="leader-info">
+                <div class="leader-name">Katibu</div>
+                <div class="leader-title">Bi. Anna Peter</div>
+                <div class="leader-desc">Anayesimamia kumbukumbu na mawasiliano</div>
+            </div>
+        </div>
+        
+        <div class="leader-card">
+            <div class="leader-icon">🎵</div>
+            <div class="leader-info">
+                <div class="leader-name">Kiongozi wa Soprano</div>
+                <div class="leader-title">Bi. Esther Joseph</div>
+                <div class="leader-desc">Anayeongoza sauti za soprano</div>
+            </div>
+        </div>
+        
+        <div class="leader-card">
+            <div class="leader-icon">🎵</div>
+            <div class="leader-info">
+                <div class="leader-name">Kiongozi wa Alto</div>
+                <div class="leader-title">Bi. Grace Lucy</div>
+                <div class="leader-desc">Anayeongoza sauti za alto</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,61 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Receipt ya Malipo{% endblock %}
+
+{% block content %}
+<style>
+    @media print {
+        .no-print {
+            display: none;
+        }
+    }
+</style>
+
+<div style="max-width:500px; margin:20px auto; background:white; border-radius:20px; overflow:hidden; box-shadow:0 5px 20px rgba(0,0,0,0.1);">
+    <div style="background:linear-gradient(135deg,#1a2a6e,#2a3a7e); color:#FFD700; text-align:center; padding:25px;">
+        <h2>🎵 KWAYA MT. BONIFASI</h2>
+        <p>Parokia ya Moyo Mtakatifu Wa Yesu, Sombetini</p>
+    </div>
+    <div style="padding:25px;">
+        <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px dashed #ddd;">
+            <strong>Receipt No:</strong> <span>{{ payment.receipt_no }}</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px dashed #ddd;">
+            <strong>Tarehe:</strong> <span>{{ payment.tarehe }}</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px dashed #ddd;">
+            <strong>Mwanakwaya:</strong> <span>{{ payment.jina }}</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px dashed #ddd;">
+            <strong>Sauti:</strong> <span>{{ payment.sauti }}</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px dashed #ddd;">
+            <strong>Simu:</strong> <span>{{ payment.simu }}</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px dashed #ddd;">
+            <strong>Mwezi/Mwaka:</strong> <span>{{ payment.mwezi }} {{ payment.mwaka }}</span>
+        </div>
+        <div style="background:#f8f9fa; padding:15px; border-radius:12px; margin-top:15px; text-align:center;">
+            <strong style="font-size:18px;">KIASI: TSh {{ "%.0f"|format(payment.kiasi) }}</strong>
+        </div>
+        <div style="text-align:center; margin-top:20px; font-size:12px; color:#888;">
+            "Utukufu wa Mungu kwa sauti za malaika"<br>Asante kwa malipo!
+        </div>
+    </div>
+</div>
+
+<div style="text-align:center; margin-bottom:30px;">
+    <button onclick="window.print()" class="no-print" style="background:#1a2a6e; color:white; padding:10px 25px; border:none; border-radius:30px; cursor:pointer;">🖨️ Chapisha</button>
+    <button onclick="window.close()" class="no-print" style="background:#6c757d; color:white; padding:10px 25px; border:none; border-radius:30px; cursor:pointer; margin-left:10px;">✖ Funga</button>
+    <a href="/ada/calendar" class="no-print" style="background:#28a745; color:white; padding:10px 25px; border:none; border-radius:30px; cursor:pointer; text-decoration:none; margin-left:10px;">◀ Rudi Calendar</a>
+</div>
+
+<script>
+    // Auto close after 5 seconds if opened from payment
+    setTimeout(function() {
+        if (window.opener) {
+            window.close();
+        }
+    }, 5000);
+</script>
+{% endblock %}
